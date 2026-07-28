@@ -9,10 +9,8 @@ import { loadFixtureBrandCore } from "@/brain/content/repository/load-fixture-br
 import { parseFixtureCsv } from "@/brain/content/repository/parse-fixture-csv";
 import { readFileSync } from "node:fs";
 
-import {
-  compileBrandCore,
-  type BrandCore,
-} from "./compile-brand-core";
+import type { BrandCore } from "./brand-core.schema";
+import { compileBrandCore } from "./compile-brand-core";
 import {
   resolveBrandCoreIdentity,
   type BrandCoreIdentity,

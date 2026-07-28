@@ -389,7 +389,7 @@
       "id": "protected-areas",
       "path": "project-knowledge/PROTECTED-AREAS.md",
       "title": "MarketMonth Protected Areas",
-      "description": "- **`Refrence folder/`** — read-only engineering reference. Never copy host-product doctrine into MarketMonth or `PRODUCT.md`.",
+      "description": "- **`reference-library/`** — noncanonical research library (deliberate human-directed reading only). Never copy host-product doctrine into MarketMonth or `PRODU",
       "kind": "supporting",
       "authority": "supporting",
       "status": "active",
@@ -468,6 +468,7 @@
   ],
   "ignoredPaths": [
     "Refrence folder/",
+    "reference-library/",
     "project-knowledge/generated/",
     "node_modules/"
   ]

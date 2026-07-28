@@ -1,8 +1,10 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import { compileBrandCore, resolveBrandCoreIdentity } from "@/brain/core";
-import type { BrandCore, BrandCoreIdentity } from "@/brain/core";
+import type { BrandCoreIdentity } from "@/brain/core/brand-core-identity";
+import { resolveBrandCoreIdentity } from "@/brain/core/brand-core-identity";
+import type { BrandCore } from "@/brain/core/brand-core.schema";
+import { compileBrandCore } from "@/brain/core/compile-brand-core";
 
 import type { ContentBrainContext } from "../types";
 import {

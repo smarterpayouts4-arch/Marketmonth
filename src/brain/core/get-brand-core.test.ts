@@ -17,7 +17,9 @@ describe("getBrandCore", () => {
     const catalogNames = loaded.context.catalogProducts.map((p) =>
       p.name.toLowerCase()
     );
-    const offerLower = loaded.brandCore.offers.map((o) => o.toLowerCase());
+    const offerLower = loaded.brandCore.offers.map((o: string) =>
+      o.toLowerCase()
+    );
     assert.ok(
       catalogNames.some((n) => offerLower.includes(n)),
       "expected at least one catalog product in Brand Core offers"
