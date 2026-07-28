@@ -40,18 +40,9 @@ function installFile(templatePath, targetPath) {
   }
   fs.mkdirSync(path.dirname(targetPath), { recursive: true })
   const nextBody = fs.readFileSync(templatePath, 'utf8')
-  let backup = false
-  if (fs.existsSync(targetPath)) {
-    const prev = fs.readFileSync(targetPath, 'utf8')
-    if (prev !== nextBody) {
-      const stamp = new Date().toISOString().replace(/[:.]/g, '-')
-      const bak = `${targetPath}.bak-${stamp}`
-      fs.writeFileSync(bak, prev, 'utf8')
-      backup = bak
-    }
-  }
+  // No on-disk .bak-* sidecars — previous content is recoverable from git.
   fs.writeFileSync(targetPath, nextBody, 'utf8')
-  return { wrote: targetPath, backup }
+  return { wrote: targetPath, backup: false }
 }
 
 /** @param {string} dir @returns {string[]} */
@@ -78,6 +69,10 @@ const artifacts = [
   {
     template: path.join(adapterCursor, 'agent-prompt-router.mdc'),
     target: path.join(repoRoot, '.cursor', 'rules', 'agent-prompt-router.mdc'),
+  },
+  {
+    template: path.join(adapterCursor, 'agent-bootstrap.mdc'),
+    target: path.join(repoRoot, '.cursor', 'rules', 'agent-bootstrap.mdc'),
   },
   {
     template: path.join(adapterCursor, 'skills', 'aps-router', 'SKILL.md'),

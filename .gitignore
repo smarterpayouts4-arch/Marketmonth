@@ -45,6 +45,11 @@ next-env.d.ts
 .cursor/hooks/.aps-session.json
 .cursor/hooks/.aps-routed-ack.json
 
+# Installer / publish sidecars (do not commit; generators must not create these)
+*.bak-*
+*.before-*
+*.bak-publish
+
 # Local Cursor MCP wiring (commit .cursor/mcp.json.example only)
 .cursor/mcp.json
 
