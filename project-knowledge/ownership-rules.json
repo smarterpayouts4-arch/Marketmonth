@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "owners": {
+    "landing": ["src/components/landing/**", "src/app/page.tsx"],
+    "discovery-ui": ["src/components/discovery/**"],
+    "discovery-engine": ["src/engine/discovery/**", "src/app/api/discovery/**"],
+    "site-seo": [
+      "src/seo/**",
+      "src/components/seo/**",
+      "src/app/api/seo/**",
+      "src/app/robots.ts",
+      "src/app/sitemap.ts",
+      "src/app/opengraph-image.tsx",
+      "src/app/llms.txt/**"
+    ],
+    "brand": ["src/components/brand/**", "src/app/(app)/brand/**"],
+    "strategy": ["src/app/(app)/strategy/**"],
+    "content-brain": [
+      "src/brain/**",
+      "src/app/api/brain/**"
+    ],
+    "dashboard-marketing-topic": [
+      "src/components/dashboard/marketing-topic/**",
+      "src/components/dashboard/phases/marketing-topic-phase-panel.tsx"
+    ],
+    "content": [
+      "src/components/content/**",
+      "src/components/dashboard/content/**",
+      "src/app/(app)/content/**"
+    ],
+    "review": ["src/app/(app)/review/**"],
+    "calendar": ["src/app/(app)/calendar/**"],
+    "analytics": ["src/app/(app)/analytics/**"],
+    "dashboard": ["src/components/dashboard/**", "src/app/(app)/dashboard/**"],
+    "app-shell": [
+      "src/components/layout/**",
+      "src/app/(app)/layout.tsx",
+      "src/app/(app)/settings/**",
+      "src/app/(app)/help/**",
+      "src/app/layout.tsx",
+      "src/app/globals.css",
+      "src/app/favicon.ico"
+    ],
+    "db": ["src/db/**"],
+    "auth": [
+      "src/auth.ts",
+      "src/app/api/auth/**",
+      "src/components/providers/**",
+      "src/types/next-auth.d.ts"
+    ],
+    "shared-ui": ["src/components/ui/**", "src/components/shared/**"],
+    "data-mocks": ["src/data/**"],
+    "knowledge": [
+      "project-knowledge/**",
+      "src/app/api/project-knowledge/**",
+      "src/lib/project-knowledge/**"
+    ],
+    "aps": ["agent-prompt-system/**"],
+    "mcp": ["mcp/**"],
+    "lib": ["src/lib/**"]
+  },
+  "publicApiEntrypoints": {
+    "discovery-ui": ["src/components/discovery/index.ts"],
+    "discovery-engine": ["src/engine/discovery/index.ts"],
+    "discovery-stages-contract": ["src/lib/discovery/stages.ts"],
+    "landing": ["src/components/landing/index.tsx"],
+    "brand": ["src/components/brand/index.ts"],
+    "site-seo": ["src/seo/index.ts"]
+  },
+  "independenceRules": [
+    {
+      "id": "ui-no-db",
+      "from": "src/components/**",
+      "disallow": ["src/db/**", "@/db"],
+      "severity": "error"
+    },
+    {
+      "id": "ui-no-engine-private",
+      "from": "src/components/**",
+      "disallow": ["src/engine/**", "@/engine"],
+      "severity": "error"
+    },
+    {
+      "id": "client-no-deep-feature-internals",
+      "description": "Features should consume declared public barrels, not sibling feature internals",
+      "from": "src/components/**",
+      "disallowDeepFromOtherFeatures": true,
+      "severity": "warn"
+    }
+  ],
+  "qualifyingFeatureRoots": [
+    "src/engine/discovery",
+    "src/components/discovery",
+    "src/components/landing",
+    "src/seo"
+  ],
+  "dependencyRules": [
+    {
+      "id": "engine-no-ui",
+      "from": "src/engine/**",
+      "disallow": ["react", "react-dom", "next/navigation", "next/link", "src/components/**"],
+      "severity": "error"
+    },
+    {
+      "id": "ui-no-engine-private",
+      "from": "src/components/**",
+      "disallow": ["src/engine/**"],
+      "severity": "error"
+    }
+  ],
+  "exceptions": []
+}

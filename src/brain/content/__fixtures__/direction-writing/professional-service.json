@@ -1,0 +1,33 @@
+{
+  "id": "professional-service",
+  "brandContext": {
+    "brandName": "Northline Advisors",
+    "domain": "northline.example",
+    "website": "https://northline.example",
+    "description": "Boutique advisory firm helping founders prepare for growth-stage fundraising.",
+    "audience": "Founders preparing for Series A conversations",
+    "products": ["Fundraising readiness review"],
+    "services": ["Board narrative coaching", "Investor Q&A prep"],
+    "valueProposition": "Turn messy traction into a clear fundraising story",
+    "marketingOpportunity": "Founders need sharper narratives before investor meetings",
+    "contentOpportunities": [
+      "Questions investors ask about unit economics",
+      "How to structure a fundraising narrative"
+    ],
+    "evidenceById": {},
+    "contextVersion": "fixture-service-v1",
+    "source": "fixture"
+  },
+  "selectedTopic": {
+    "topicId": "tc_svc_story_1",
+    "masterTitle": "How to structure a fundraising narrative",
+    "objective": "value_proposition",
+    "audience": "Founders preparing for Series A conversations",
+    "audiencePain": "Traction details feel scattered before meetings",
+    "strategicAngle": "Clarity value",
+    "relevanceReasons": ["Value proposition framing"],
+    "evidenceIds": []
+  },
+  "absentCapability": "guaranteed term-sheet outcomes",
+  "awkwardMasterTitle": "How Should Buyers Evaluate AI Tools—Before They Commit?"
+}

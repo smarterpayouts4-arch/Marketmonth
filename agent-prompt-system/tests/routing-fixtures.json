@@ -1,0 +1,285 @@
+[
+  {
+    "id": "official-quality",
+    "prompt": "Run the official quality check and document the score.",
+    "expect_substantial": true,
+    "primary_workflow": "daily-project-closeout",
+    "allowed_supporting": ["test-and-verify", "use-agent-toolchain"],
+    "must_select": ["npm run quality:update"],
+    "must_not_select": ["npm run quality:update --fast", "quality:update --fast"],
+    "must_read": ["project-knowledge/COMMANDS.md"],
+    "must_not_stop_at": [],
+    "routing_state": "substantial_unconfirmed_until_ack",
+    "verification": "EXECUTED quality:update; evidence labels required",
+    "reason": "Official scoring requires full probes."
+  },
+  {
+    "id": "strategy-page",
+    "prompt": "Change the Strategy page so owners know what to discuss this month.",
+    "expect_substantial": false,
+    "primary_workflow": "implement-feature",
+    "allowed_supporting": ["investigate-codebase", "test-and-verify"],
+    "must_select": [],
+    "must_not_select": [],
+    "must_read": [
+      "project-knowledge/PRODUCT.md",
+      "project-knowledge/CURRENT_STATE.md",
+      "project-knowledge/ARCHITECTURE.md"
+    ],
+    "must_not_stop_at": ["agent-prompt-system/project-context/PRODUCT.md"],
+    "routing_state": "heuristic_bypass_bridge_still_applies",
+    "verification": "INSPECTED canonical docs; UI change verified",
+    "reason": "Canonical resolution — not stub-only. Heuristic may miss (no keyword); bridge still advisory."
+  },
+  {
+    "id": "library-api",
+    "prompt": "What API does this installed library expose?",
+    "expect_substantial": false,
+    "primary_workflow": "use-agent-toolchain",
+    "allowed_supporting": ["investigate-codebase"],
+    "must_select": ["Context7"],
+    "must_not_select": [
+      "project-knowledge as primary",
+      "broad web search as primary"
+    ],
+    "must_read": [],
+    "must_not_stop_at": [],
+    "routing_state": "bypass_or_trivial",
+    "verification": "Context7 or package docs",
+    "reason": "Library truth from Context7."
+  },
+  {
+    "id": "discovery-ui-verify",
+    "prompt": "Verify the Discovery form works in the browser after the recent investigate pass.",
+    "expect_substantial": true,
+    "primary_workflow": "test-and-verify",
+    "allowed_supporting": ["use-agent-toolchain", "debug-runtime-problem"],
+    "must_select": ["Playwright or browser"],
+    "must_not_select": [],
+    "must_read": ["project-knowledge/CURRENT_STATE.md"],
+    "must_not_stop_at": [],
+    "routing_state": "substantial_unconfirmed_until_ack",
+    "verification": "OBSERVED browser or Playwright",
+    "reason": "UI verification tool."
+  },
+  {
+    "id": "brand-profile-type",
+    "prompt": "Where is the canonical BrandProfile type?",
+    "expect_substantial": false,
+    "primary_workflow": "investigate-codebase",
+    "allowed_supporting": ["use-agent-toolchain"],
+    "must_select": ["docs-index or ask or targeted source"],
+    "must_not_select": [],
+    "must_read": [],
+    "must_not_stop_at": [
+      "treating mock and engine BrandProfile as one type"
+    ],
+    "routing_state": "bypass_or_trivial",
+    "verification": "INSPECTED types in source",
+    "reason": "Distinguish mock vs engine types."
+  },
+  {
+    "id": "short-engineering-add",
+    "prompt": "Add TypeScript types across discovery handoff helpers so typecheck passes cleanly.",
+    "expect_substantial": false,
+    "primary_workflow": "implement-feature",
+    "allowed_supporting": ["test-and-verify"],
+    "must_select": [],
+    "must_not_select": [],
+    "must_read": ["project-knowledge/CURRENT_STATE.md"],
+    "must_not_stop_at": [],
+    "routing_state": "heuristic_false_negative",
+    "verification": "EXECUTED typecheck; known FN for keyword list",
+    "reason": "Short/meaningful eng ask — heuristic may skip; bridge still applies."
+  },
+  {
+    "id": "long-engineering-implement",
+    "prompt": "Implement the objective topic-strategy registry refactor in generate-topic-candidates with focused tests and a deletion ledger.",
+    "expect_substantial": true,
+    "primary_workflow": "implement-feature",
+    "allowed_supporting": ["test-and-verify", "investigate-codebase"],
+    "must_select": [],
+    "must_not_select": [],
+    "must_read": [
+      "project-knowledge/CURRENT_STATE.md",
+      "project-knowledge/CONTENT_BRAIN.md"
+    ],
+    "must_not_stop_at": [],
+    "routing_state": "substantial_unconfirmed_until_ack",
+    "verification": "EXECUTED tests/typecheck; deletion ledger",
+    "reason": "Long engineering request with implement keyword."
+  },
+  {
+    "id": "docs-only-knowledge",
+    "prompt": "Update project-knowledge documentation so APS ownership terminology matches SYSTEM.md.",
+    "expect_substantial": true,
+    "primary_workflow": "investigate-codebase",
+    "allowed_supporting": ["use-agent-toolchain", "daily-project-closeout"],
+    "must_select": [],
+    "must_not_select": [],
+    "must_read": [
+      "project-knowledge/README.md",
+      "agent-prompt-system/SYSTEM.md"
+    ],
+    "must_not_stop_at": [],
+    "routing_state": "substantial_unconfirmed_until_ack",
+    "verification": "INSPECTED docs consistency; knowledge:check if structural",
+    "reason": "Documentation-only knowledge work."
+  },
+  {
+    "id": "idea-lab-brain",
+    "prompt": "Investigate Idea Lab Auto-generate topic candidates and plan a feature fix for product_education honesty.",
+    "expect_substantial": true,
+    "primary_workflow": "investigate-codebase",
+    "allowed_supporting": ["plan-feature", "test-and-verify"],
+    "must_select": [],
+    "must_not_select": ["wiring APS into Idea Lab runtime"],
+    "must_read": [
+      "project-knowledge/CURRENT_STATE.md",
+      "src/app/dev/brain/idea-lab/SANDBOX.md"
+    ],
+    "must_not_stop_at": [],
+    "routing_state": "substantial_unconfirmed_until_ack",
+    "verification": "INSPECTED Brain path; APS remains Cursor-only",
+    "reason": "Idea Lab / Brain request — APS routes Cursor work, not runtime."
+  },
+  {
+    "id": "discovery-feature",
+    "prompt": "Plan a Discovery activation feature improvement and audit the current stream API contract.",
+    "expect_substantial": true,
+    "primary_workflow": "plan-feature",
+    "allowed_supporting": ["audit-existing-system", "investigate-codebase"],
+    "must_select": [],
+    "must_not_select": [],
+    "must_read": [
+      "project-knowledge/FEATURES/discovery-engine.md",
+      "project-knowledge/CURRENT_STATE.md"
+    ],
+    "must_not_stop_at": [],
+    "routing_state": "substantial_unconfirmed_until_ack",
+    "verification": "Task spec before edits",
+    "reason": "Discovery request."
+  },
+  {
+    "id": "seo-improve",
+    "prompt": "Audit and improve MarketMonth site SEO metadata and llm readiness docs.",
+    "expect_substantial": true,
+    "primary_workflow": "improve-seo-and-llm-readiness",
+    "allowed_supporting": ["audit-existing-system", "test-and-verify"],
+    "must_select": [],
+    "must_not_select": [],
+    "must_read": ["project-knowledge/FEATURES/site-seo.md"],
+    "must_not_stop_at": [],
+    "routing_state": "substantial_unconfirmed_until_ack",
+    "verification": "SEO verify scripts / INSPECTED metadata",
+    "reason": "SEO request."
+  },
+  {
+    "id": "api-route",
+    "prompt": "Investigate the /api/project-knowledge/ask route and document how the API system works for agents.",
+    "expect_substantial": true,
+    "primary_workflow": "investigate-codebase",
+    "allowed_supporting": ["use-agent-toolchain", "audit-existing-system"],
+    "must_select": [],
+    "must_not_select": [],
+    "must_read": [
+      "project-knowledge/generated/maps/API_MAP.md",
+      "docs/ai/agent-toolchain.md"
+    ],
+    "must_not_stop_at": [],
+    "routing_state": "substantial_unconfirmed_until_ack",
+    "verification": "INSPECTED route + EXECUTED ask if server up",
+    "reason": "API request."
+  },
+  {
+    "id": "cross-functional-ambiguous",
+    "prompt": "Research how Discovery, Content Brain, and SEO should share brand context — plan a multi-file architecture approach.",
+    "expect_substantial": true,
+    "primary_workflow": "plan-feature",
+    "allowed_supporting": ["investigate-codebase", "use-agent-toolchain"],
+    "must_select": [],
+    "must_not_select": [],
+    "must_read": [
+      "project-knowledge/ARCHITECTURE.md",
+      "project-knowledge/PRODUCT.md",
+      "project-knowledge/CURRENT_STATE.md"
+    ],
+    "must_not_stop_at": [],
+    "routing_state": "substantial_unconfirmed_until_ack",
+    "verification": "Task spec; max 3 workflows",
+    "reason": "Ambiguous cross-functional — ≤3 workflows."
+  },
+  {
+    "id": "non-engineering-chat",
+    "prompt": "Thanks — that explanation helped a lot.",
+    "expect_substantial": false,
+    "primary_workflow": null,
+    "allowed_supporting": [],
+    "must_select": [],
+    "must_not_select": ["forcing APS ceremony"],
+    "must_read": [],
+    "must_not_stop_at": [],
+    "routing_state": "bypass_or_trivial",
+    "verification": "none",
+    "reason": "Non-engineering conversation — bypass."
+  },
+  {
+    "id": "misleading-keyword-docs",
+    "prompt": "Please plan our weekend hiking docs and research restaurants — not a MarketMonth task.",
+    "expect_substantial": true,
+    "primary_workflow": null,
+    "allowed_supporting": [],
+    "must_select": [],
+    "must_not_select": ["implement-feature on product code"],
+    "must_read": [],
+    "must_not_stop_at": [],
+    "routing_state": "substantial_heuristic_true_positive_noise",
+    "verification": "Agent should still bypass product edits",
+    "reason": "Misleading keywords (plan/docs/research) — heuristic true; agent should not touch product."
+  },
+  {
+    "id": "one-workflow-toolchain",
+    "prompt": "Use the agent toolchain to investigate which MCP tool reads project-knowledge docs.",
+    "expect_substantial": true,
+    "primary_workflow": "use-agent-toolchain",
+    "allowed_supporting": [],
+    "must_select": ["mm_read_project_doc or docs-index"],
+    "must_not_select": [],
+    "must_read": ["docs/ai/agent-toolchain.md"],
+    "must_not_stop_at": [],
+    "routing_state": "substantial_unconfirmed_until_ack",
+    "verification": "Single primary workflow preferred",
+    "reason": "Tasks that should select one workflow."
+  },
+  {
+    "id": "two-workflow-debug-test",
+    "prompt": "Debug the runtime problem on Idea Lab generate and then test and verify the fix.",
+    "expect_substantial": true,
+    "primary_workflow": "debug-runtime-problem",
+    "allowed_supporting": ["test-and-verify"],
+    "must_select": [],
+    "must_not_select": [],
+    "must_read": ["project-knowledge/CURRENT_STATE.md"],
+    "must_not_stop_at": [],
+    "routing_state": "substantial_unconfirmed_until_ack",
+    "verification": "Two compatible workflows",
+    "reason": "Tasks that should select two workflows."
+  },
+  {
+    "id": "three-workflow-security",
+    "prompt": "Audit the existing system for security and privacy issues, then plan a feature hardening pass and test and verify.",
+    "expect_substantial": true,
+    "primary_workflow": "review-security-and-privacy",
+    "allowed_supporting": ["audit-existing-system", "test-and-verify"],
+    "must_select": [],
+    "must_not_select": [],
+    "must_read": [
+      "project-knowledge/PROTECTED-AREAS.md",
+      "project-knowledge/KNOWN-RISKS.md"
+    ],
+    "must_not_stop_at": [],
+    "routing_state": "substantial_unconfirmed_until_ack",
+    "verification": "Exactly ≤3 workflows",
+    "reason": "Tasks that should select three workflows."
+  }
+]

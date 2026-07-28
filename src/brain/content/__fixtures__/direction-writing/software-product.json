@@ -1,0 +1,33 @@
+{
+  "id": "software-product",
+  "brandContext": {
+    "brandName": "ParcelKit",
+    "domain": "parcelkit.example",
+    "website": "https://parcelkit.example",
+    "description": "Developer toolkit for shipping webhook retries and delivery logs.",
+    "audience": "Backend engineers owning webhook reliability",
+    "products": ["Webhook retry console", "Delivery log explorer"],
+    "services": ["SDK integration support"],
+    "valueProposition": "See failed deliveries and retry with confidence",
+    "marketingOpportunity": "Teams lose hours debugging silent webhook failures",
+    "contentOpportunities": [
+      "How to debug failed webhook deliveries",
+      "Retry strategies for unreliable endpoints"
+    ],
+    "evidenceById": {},
+    "contextVersion": "fixture-software-v1",
+    "source": "fixture"
+  },
+  "selectedTopic": {
+    "topicId": "tc_soft_retry_1",
+    "masterTitle": "How to debug failed webhook deliveries",
+    "objective": "decision_support",
+    "audience": "Backend engineers owning webhook reliability",
+    "audiencePain": "Silent failures waste engineering hours",
+    "strategicAngle": "Decision criteria",
+    "relevanceReasons": ["Decision support framing"],
+    "evidenceIds": []
+  },
+  "absentCapability": "zero-latency global CDN acceleration",
+  "awkwardMasterTitle": "How Should Buyers Evaluate AI Tools—Before They Commit?"
+}

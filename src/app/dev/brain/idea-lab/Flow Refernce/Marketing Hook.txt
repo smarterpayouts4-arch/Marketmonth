@@ -1,0 +1,1255 @@
+
+Search in video
+Mastering the "Scrollback"
+0:00
+The single most reason why your reels or
+0:01
+short-form videos don't perform are bad hooks,
+0:03
+and I kid you not, fixing and understanding
+0:05
+your hook game will get you views, lots
+0:08
+of them.
+0:08
+So, recently, thousands of creators applied to get
+0:11
+their hooks analyzed by me, and most of
+0:13
+them make these simple mistakes that crush retention,
+0:15
+make people swipe away before they even know
+0:17
+what's up, and as a result of that,
+0:19
+make the algorithm hate you.
+0:20
+So, today, I'll pick three creators and fix
+0:23
+their hooks with some tricks and strategies that
+0:25
+have helped my clients gain millions of views,
+0:27
+and that you can actually instantly implement yourself
+0:29
+as well.
+0:29
+All right, so the first issue is probably
+0:30
+one of the biggest problems I see with
+0:32
+hooks, and it's this.
+0:34
+Think of people swiping through their reels feed
+0:36
+as being on autopilot, and a lot of
+0:38
+creator gurus talk about this, but they never
+0:40
+really explain the reason why and how to
+0:42
+deal with this.
+0:43
+So, when people swipe, they basically have this
+0:45
+automated muscle memory at this point to keep
+0:47
+swiping until something hits their brain receptors, where
+0:51
+the brain goes, hmm, that is interesting.
+0:54
+And ideally, I've actually done lots of research
+0:56
+on that.
+0:57
+A lot of people recently actually swipe, swipe,
+0:59
+swipe, and then it takes the brain a
+1:00
+little longer to kind of process it, and
+1:02
+then they swipe back again, and this seems
+1:04
+to be like a big major trigger indicator
+1:07
+for the algorithm at this point.
+1:08
+And because of all of that, this process
+1:10
+happens so fast that you need to carefully
+1:12
+construct your hooks to basically hit those triggers
+1:15
+as fast and as best as possible to
+1:17
+get people from your target audience to basically
+1:19
+do that.
+1:20
+Stop and think and be like, hmm.
+1:22
+So, essentially what you want to do at
+1:23
+all times is you want to open loops
+1:25
+and don't close them as long as possible,
+1:27
+basically keeping them tangling at all times.
+1:29
+And when you do close the loop, you
+1:31
+want to open another one.
+1:32
+This is essentially what we can see clearly
+1:34
+here with our first creator, Max.
+1:36
+Malgo, Max.
+1:38
+Let's just call her Max.
+1:39
+So, let's just take a look at this
+1:40
+video right here.
+1:41
+Things I don't do being lean over 40.
+1:43
+So, based on the cover, sounds interesting, but
+1:45
+let's take a look first.
+Context & The Bit-by-Bit Framework
+1:54
+Okay.
+1:56
+So, at this point, we're already past the
+1:58
+hook. And here's the thing.
+1:59
+People at this point don't care.
+2:01
+People don't even know what the context of
+2:03
+the video is.
+2:03
+And this is how you need to think
+2:05
+when especially crafting your hooks.
+2:07
+People sit, they swipe on autopilot, and then
+2:09
+they see this frame starting with this.
+2:12
+And somebody in the kitchen saying, I definitely
+2:14
+don't cut out carbs.
+2:16
+I'm like, okay, cool.
+2:18
+But like, why?
+2:19
+And why should you cut out carbs?
+2:20
+I don't get the context, right?
+2:22
+It's like going to a hardware store and
+2:24
+somebody comes up to you and is like,
+2:25
+I never pull out.
+2:27
+And you're like, huh, what?
+2:29
+But he's like, yeah, I mean, the screws
+2:32
+obviously halfway through a project.
+2:33
+I always finish what I start.
+2:35
+You already notice here, there's actually a very
+2:37
+fine line from being borderline criminal and getting
+2:40
+people's scroll swapping attention, right?
+2:42
+And the fix to that whole thing is
+2:44
+simply adding context as easy as that.
+2:46
+So, the first thing I would do here
+2:48
+is slap that context right at the top
+2:51
+of the screen.
+2:51
+Let's just do this together.
+2:52
+So, let's slap on the safe zone.
+The "Safe-Zone" Mistake That's Costing You A Lot of Views!
+2:56
+The first thing you can actually see already
+2:58
+from the first sort of frame here, not
+3:00
+really the actual first frame, but the hook
+3:02
+is that this sling right here is actually
+3:06
+overlapping with the comment box.
+3:09
+You instantly see it's just way too big
+3:10
+and honestly, it doesn't look good.
+3:12
+So, the first thing I want to do
+3:13
+here is literally remove the caption just to
+3:16
+show you how much cleaner that is.
+3:18
+So, we're just going to hit the generative
+3:20
+fill.
+3:20
+So, boom, looks pretty, looks pretty good actually.
+3:23
+Looks a lot cleaner.
+3:24
+Captions usually can be a lot smaller, but
+3:26
+let's not even get into that.
+3:27
+The second thing is, like I said, adding
+3:29
+context to this whole thing.
+3:30
+And by adding context, I wouldn't just say
+3:33
+like the cover image of this video says,
+3:36
+things I don't do being lean over 40.
+3:38
+I mean, it's not bad, but I try
+3:40
+to create even more of a curiosity gap
+3:42
+with this whole thing to basically force people
+3:44
+to watch even further.
+3:46
+Because suddenly they have this whole open loop
+3:48
+in their head and they're like, okay, now
+3:49
+I need to watch further.
+3:50
+To kind of create that and be able
+3:52
+to craft that, you need to understand your
+3:55
+target audience in an actual way, right?
+THIS is one of the strongest Hook Frameworks!
+3:58
+And in that case, the content of the
+3:59
+reel itself, if we watch the whole video,
+4:01
+is a gold mine.
+4:02
+Because basically she says, I'm lean over 40,
+4:05
+but I definitely do eat carbs.
+4:07
+And that in and itself challenges a common
+4:09
+belief, one of the strongest forms of creating
+4:12
+hooks, right?
+4:13
+So, remember that.
+4:14
+In this case, just to make it a
+4:15
+little shorter and a little snappier, I'd say
+4:18
+lean at 45 and I eat carbs every
+4:21
+day or something like this.
+4:22
+So, let's just, you know, I'll just do
+4:24
+it here right in front of you so
+4:25
+you can see, because, you know, the second
+4:28
+part of this whole thing is actually making
+4:29
+this look better, but let's get into that.
+4:32
+And I eat carbs every day.
+4:35
+Okay.
+4:36
+So, obviously we're not going to make this
+4:37
+work.
+4:39
+Carbs every day.
+4:40
+And if we have here a safe zone,
+4:42
+we can already see it needs to be
+4:44
+smaller, way smaller than you might think.
+4:47
+Also, I'm going to play around with this.
+4:49
+I mean, it doesn't look bad.
+4:51
+Then you can make it a little bigger.
+4:53
+Eat carbs every day.
+4:55
+Make this a little there.
+4:57
+And you know, one thing you can instantly
+Fix This And You'll Get More Views
+5:01
+see right there is that the way this
+5:04
+whole shot is framed, and it's actually a
+5:05
+big part of why people actually stop scrolling
+5:09
+is that it basically overlaps with this part
+5:13
+right here.
+5:14
+And there's just no way, there's basically clutter.
+5:16
+This one is clearly a kitchen.
+5:18
+This is a person.
+5:19
+This one is safe zone, safe space to
+5:22
+put your text, but this is virtually unusable.
+5:25
+So, you know, there's almost no way of
+5:27
+making this look good.
+5:28
+One thing you could do at all times
+5:30
+is just slapping some background thing right there.
+5:34
+As we can see, it looks a little
+5:36
+too big, so make it a little smaller.
+5:38
+I eat carbs every day, right?
+5:40
+Already not that bad, to be honest, if
+5:43
+you ask me.
+5:44
+A few things you could play around with,
+5:47
+just a few extra lessons right here for
+5:49
+you guys, is that now you can play
+5:52
+with font, weight, for example, and I eat,
+5:57
+you put this a little smaller, like medium,
+5:59
+and carbs every day, also like medium, and
+6:04
+suddenly it's just way easier for the eye,
+6:07
+basically, you know, as you can see right
+6:09
+here.
+6:10
+So you kind of read this.
+6:11
+I actually like it quite a lot, right?
+Without This You Won't Be Able To Get Views in 2025 anymore...
+6:13
+But just to kind of make you understand
+6:16
+that, yeah, the hook is cool.
+6:19
+The spoken hook is cool.
+6:20
+It opens up some sort of curiosity gap
+6:22
+with what she says and what she has
+6:24
+here.
+6:24
+You know, this challenge is a common belief,
+6:26
+but all of this is still pretty off.
+6:29
+So let's actually try to fix that.
+6:31
+And what I'm going to do is I'll
+6:32
+pull this picture into Chatubity and actually try
+6:35
+to create a nice looking frame to just
+6:39
+prove the point for you right here.
+6:41
+Create a real screenshot where you put her
+6:42
+into the frame.
+6:43
+Nice lighting, natural, and a kitchen with a
+6:45
+big bowl of unhealthy carbs in the bottom
+6:48
+half of the screen.
+6:49
+I wrote this because I want to create
+6:50
+even more sort of a contrast because, you
+6:52
+know, curiosity gaps and stuff like this.
+6:54
+Scroll, stopping visual, hook real, aspect ratio, 9
+6:58
+by 16.
+6:59
+Let's just see what it will come up
+7:00
+with.
+7:01
+All right, so awesome.
+7:02
+This actually looks very close.
+7:04
+Man, this is just insane.
+7:07
+So let's just take this one.
+7:08
+Just to prove a point, let me just
+7:09
+put this right here.
+7:10
+It kind of overlaps, so I'm going to
+7:12
+flip the colors.
+7:13
+A very easy way.
+7:14
+Black and white, white on black.
+7:15
+It's all the same.
+7:16
+You know, if we overlay this, still pretty
+7:18
+good.
+7:18
+And you can just see basically the difference,
+7:22
+right?
+7:22
+Of a shot like this and a shot
+7:25
+like this.
+7:25
+Especially if you have some nasty carbs right
+7:28
+there, maybe make them even grazier, more unhealthy.
+7:31
+And suddenly people are going to have a
+7:34
+reason to stick around and be like, really?
+7:36
+What's she doing?
+7:36
+How does she do it?
+7:37
+I love noodles.
+The "First Impression Mismatch" (Big one...)
+7:39
+Right.
+7:40
+Next one, Stefan from Slovakia.
+7:42
+His problem is actually getting reached and I
+7:43
+can actually instantly see why.
+7:45
+So let's go step by step right here.
+7:47
+So first of all, the first thing, the
+7:49
+first impression that I have is amazing, great
+7:51
+pictures, especially these ones.
+7:52
+And you can understand what's going on.
+7:54
+Carousels are always better than actual pictures, but
+7:58
+here's the thing.
+7:59
+Even with carousels, you need, you need a
+8:02
+hook in some form.
+8:04
+In this case, it's really, there's no hook.
+8:07
+There's just a picture, you know, and just
+8:08
+a different version of the same picture.
+8:11
+Now to kind of come back to the
+8:12
+elements of every hook needs to contain is
+8:15
+first of all, a, you know, like a
+8:17
+setup of something that makes people in your
+8:21
+target audience actually care and ideally plants some
+8:24
+sort of picture in hindsight.
+8:27
+And that gives them a reason to stick
+8:29
+around because they want that question to be
+8:31
+answered at some point, because that's exactly what
+8:34
+they're interested in and something that they ideally
+8:36
+identify with.
+8:38
+So with that being said, the profile that
+8:40
+you have also has to sort of pass
+8:42
+this.
+8:43
+It's exactly what I'm looking for.
+8:44
+It's what I, what's interesting for me, sort
+8:47
+of test.
+8:47
+And that one is totally off here because
+8:50
+this is the first part of the profile,
+8:53
+by the way, you're from Slovakia and this
+8:54
+is Bratislava.
+8:56
+I hang out there quite, quite a lot.
+8:58
+Actually, most people who find you through reels
+9:00
+actually come to this feed.
+9:02
+And if you take a look here, that
+9:04
+is totally off, right?
+9:06
+There's a big mismatch between the photo feed
+9:09
+and actually the reels feed.
+9:10
+And here there's basically great pics, but no
+9:13
+hooks at all.
+9:14
+And here's actually bad reels.
+9:16
+If you ask me, if we just take
+9:17
+a look at this one right here, honestly,
+9:20
+pretty bad reels, even though it's kind of
+9:23
+funny.
+9:26
+Very, very bad reels, to be honest, and
+9:28
+bad hooks, right?
+9:30
+And that instantly takes away all the credibility
+9:32
+that you have.
+9:33
+So let's take a look at this one.
+9:34
+Who can relate?
+9:37
+Okay.
+9:38
+Let's mute this here, but basically talk about
+Planting Questions To Hack Retention
+9:42
+the hook.
+9:42
+Who can relate?
+9:43
+And then this first frame right here, it
+9:46
+looks pretty bland, right?
+9:47
+What is the need?
+9:48
+Ask yourself, what is the need you fulfill
+9:50
+for your target audience with this?
+9:52
+What is the question that you want to
+9:55
+plant in people's head?
+9:57
+Who can relate is not a strong question
+9:59
+because I'm like, I don't know what this
+10:02
+even is about, so I'm gone, right?
+10:04
+So to me, this kind of looks like
+10:06
+it's trying to farm views, especially with this
+10:09
+twist at the end there, but it's not
+10:11
+really serving a purpose, not really talking to
+10:14
+your actual target audience, which is, I guess,
+10:16
+people who are into your photography, right?
+10:20
+And the thing is, especially about photography accounts
+10:23
+on Instagram, seeing as this was the first
+10:25
+big platform for photographers, things have changed quite
+10:28
+a bit, right?
+10:29
+It's not just about photos anymore, unfortunately, right?
+10:32
+And I can kind of understand the frustration
+10:33
+here.
+10:34
+Lots of photographers have, but these days are
+10:37
+over because there's just a million photographers and
+10:40
+taking pictures is a skill set, but there's
+10:42
+just a lot of people out there, right?
+10:44
+So what you actually need to focus on
+10:46
+with all these things is thinking about the
+10:49
+story within the photo, the emotional connection within
+10:52
+a photo, right?
+10:53
+Making people relate with either the photo or
+10:56
+the photographer, ideally, right?
+10:57
+Again, why?
+10:58
+Because there's a gazillion photographers out there and
+11:00
+you're not special.
+11:01
+That is until they get to understand your
+11:03
+personality or your why, or the emotions behind
+11:06
+it, like I said.
+11:07
+So again, just this one, take a look
+11:10
+at this picture, like just a bunch of
+11:15
+pictures.
+11:15
+Unfortunately, I don't understand what's going on right
+11:17
+here.
+11:20
+Not even a voiceover.
+11:22
+So this one looks cool.
+11:23
+Let's take a look.
+11:24
+I need to mute this.
+11:28
+But yeah, pictures, cool pictures, but that's just
+11:32
+about it.
+Simple Storytelling Hooks To 10x Your Impact
+11:33
+Now, let me show you an example from
+11:35
+a former client of mine who was going
+11:38
+through the career mentorship at basically from zero.
+11:40
+And he's doing every, all of these things,
+11:42
+obviously that I talked about right now, pretty,
+11:44
+pretty well.
+11:45
+This is Consti.
+11:45
+He's in somewhat of a different photography niche,
+11:48
+but also a very, very saturated one, the
+11:51
+wildlife photography one.
+11:52
+Let's just take a look at some of
+11:53
+his examples.
+11:54
+Obviously, for example, my photos 10 years ago
+11:58
+versus now.
+12:08
+Right.
+12:09
+And it's also basically just showing pictures, but
+12:11
+suddenly we have a connection.
+12:12
+First of all, we see where we see
+12:14
+him in some crazy gear with a crazy
+12:17
+camera and some crazy setting.
+12:19
+So a story instantly unfolds.
+12:21
+And what is the question in my head?
+12:23
+First of all, what is he doing?
+12:24
+Is he a very professional photographer and what's
+12:27
+going to happen?
+12:27
+Because now I'm invested 10 years ago.
+12:30
+He's been doing this for a while.
+12:31
+He's actually looks pretty young still.
+12:33
+So, you know, then continues to go, but
+12:36
+we'll just talk about the hooks right here.
+12:38
+Not bad photos, but some are kind of
+12:39
+bad.
+12:40
+And then again, my photos now taught a
+12:43
+better or not.
+12:44
+And that doesn't matter in this case, actually
+12:47
+the quality of the photos doesn't matter that
+12:48
+much in this case, because people are ideally
+12:50
+people are going to fight anyway in the
+12:52
+comments.
+12:52
+And that would, that's what makes people go
+12:54
+viral, but it's basically people getting brought on
+12:58
+the journey, right?
+12:59
+It's suddenly you're like with him.
+13:01
+He shows some emotion as well, smiling somewhere
+13:03
+here, you know, for example.
+13:05
+And it's such a different frame if you
+13:08
+ask me, right?
+13:09
+So people are going to be like, like,
+13:10
+how can I create photos?
+13:11
+Like you, man?
+13:11
+Like why did you, how can you travel?
+13:14
+Why, where did you learn all of this
+13:17
+and stuff like this?
+13:17
+And then, you know, people ask you this,
+13:19
+obviously it's the whole monetization avenue because you
+13:23
+can teach people that.
+13:24
+And suddenly your life is just changing directions
+13:26
+and ways you've never basically thought about before.
+13:29
+So whereas if we go back to Stefan's
+13:31
+videos, zero emotional connection, even with the cool,
+13:34
+like these ones are amazing.
+13:36
+I love these, but even there, right?
+13:38
+The connection is just not there because we
+13:40
+don't, we don't even get to the point
+13:42
+of looking at the videos more closely because
+13:44
+we just don't care.
+13:45
+Cause there's so many photos out there, right?
+13:47
+So to recap here, think about what major
+13:50
+pain points your audience actually cares about, and
+13:52
+then make that first frame and hook so
+13:54
+compelling that people just need to keep watching,
+13:57
+right?
+13:57
+Try to figure out whether your hook makes
+13:59
+viewers have a question or not.
+14:01
+So go back to your hooks and think
+14:02
+about what is the question you want people
+14:03
+to pop in their head when watching this.
+14:05
+And in this case, this is not even
+14:07
+about photography.
+14:08
+I don't even know what's going on versus
+14:10
+right.
+14:11
+Something clearly, even one that's not performing.
+14:14
+I mean, that's the same kind of example
+14:16
+right here, but something totally different.
+14:20
+Now I'm anticipating what's the shot and why,
+If Your Views Are Stagnant, here's why...
+14:23
+why did it get a hundred K look
+14:24
+beautiful delivers on the promise right away, actually
+14:28
+elevates it.
+14:28
+Beautiful.
+14:29
+Awesome.
+14:30
+All right. Last one is Ella, a morning coffee creator.
+14:32
+And she says she struggles with views and
+14:34
+a stagnant following.
+14:36
+So let's take a look at one video
+14:38
+from her.
+14:41
+I'm going to put some different music in
+14:43
+there because YouTube's going to flag it, but
+14:45
+remember this video, by the way, we've kind
+14:47
+of pulled her through the hook generator already
+14:50
+at some point in one of our recent
+14:52
+videos, probably you don't remember because nobody seems
+14:54
+to watch this thing, but essentially I have
+14:57
+a free hook generator that where you can
+14:59
+screenshot this whole thing, pull it in.
+15:01
+And here's what the hook generator actually set.
+15:03
+It gave this whole thing a hook score
+15:05
+of three out of 10 said that I
+15:07
+would say this hook sucks.
+15:08
+And I actually agree because there's zero curiosity
+15:11
+and no emotional trigger in there.
+15:13
+Remember very similar to the things we talked
+15:15
+about before.
+15:16
+And if we look here, first of all,
+15:18
+everything looks kind of cluttered.
+15:20
+So we don't even know like it's even
+15:23
+so, so cluttered here that there's no real
+15:26
+focus on this latte and it doesn't kind
+15:29
+of stand out.
+15:30
+And this just clutters it too much.
+15:32
+Plus the text overlays with all the other
+15:34
+things, as well as honestly, this even makes
+15:37
+me more confused here just because it's all
+15:40
+like a mash of a lot of things
+The 3 Hook Elements Together
+15:42
+coming together based off of all the principles
+15:44
+that we talked about before, planning a picture,
+15:46
+planning a question, actually, and making a first
+15:49
+frame decluttered and, um, actually opening some sort
+15:53
+of curiosity loop, curiosity gap.
+15:55
+Here's what I would do right here.
+15:57
+And for this case, let's go back to
+15:59
+her old friend, Chachabitty, because I don't want
+16:00
+to go downstairs and create a coffee.
+16:02
+I can't do that.
+16:03
+Obviously.
+16:03
+Otherwise I would have a coffee account.
+16:05
+Let's just pull this in there.
+16:07
+And I say, create me an aesthetic Instagram,
+16:08
+real first frame shot of a vanilla blueberry
+16:11
+ice latte and a glass.
+16:12
+I give some context, blah, blah, blah.
+16:15
+It doesn't matter, but let's see what it
+16:16
+comes up with.
+16:17
+Here's what it came up with.
+16:18
+Looks pretty good.
+16:19
+Actually, honestly, it looks pretty, pretty good, man.
+16:22
+It looks so real, but let's just pull
+16:24
+this in to Photoshop and let's just compare
+16:26
+the two examples right there.
+16:28
+As you can see right here, it's a
+16:29
+total difference.
+16:30
+It's like night and day.
+16:31
+And honestly, you might be like, this is
+16:33
+way harder to create.
+16:33
+I need like cameras and stuff like this.
+16:36
+You actually don't.
+16:37
+With your phone, if your phone is less
+16:38
+than, let's say four years old, you can
+16:40
+recreate this shot basically without having any extra
+16:43
+equipment apart from maybe a light.
+16:46
+But then again, if you have a window
+16:47
+in your kitchen, easy to do, right?
+16:49
+Just notice that here, like all the shadows
+16:52
+coming together and the wall, no depth in
+16:55
+the image and stuff like this.
+16:56
+Total difference, right?
+16:57
+Now, with that being said, this looks actually
+16:59
+pretty cool.
+17:00
+Looks actually a little similar here as well.
+17:02
+One thing I can see is that this
+17:04
+blueberry thing, don't ask me if it really
+17:06
+looks like this.
+17:07
+But let's just say.
+17:07
+The first thing I would add here is
+17:09
+a visual hook, a text hook.
+17:11
+Sorry, text hook.
+17:12
+This in and of itself is a visual
+17:14
+hook already.
+17:15
+We don't want to give away like she
+17:16
+does here, vanilla blueberry iced latte.
+17:19
+Because maybe people in her target audience might
+17:21
+be like, okay, this is something weird.
+17:22
+But I would see this, I'd be like,
+17:24
+it's nothing weird.
+17:25
+I just don't feel like it right now.
+17:26
+I'm going to swipe away.
+17:27
+Whereas you want people even like me who
+17:29
+are remotely interested in interesting coffees to think,
+17:33
+oh, that is interesting.
+17:35
+I wonder what that is.
+17:36
+I wonder how it tastes, right?
+17:38
+Thinking about the question.
+17:39
+So the first thing I would do is
+17:41
+basically open the curiosity gap here and say
+17:44
+something like this coffee should not taste good,
+17:47
+for example.
+17:49
+Not, and then, you know, same old spiel.
+17:52
+We're just going to create some background overlay
+17:54
+that Instagram is going to do anyway for
+17:56
+you.
+17:56
+Let's make it white, for example.
+The Color Theory Trick
+17:58
+Should not taste good.
+18:00
+Instantly better.
+18:01
+One thing from before, instead of playing around
+18:05
+with the font weight, we can play around
+18:06
+with the color picker.
+18:08
+Notice how if I use red, it instantly
+18:10
+looks a little off and cheapish.
+18:12
+It still looks cool, but honestly, honestly, see,
+18:15
+in this case to make things cool, just
+18:17
+play around with it, but not, I mean,
+18:19
+why not?
+18:20
+Let's just use the red one.
+18:21
+Why not?
+18:22
+Put a bunch of dots here just to
+18:23
+open it more.
+18:25
+There you go.
+18:25
+Look at this.
+18:26
+But now my friends, we're getting even deeper
+18:28
+because that in itself is already a strong
+18:30
+hook, way better to this.
+18:32
+Let's open the loops even more.
+18:34
+Cause if you look, this coffee should not
+18:36
+taste good.
+18:36
+Cool.
+18:37
+Opens a loop, but instantly we kind of
+18:39
+see, okay, has something to do with blueberries.
+18:41
+So I'm like, I already kind of get
+18:42
+half the answer.
+18:43
+So I solved it myself.
+18:44
+So there's no need for me to keep
+18:46
+watching.
+18:46
+So here's what I would actually do.
+18:48
+Sneaky little trick that I would do here
+18:50
+to make this even crazier.
+18:52
+First of all, take the blueberries, blur them.
+18:55
+Look at this.
+18:57
+Maybe blur them even more just so people
+19:00
+kind of get a sense of what's going
+19:01
+on.
+19:02
+And then what I want is something like
+19:04
+this.
+19:07
+Honestly, I think yellow is better, but again,
+19:10
+a lot of the times I would actually
+19:12
+recommend you to do it with any, with
+19:13
+Photoshop or with whatever you have until you
+19:16
+kind of get a feel for what looks
+19:17
+good and how to kind of edit elements
+19:19
+in there.
+19:20
+You just play around with it and you
+19:21
+can see this one is actually, see, I
+19:23
+would have never thought about this color.
+19:24
+I'd be like yellow, red, but like just
+19:27
+doing that with the whole composition here.
+19:29
+Now I lost that.
+19:30
+This looks actually pretty, pretty cool.
+19:32
+Now let's do some outer glow because I'm
+The Before / After
+19:35
+a nerd.
+19:35
+There you go.
+19:37
+And suddenly you have a first frame where
+19:39
+you're like, what is this?
+19:41
+And then you basically show what to do
+19:43
+and don't give away this thing until all
+19:46
+the way at the end.
+19:46
+But this is all part of another video,
+19:48
+but you could just see night and day
+19:50
+difference.
+19:50
+So if you want to get your accounts
+19:51
+and content reviewed for free, link is in
+19:53
+the description.
+19:54
+And if you implement these things and you're
+19:56
+still stuck, obviously it's because your whole content
+19:58
+strategy is off and the rest of your
+19:59
+video is off.
+20:00
+So watch this video next and I'll walk
+20:01
+you through a process that will make you
+20:03
+go grow better than ever before.

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "marketmonth-discovery": {
+      "command": "npx",
+      "args": ["tsx", "mcp/src/stdio-server.ts"],
+      "cwd": "${workspaceFolder}"
+    }
+  }
+}

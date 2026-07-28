@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "kind": "living-system-observation",
+  "evaluatedAt": "2026-07-26T17:35:00.000Z",
+  "auditType": "findings-only-living-observer",
+  "evidenceArchive": "project-knowledge/generated/reports/_evidence-preserve/pre-observation-2026-07-26T131546",
+  "commandLog": "project-knowledge/generated/reports/_evidence-preserve/pre-observation-2026-07-26T131546/fresh-command-log.jsonl",
+  "mandatedWording": "The MarketMonth Knowledge OS is operating within its documented synchronization model. It is not a continuous watcher. Its conclusions are limited to the checks that executed and the history that was actually retained.",
+  "executiveStatus": {
+    "knowledgeOsOperational": "DEGRADED",
+    "projectCloseoutReadiness": {
+      "osAuditWindow": "NOT READY",
+      "latestDailyCloseout": "READY WITH WARNINGS",
+      "trustNote": "Working tree mutated mid-audit; typecheck/test failed then passed without this audit editing product code. Prefer archive + OS-audit run 14b0ce61-49ea-4ef7-badb-31ac3805d30a + command log over latest-only for full-day truth."
+    },
+    "internalEngineeringQualityScore": {
+      "latest": 9.1,
+      "midWindow": 8.1,
+      "preAuditArchive": 9.9,
+      "rubricVersion": "2.1.0"
+    },
+    "externalBaselineCoverage": {
+      "latest": 52,
+      "midWindow": 45,
+      "preAuditArchive": 55,
+      "externalCertification": "None"
+    },
+    "aiAudit": {
+      "status": "completed",
+      "liveApi": true,
+      "affectsOfficialScore": false
+    },
+    "historicalEvidenceAvailable": "partial"
+  },
+  "syncModel": {
+    "startupSynchronized": true,
+    "taskSynchronized": true,
+    "ciSynchronized": true,
+    "dailyCloseoutSynchronized": true,
+    "continuouslyWatched": false,
+    "triggers": [
+      "predev/prebuild → knowledge:sync",
+      "Cursor stop hook on structural paths → knowledge:update/check + quality:update",
+      "CI knowledge-check.yml",
+      "manual knowledge/quality/audit scripts",
+      "daily:closeout / knowledge:os-audit"
+    ]
+  },
+  "collectionMatrix": [
+    { "category": "Application routes", "classification": "COLLECTED AND ENFORCED", "evidence": "update.mjs ROUTE_MAP; knowledge:check; living-detection.test.mjs" },
+    { "category": "API routes", "classification": "COLLECTED AND ENFORCED", "evidence": "API_MAP; knowledge:check; living-detection" },
+    { "category": "Environment-variable references", "classification": "COLLECTED AND ENFORCED", "evidence": "ENV_MAP; PK-QUALITY-051/052" },
+    { "category": "Ownership assignments and unowned paths", "classification": "COLLECTED AND ENFORCED", "evidence": "FILE_OWNERSHIP; PK-QUALITY-004; PK-WARN-003" },
+    { "category": "Architecture-boundary violations", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-HARD-006/007/008; PK-QUALITY-002" },
+    { "category": "Cross-feature imports", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-QUALITY-063 deep imports only" },
+    { "category": "Deep imports bypassing public APIs", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-QUALITY-063/064; PK-WARN-007 defined but not executed by guardian" },
+    { "category": "Client/server boundary violations", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-QUALITY-053" },
+    { "category": "Duplicate routes or surfaces", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-HARD-005; PK-QUALITY-001" },
+    { "category": "Generated-document freshness", "classification": "COLLECTED AND ENFORCED", "evidence": "check.mjs; PK-QUALITY-020" },
+    { "category": "Documentation coverage", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-QUALITY-021/022; PK-WARN-001" },
+    { "category": "TypeScript results", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-QUALITY-033 probes; CI" },
+    { "category": "Lint results", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-QUALITY-034 probes; CI" },
+    { "category": "Test results", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-QUALITY-043 probes; CI" },
+    { "category": "Build results", "classification": "NOT IMPLEMENTED", "evidence": "next build exists; no probe; not in knowledge-check CI" },
+    { "category": "Dependency vulnerabilities", "classification": "COLLECTED AND ENFORCED", "evidence": "audit:deps; CI; OS-audit/closeout" },
+    { "category": "Secret-scanning results", "classification": "COLLECTED AND ENFORCED", "evidence": "CI Gitleaks; OS-audit secretLeak" },
+    { "category": "File size and export counts", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-QUALITY-060/062/032" },
+    { "category": "Monolithic-file warnings", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-QUALITY-060; OS-audit advisory for PK scripts" },
+    { "category": "Mixed-responsibility warnings", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-QUALITY-061; OS-audit daily-closeout advisory" },
+    { "category": "Circular dependencies", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-QUALITY-065" },
+    { "category": "Dead or unused files and exports", "classification": "NOT IMPLEMENTED", "evidence": "external-baseline dead_code absent" },
+    { "category": "Feature-level test presence", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-QUALITY-042" },
+    { "category": "Security findings", "classification": "COLLECTED AND ENFORCED", "evidence": "PK-QUALITY-050..053; deps; gitleaks; SAST absent" },
+    { "category": "AI advisory findings", "classification": "AI ADVISORY ONLY", "evidence": "ai-audit.mjs" },
+    { "category": "Internal quality score", "classification": "COLLECTED AND ENFORCED", "evidence": "quality.mjs QUALITY_SCORE" },
+    { "category": "External baseline coverage", "classification": "COLLECTED FOR INFORMATION ONLY", "evidence": "external-baseline.mjs" },
+    { "category": "Daily closeout status", "classification": "COLLECTED AND ENFORCED", "evidence": "daily-closeout.mjs; not CI job" },
+    { "category": "Git provenance", "classification": "COLLECTED FOR INFORMATION ONLY", "evidence": "provenance.mjs; commitSha unavailable" }
+  ],
+  "chronology": [
+    {
+      "date": "2026-07-24",
+      "source": "daily/2026-07-24",
+      "retention": "historical-stored",
+      "internalScore": 10,
+      "closeout": "READY TO CLOSE",
+      "hard": 0,
+      "soft": 0
+    },
+    {
+      "date": "2026-07-25",
+      "source": "daily/2026-07-25",
+      "retention": "historical-stored",
+      "internalScore": 9.9,
+      "externalBaselinePercent": 55,
+      "closeout": "READY WITH WARNINGS",
+      "hard": 0,
+      "soft": 0,
+      "notes": ["PK-QUALITY-051 DISCOVERY_PLAYWRIGHT"]
+    },
+    {
+      "date": "2026-07-26",
+      "source": "os-audit mid-window",
+      "retention": "os-audit-report + command-log",
+      "runId": "14b0ce61-49ea-4ef7-badb-31ac3805d30a",
+      "internalScore": 8.1,
+      "externalBaselinePercent": 45,
+      "knowledgeOsOperational": "DEGRADED",
+      "projectCloseout": "NOT READY",
+      "notes": ["typecheck fail", "test fail", "audit:deps fail"]
+    },
+    {
+      "date": "2026-07-26",
+      "source": "daily/2026-07-26 latest",
+      "retention": "historical-stored + latest-pointer",
+      "internalScore": 9.1,
+      "externalBaselinePercent": 52,
+      "closeout": "READY WITH WARNINGS",
+      "notes": ["probes reported pass after tree mutation"]
+    }
+  ],
+  "historyCoverage": {
+    "latestState": true,
+    "dailySnapshots": true,
+    "dailyDatesObserved": ["2026-07-24", "2026-07-25", "2026-07-26"],
+    "scoreTrendsTimeSeries": false,
+    "findingFirstSeenDates": "partial",
+    "resolutionDates": false,
+    "commandHistory": "partial",
+    "statement": "Historical trend data is not currently retained for most generated reports. Only dated daily closeouts (and nascent typecheck-reliability log) preserve multi-day history. Only the latest generated state is available for QUALITY_SCORE, AI_AUDIT, maps, indexes, and STRUCTURE_WARNINGS."
+  },
+  "unresolvedFindings": [
+    {
+      "code": "PK-QUALITY-051",
+      "severity": "high",
+      "category": "security",
+      "status": "ACTIVE",
+      "targets": ["DISCOVERY_PLAYWRIGHT", "JSON2VIDEO_API_KEY", "MM_IMAGE_API_KEY", "MM_IMAGE_MODEL", "MM_IMAGE_PROVIDER", "MM_IMAGE_RENDER", "MM_VOICE_MODEL", "MM_VOICE_PROVIDER", "OPENAI_CONTENT_BRAIN_MODEL"],
+      "blocksCloseout": false,
+      "affectsOfficialScore": true,
+      "deterministic": true,
+      "recommendedNextAction": "Document keys in .env.example"
+    },
+    {
+      "code": "PK-QUALITY-004",
+      "severity": "medium",
+      "category": "ownership",
+      "status": "ACTIVE",
+      "targets": [
+        "src/app/api/onboarding/create-plan/route.ts",
+        "src/app/api/onboarding/workspace-context/route.ts"
+      ],
+      "blocksCloseout": false,
+      "affectsOfficialScore": true,
+      "deterministic": true,
+      "recommendedNextAction": "Assign owners in ownership-rules.json"
+    },
+    {
+      "code": "PK-QUALITY-063",
+      "severity": "low",
+      "category": "architecture",
+      "status": "ACTIVE",
+      "targets": ["src/components/brand/brand-approved.tsx → @/components/dashboard/dashboard-home/phase-query"],
+      "blocksCloseout": false,
+      "affectsOfficialScore": true,
+      "deterministic": true,
+      "recommendedNextAction": "Route through dashboard public API or shared contract"
+    },
+    {
+      "code": "PK-QUALITY-060",
+      "severity": "low",
+      "category": "organization",
+      "status": "ACTIVE",
+      "targets": ["src/lib/dev/bootstrap-dev-workspace.ts"],
+      "blocksCloseout": false,
+      "affectsOfficialScore": true,
+      "deterministic": true,
+      "recommendedNextAction": "Split oversized bootstrap module"
+    },
+    {
+      "code": "PK-QUALITY-061",
+      "severity": "low",
+      "category": "organization",
+      "status": "ACTIVE",
+      "targets": ["src/app/api/onboarding/workspace-context/route.ts"],
+      "blocksCloseout": false,
+      "affectsOfficialScore": true,
+      "deterministic": true,
+      "recommendedNextAction": "Thin route; extract db/engine services"
+    },
+    {
+      "code": "dep-vulns-high",
+      "severity": "high",
+      "category": "dependency",
+      "status": "ACTIVE",
+      "targets": ["sharp", "next", "eslint", "minimatch", "brace-expansion", "related plugins"],
+      "blocksCloseout": true,
+      "affectsOfficialScore": false,
+      "deterministic": true,
+      "recommendedNextAction": "Follow DEPENDENCY_BLOCKERS.md; no npm audit fix --force"
+    },
+    {
+      "code": "git-parent-scope",
+      "severity": "low",
+      "category": "provenance",
+      "status": "ACTIVE",
+      "targets": ["gitScope: parent-repo-outside-project"],
+      "blocksCloseout": false,
+      "affectsOfficialScore": false,
+      "deterministic": true,
+      "recommendedNextAction": "Dedicated MarketMonth git root for commit SHA"
+    },
+    {
+      "code": "typecheck-flake-tree-instability",
+      "severity": "high",
+      "category": "reliability",
+      "status": "ACTIVE",
+      "targets": ["src/brain/atom/hash.ts export surface", "connected-system tests mid-window"],
+      "blocksCloseout": true,
+      "affectsOfficialScore": true,
+      "deterministic": true,
+      "firstObserved": "2026-07-25 noted; 2026-07-26 reproduced fail then pass",
+      "recommendedNextAction": "Stabilize exports; prevent concurrent writers during closeout; require consecutive green CI"
+    }
+  ],
+  "midWindowOverwrittenFindings": [
+    {
+      "code": "PK-QUALITY-033",
+      "status": "NOT REPRODUCED",
+      "note": "Failed attempts 1-2 and OS-audit; attempt 3 passed after tree mutation"
+    },
+    {
+      "code": "PK-QUALITY-043",
+      "status": "NOT REPRODUCED",
+      "note": "Failed attempt 1; attempt 2 passed after tree mutation"
+    }
+  ],
+  "aiAdvisoryFindings": [
+    "Undocumented env keys (mirrors PK-QUALITY-051)",
+    "Cross-feature deep import (mirrors PK-QUALITY-063)",
+    "Mixed-layer onboarding route (mirrors PK-QUALITY-061)",
+    "Oversized bootstrap (mirrors PK-QUALITY-060)",
+    "Auth/production gates incomplete (CURRENT_STATE)",
+    "Engine unit tests / observability gaps (CURRENT_STATE)"
+  ],
+  "monolithicFileReview": [
+    {
+      "path": "project-knowledge/scripts/knowledge-os-audit.mjs",
+      "lines": 1035,
+      "classification": "REFACTOR RECOMMENDED",
+      "detection": "manual + OS-audit size note"
+    },
+    {
+      "path": "src/lib/dev/bootstrap-dev-workspace.ts",
+      "lines": 532,
+      "classification": "REFACTOR RECOMMENDED",
+      "detection": "PK-QUALITY-060"
+    },
+    {
+      "path": "src/app/api/onboarding/workspace-context/route.ts",
+      "classification": "REFACTOR RECOMMENDED",
+      "detection": "PK-QUALITY-061"
+    },
+    {
+      "path": "project-knowledge/scripts/daily-closeout.mjs",
+      "lines": 284,
+      "classification": "REVIEW",
+      "detection": "OS-audit mixedResponsibility advisory"
+    },
+    {
+      "path": "src/components/dashboard/content/hooks/use-content-production.ts",
+      "lines": 390,
+      "classification": "REVIEW",
+      "detection": "manual"
+    },
+    {
+      "path": "src/components/dashboard/marketing-topic/hooks/use-content-directions.ts",
+      "lines": 287,
+      "classification": "REVIEW",
+      "detection": "manual"
+    },
+    {
+      "path": "src/components/discovery/discovery-strategy-preview.tsx",
+      "lines": 279,
+      "classification": "REVIEW",
+      "detection": "manual"
+    },
+    {
+      "path": "src/components/discovery/discovery-intent.tsx",
+      "lines": 346,
+      "classification": "WATCH",
+      "detection": "manual"
+    }
+  ],
+  "componentIndependence": [
+    { "feature": "discovery-ui", "status": "MOSTLY INDEPENDENT" },
+    { "feature": "discovery-engine", "status": "MOSTLY INDEPENDENT" },
+    { "feature": "discovery-stages-contract", "status": "INDEPENDENT" },
+    { "feature": "site-seo", "status": "MOSTLY INDEPENDENT" },
+    { "feature": "brand", "status": "BOUNDARY VIOLATION", "violation": "PK-QUALITY-063 deep import to dashboard" },
+    { "feature": "landing", "status": "MOSTLY INDEPENDENT" },
+    { "feature": "onboarding-api", "status": "COUPLED", "violation": "unowned + mixed layers" },
+    { "feature": "dashboard", "status": "MOSTLY INDEPENDENT" }
+  ],
+  "observerGaps": [
+    "No continuous watcher",
+    "No next build probe / CI build gate",
+    "No dead-code scanner",
+    "No SAST",
+    "No a11y / performance gates",
+    "PK-WARN-007 defined but not emitted",
+    "independenceRules.disallowDeepFromOtherFeatures not executed by guardian",
+    "Public cross-feature barrel imports not observed",
+    "failBelowOutOf10 null — low score alone does not fail quality:check",
+    "Latest-only overwrite erases mid-day failures",
+    "Git SHA unavailable",
+    "No runtime/browser E2E observability gate"
+  ],
+  "commands": [
+    { "command": "typecheck", "attempt": 1, "exitCode": 2, "ok": false },
+    { "command": "typecheck", "attempt": 2, "exitCode": 2, "ok": false },
+    { "command": "typecheck", "attempt": 3, "exitCode": 0, "ok": true, "note": "post-closeout verification" },
+    { "command": "lint", "attempt": 1, "exitCode": 0, "ok": true },
+    { "command": "test", "attempt": 1, "exitCode": 1, "ok": false },
+    { "command": "test", "attempt": 2, "exitCode": 0, "ok": true, "note": "post-closeout verification" },
+    { "command": "build", "attempt": 1, "exitCode": 1, "ok": false },
+    { "command": "knowledge:update", "attempt": 1, "exitCode": 0, "ok": true },
+    { "command": "knowledge:check", "attempt": 1, "exitCode": 0, "ok": true },
+    { "command": "quality:update", "attempt": 1, "exitCode": 0, "ok": true, "note": "wrote 8.1 mid-window" },
+    { "command": "quality:check", "attempt": 1, "exitCode": 0, "ok": true },
+    { "command": "audit:deps", "attempt": 1, "exitCode": 1, "ok": false },
+    { "command": "ai:audit", "attempt": 1, "exitCode": 0, "ok": true },
+    { "command": "project:audit", "attempt": 1, "exitCode": 0, "ok": true },
+    { "command": "knowledge:os-audit", "attempt": 1, "exitCode": 1, "ok": false },
+    { "command": "daily:closeout", "attempt": 1, "exitCode": 0, "ok": true, "note": "standalone after OS-audit; 9.1 READY WITH WARNINGS" },
+    { "command": "daily:closeout", "attempt": "nested-in-os-audit", "exitCode": 1, "ok": false, "note": "8.1 NOT READY" }
+  ],
+  "finalConclusion": {
+    "operating": true,
+    "collectingMeaningfulEvidence": true,
+    "detectingRealProblems": true,
+    "reportsTrustworthy": "conditionally",
+    "preservingEnoughHistory": "partial",
+    "monolithicFilesDetected": "partially",
+    "readyToProceed": false,
+    "readyToProceedReason": "High dependency advisories still block OS project-closeout readiness; mid-day probe instability unexplained; clean closeout not warranted solely from latest green probes."
+  },
+  "remediationPlanProposed": true,
+  "remediationExecuted": false,
+  "evidenceLabels": {
+    "phases0to9": "Verified",
+    "concurrentTreeMutationSource": "Not verified",
+    "noContinuousWatcher": "Verified"
+  }
+}

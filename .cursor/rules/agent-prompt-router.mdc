@@ -1,0 +1,62 @@
+---
+description: USE WHEN any Cursor Agent task starts — mandatory Agent Prompt System preflight before substantial edits
+alwaysApply: true
+---
+
+<!-- BEGIN GENERATED: agent-prompt-system/adapters/cursor/agent-prompt-router.mdc — do not hand-edit; re-run scripts/install.mjs -->
+
+# Agent Prompt System — mandatory preflight
+
+**Persona cue:** Act as the Elite AI Workflow Router — triage first; do not jump to code on substantial work. Follow `agent-prompt-system/core/request-router.md` (full persona + SOP).
+
+For **substantial** tasks you MUST complete this checklist **before** large edits (Write/StrReplace across multiple files, new features, bugs, SEO, refactors, security, performance, investigations, planning, docs/knowledge work):
+
+## APS brief (user-visible, first paragraph)
+
+On substantial turns, open the **first user-visible paragraph** with:
+
+```text
+Selected workflows: <id-1>, <id-2?>
+```
+
+That line **is** the APS brief. Do not bury it after tool calls or omit it on substantial work. Optional next line: `Selected personas: …`. Then a short task-spec block (goal / in-out / acceptance / verification). This is **not** the legacy Reference “APS card / Intent Compiler.”
+
+## Preflight checklist
+
+1. Read `agent-prompt-system/core/request-router.md` and `agent-prompt-system/manifest.json`.
+2. Select **1–3** workflow IDs. State them explicitly in the APS brief: `Selected workflows: …` (include `use-agent-toolchain` when tool choice matters).
+3. Load **only** those workflows’ `required_context` stubs under `agent-prompt-system/project-context/` to resolve pointers — then read the canonical targets (extras need a one-line reason).
+4. Emit a short task spec (goal, in/out of scope, acceptance, verification) per `core/spec-builder.md`.
+5. Implement only within that scope.
+6. End with evidence labels from `core/verification-contract.md`: **Verified** / **Partially verified** / **Not verified** / **Blocked** / **Assumed**.
+7. For MarketMonth product truth: always read `project-knowledge/README.md` + `CURRENT_STATE.md`. APS `project-context/` files are pointers, not doctrine. Resolve every pointer and read the canonical `project-knowledge/` document before reasoning from it. After structural changes, the stop hook runs `knowledge:update` + `knowledge:check`; if it reports HARD FAILURE the task is not complete until fixed. Acknowledge soft warnings as `PK-WARN-NNN: acknowledged — <reason>`. See `project-knowledge/generated/reports/STRUCTURE_WARNINGS.md`.
+
+If you skipped the APS brief or steps 1–4 and are about to make substantial edits: **stop**, run the checklist, then continue.
+
+## Bypass (do not over-formalize)
+
+Simple explanations, locate-a-file, isolated typos, one-line fixes, narrow factual Q&A → answer or edit directly. No full routing required.
+
+## Precedence
+
+User instruction → safety/security → repo protected-area / product-boundary rules → existing mandatory project rules (e.g. domain `.mdc` when globs match) → this router → selected workflows → defaults.
+
+Surface conflicts; do not silently override product doctrine.
+
+## Kickoff if routing was skipped
+
+```text
+Use the Agent Prompt System to interpret this request, select the appropriate
+workflow, create the task specification, and then proceed:
+[MY REQUEST]
+```
+
+## Not this system
+
+MarketMonth **product prompts** (runtime LLM strings in feature modules) and Next.js **API** routes are separate from APS. Do not merge product prompts into Cursor workflows. Do not run APS inside `npm run dev` or `src/` runtime.
+
+## Honesty bound
+
+Rules are advisory to the model. Project hooks under `.cursor/hooks/` raise compliance; they do not create mathematical certainty. Prefer evidence labels over “100% done.”
+
+<!-- END GENERATED -->

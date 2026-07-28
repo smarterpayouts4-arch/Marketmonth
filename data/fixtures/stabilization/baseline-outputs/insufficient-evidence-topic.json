@@ -1,0 +1,198 @@
+{
+  "status": "partially_ready",
+  "brandName": "Zynava",
+  "generatedAt": "2026-07-28T14:08:43.146Z",
+  "contextVersion": "8fc91ffa87c1ac74",
+  "generationId": "tgen_980e71b51956",
+  "mode": "manual",
+  "masterTopic": {
+    "id": "master_09015905cde2",
+    "source": "manual",
+    "punchline": "Why Zynava's proprietary nano-quantum absorption beats every competitor clinical trial",
+    "subheading": "Compare supplement prices and formulations in one search so shoppers can choose with more clarity and less guesswork",
+    "rationale": "Owner-selected master topic for Zynava. Six alternative editorial directions will explore this umbrella without replacing it.",
+    "evidenceIds": [
+      "ev_fc77e614564e70a4",
+      "ev_da958acd1410ea62",
+      "ev_ed7b1b27df4a3991"
+    ],
+    "confidence": "low",
+    "safety": {
+      "status": "safe",
+      "reasons": []
+    }
+  },
+  "variations": [
+    {
+      "id": "var_b19472560b38",
+      "angle": "beginner_guide",
+      "punchline": "A practical starting guide to Zynava's proprietary nano-quantum absorption beats every co…",
+      "subheading": "Orient newcomers with one concrete starting move around Supplement search.",
+      "brief": "Beginner path for Zynava's proprietary nano-quantum absorption beats every competitor clinical trial: what to learn first, what to ignore early.",
+      "ideaSummary": "Shoppers comparing supplements who want clearer… often stall when first approaching Zynava's proprietary nano-quantum absorption beats every competitor clinical trial. This beginner guide gives one concrete starting decision using Zynava's Supplement search. It names what to ignore early and what matters before investing more time. The payoff is a reusable first step under the selected master topic — not a full category tour.",
+      "audienceProblem": "Shoppers comparing supplements who want clearer… lack a clear first step for Zynava's proprietary nano-quantum absorption beats every competitor clin…",
+      "strategicPurpose": "Starter path · Establish what is proven, assumed, and off-limits with transparent proof.",
+      "specificTopic": "First steps for Shoppers comparing supplements who want clearer… new to Zynava's proprietary nano-quantum absorption beats every competitor clinical trial",
+      "corePromise": "Leave with one clear first step on Zynava's proprietary nano-quantum absorption beats every competitor clinical trial",
+      "suggestedFormat": "narrative_explainer",
+      "suggestedCta": "See the first step",
+      "destination": "https://zynava.com",
+      "evidenceIds": [
+        "ev_fc77e614564e70a4",
+        "ev_da958acd1410ea62",
+        "ev_ed7b1b27df4a3991"
+      ],
+      "assumptionIds": [
+        "asm_public_positioning"
+      ],
+      "confidence": "medium",
+      "safety": {
+        "status": "safe",
+        "reasons": []
+      }
+    },
+    {
+      "id": "var_cb549b855b6b",
+      "angle": "faq",
+      "punchline": "Questions Shoppers comparing supplements who want clearer… ask before trusting Supplement…",
+      "subheading": "Answer the objections that stall commitment.",
+      "brief": "FAQ on Zynava's proprietary nano-quantum absorption beats every competitor clinical trial: specific questions, honest limits, grounded in Zynava.",
+      "ideaSummary": "People researching Zynava's proprietary nano-quantum absorption beats every competitor clinical trial get stuck on the same practical questions before they trust a next step. This FAQ answers those questions in Zynava's voice, using known context about Supplement search without inventing unsupported claims. It separates what is proven from what is still a judgment call. The card should feel like a decision unblocker, not a glossary.",
+      "audienceProblem": "Uncertainty about Zynava's proprietary nano-quantum absorption beats every competitor clinical trial delays action for Shoppers comparing supplements…",
+      "strategicPurpose": "Q&A unblocker · Establish what is proven, assumed, and off-limits with transparent proof.",
+      "specificTopic": "Practical questions about Zynava's proprietary nano-quantum absorption beats every competitor clinical trial before acting",
+      "corePromise": "Unblock the decision with honest, specific answers",
+      "suggestedFormat": "q_and_a",
+      "suggestedCta": "Get answers",
+      "destination": "https://zynava.com",
+      "evidenceIds": [
+        "ev_fc77e614564e70a4",
+        "ev_da958acd1410ea62",
+        "ev_ed7b1b27df4a3991"
+      ],
+      "assumptionIds": [
+        "asm_public_positioning"
+      ],
+      "confidence": "medium",
+      "safety": {
+        "status": "safe",
+        "reasons": []
+      }
+    },
+    {
+      "id": "var_36b6b8b14bbb",
+      "angle": "problem_solution",
+      "punchline": "Why Zynava's proprietary nano-quantum absorption beats every competitor clinical trial fe…",
+      "subheading": "Name the pain (Help overwhelmed shoppers compare suppl…), then show a clearer path.",
+      "brief": "Problem → relief for Zynava's proprietary nano-quantum absorption beats every competitor clinical trial, grounded in Zynava's offer (Supplement search).",
+      "ideaSummary": "Scattered advice makes Zynava's proprietary nano-quantum absorption beats every competitor clinical trial feel harder than it should for Shoppers comparing supplements who want clearer…. This idea names that friction in their language, then shows how Zynava organizes a clearer path through Supplement search. It stays concrete: one problem, one organized next move, and proof language tied to known context (Compare supplement prices and formulations in one search so shoppers can choose with more clarity and less guesswork). Do not expand into a full product tour.",
+      "audienceProblem": "Scattered advice about Zynava's proprietary nano-quantum absorption beats every competitor clinical trial wastes attention.",
+      "strategicPurpose": "Friction relief · Establish what is proven, assumed, and off-limits with transparent proof.",
+      "specificTopic": "The friction behind Zynava's proprietary nano-quantum absorption beats every competitor clinical trial and how Zynava organizes next moves",
+      "corePromise": "Replace scatter with one coherent next move",
+      "suggestedFormat": "before_after",
+      "suggestedCta": "Start with clarity",
+      "destination": "https://zynava.com",
+      "evidenceIds": [
+        "ev_fc77e614564e70a4",
+        "ev_da958acd1410ea62",
+        "ev_ed7b1b27df4a3991"
+      ],
+      "assumptionIds": [
+        "asm_public_positioning"
+      ],
+      "confidence": "medium",
+      "safety": {
+        "status": "safe",
+        "reasons": []
+      }
+    },
+    {
+      "id": "var_cc3bd0a9b13a",
+      "angle": "decision_guide",
+      "punchline": "Five checks before relying on Supplement search",
+      "subheading": "A reusable decision checklist for this topic.",
+      "brief": "Decision checklist for Zynava's proprietary nano-quantum absorption beats every competitor clinical trial: criteria and where Supplement search fits.",
+      "ideaSummary": "Buyers comparing options around Zynava's proprietary nano-quantum absorption beats every competitor clinical trial need shared criteria, not more opinions. This checklist is tied to Zynava's positioning and Supplement search, so decisions can be repeated. Each check should be evaluable without inventing metrics beyond known context. The promise is a reusable decision tool under the master topic, not a one-off tip.",
+      "audienceProblem": "Buyers lack a shared checklist for Zynava's proprietary nano-quantum absorption beats every competitor clinical trial.",
+      "strategicPurpose": "Checklist · Establish what is proven, assumed, and off-limits with transparent proof.",
+      "specificTopic": "A short checklist for evaluating Zynava's proprietary nano-quantum absorption beats every competitor clinical trial",
+      "corePromise": "Walk away with criteria you can reuse",
+      "suggestedFormat": "checklist",
+      "suggestedCta": "Use the checklist",
+      "destination": "https://zynava.com",
+      "evidenceIds": [
+        "ev_fc77e614564e70a4",
+        "ev_da958acd1410ea62",
+        "ev_ed7b1b27df4a3991"
+      ],
+      "assumptionIds": [
+        "asm_public_positioning"
+      ],
+      "confidence": "medium",
+      "safety": {
+        "status": "safe",
+        "reasons": []
+      }
+    },
+    {
+      "id": "var_285063aec011",
+      "angle": "comparison",
+      "punchline": "What matters when comparing Supplement search",
+      "subheading": "Contrast approaches on criteria that change outcomes.",
+      "brief": "Comparison under Zynava's proprietary nano-quantum absorption beats every competitor clinical trial: dimensions that matter for Shoppers comparing supplements who want clearer….",
+      "ideaSummary": "Side-by-side evaluation around Zynava's proprietary nano-quantum absorption beats every competitor clinical trial feels opaque when every option claims the same benefits. This idea defines the few dimensions that change outcomes for Shoppers comparing supplements who want clearer…, grounded in Zynava context and Supplement search. It avoids trash-talking rivals and stays within what is supportable from known proof. The result is a fair comparison frame buyers can reuse when shortlisting.",
+      "audienceProblem": "Side-by-side evaluation of Zynava's proprietary nano-quantum absorption beats every competitor clinical trial feels opaque.",
+      "strategicPurpose": "Fair contrast · Establish what is proven, assumed, and off-limits with transparent proof.",
+      "specificTopic": "Side-by-side dimensions for Zynava's proprietary nano-quantum absorption beats every competitor clinical trial (no rival trash-talk)",
+      "corePromise": "Compare approaches on criteria that actually matter",
+      "suggestedFormat": "side_by_side",
+      "suggestedCta": "Compare approaches",
+      "destination": "https://zynava.com",
+      "evidenceIds": [
+        "ev_fc77e614564e70a4",
+        "ev_da958acd1410ea62",
+        "ev_ed7b1b27df4a3991"
+      ],
+      "assumptionIds": [
+        "asm_public_positioning"
+      ],
+      "confidence": "medium",
+      "safety": {
+        "status": "safe",
+        "reasons": []
+      }
+    },
+    {
+      "id": "var_f3e1ec9c7c98",
+      "angle": "trust_transparency",
+      "punchline": "What Zynava will and will not claim about Zynava's proprietary nano-quantum absorption be…",
+      "subheading": "Show receipts and honest limits before the ask.",
+      "brief": "Trust direction on Zynava's proprietary nano-quantum absorption beats every competitor clinical trial: known context, assumptions, and Zynava limits.",
+      "ideaSummary": "Skepticism about Zynava's proprietary nano-quantum absorption beats every competitor clinical trial is rational when claims outrun evidence. This idea shows what Zynava can support from known context (Compare supplement prices and formulations in one search so shoppers can choose with more clarity and less guesswork), what remains an assumption, and what stays off-limits. It builds credibility for Shoppers comparing supplements who want clearer… before any conversion ask related to Supplement search. Keep the tone transparent and specific — a trust asset under the master topic, not a soft bra…",
+      "audienceProblem": "Skepticism about Zynava's proprietary nano-quantum absorption beats every competitor clinical trial blocks engagement.",
+      "strategicPurpose": "Trust asset · Establish what is proven, assumed, and off-limits with transparent proof.",
+      "specificTopic": "Proven vs assumed vs off-limits for Zynava's proprietary nano-quantum absorption beats every competitor clinical trial",
+      "corePromise": "See what is proven, assumed, and off-limits",
+      "suggestedFormat": "case_narrative",
+      "suggestedCta": "Learn more",
+      "destination": "https://zynava.com",
+      "evidenceIds": [
+        "ev_fc77e614564e70a4",
+        "ev_da958acd1410ea62",
+        "ev_ed7b1b27df4a3991"
+      ],
+      "assumptionIds": [
+        "asm_public_positioning"
+      ],
+      "confidence": "medium",
+      "safety": {
+        "status": "safe",
+        "reasons": []
+      }
+    }
+  ],
+  "warnings": [
+    "Topic has weak overlap with known brand context; directions may be loosely grounded"
+  ]
+}

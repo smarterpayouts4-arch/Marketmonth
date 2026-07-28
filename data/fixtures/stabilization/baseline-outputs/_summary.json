@@ -1,0 +1,84 @@
+{
+  "capturedAt": "2026-07-28T14:08:43.170Z",
+  "provider": "deterministic-v1",
+  "fixture": "data/fixtures/zynava-discovery.csv",
+  "scenarios": [
+    {
+      "id": "normal-zynava-topic",
+      "status": "ready",
+      "masterTitle": null,
+      "variationCount": 6,
+      "angles": [
+        "beginner_guide",
+        "faq",
+        "problem_solution",
+        "decision_guide",
+        "comparison",
+        "trust_transparency"
+      ]
+    },
+    {
+      "id": "broad-topic",
+      "status": "ready",
+      "masterTitle": null,
+      "variationCount": 6,
+      "angles": [
+        "beginner_guide",
+        "faq",
+        "problem_solution",
+        "decision_guide",
+        "comparison",
+        "trust_transparency"
+      ]
+    },
+    {
+      "id": "narrow-product-topic",
+      "status": "ready",
+      "masterTitle": null,
+      "variationCount": 6,
+      "angles": [
+        "beginner_guide",
+        "faq",
+        "problem_solution",
+        "decision_guide",
+        "comparison",
+        "trust_transparency"
+      ]
+    },
+    {
+      "id": "insufficient-evidence-topic",
+      "status": "partially_ready",
+      "masterTitle": null,
+      "variationCount": 6,
+      "angles": [
+        "beginner_guide",
+        "faq",
+        "problem_solution",
+        "decision_guide",
+        "comparison",
+        "trust_transparency"
+      ]
+    },
+    {
+      "id": "duplicate-prone-topic",
+      "status": "ready",
+      "masterTitle": null,
+      "variationCount": 6,
+      "angles": [
+        "beginner_guide",
+        "faq",
+        "problem_solution",
+        "decision_guide",
+        "comparison",
+        "trust_transparency"
+      ]
+    },
+    {
+      "id": "unsupported-claim-attempt",
+      "status": "blocked",
+      "masterTitle": null,
+      "variationCount": 0,
+      "angles": []
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "exact": {
+    "/": { "surface": "landing", "stage": "LANDING" }
+  },
+  "prefixes": [
+    { "prefix": "/brand", "surface": "brand", "stage": "LEARN" },
+    { "prefix": "/strategy", "surface": "strategy", "stage": "STRATEGIZE" },
+    { "prefix": "/content", "surface": "content", "stage": "CONTENT_UNIVERSE" },
+    { "prefix": "/review", "surface": "review", "stage": "REVIEW" },
+    { "prefix": "/calendar", "surface": "calendar", "stage": "SCHEDULE" },
+    { "prefix": "/analytics", "surface": "analytics", "stage": "PUBLISH_LEARN" },
+    { "prefix": "/dashboard", "surface": "dashboard", "stage": "ORCHESTRATION" },
+    { "prefix": "/settings", "surface": "app-shell", "stage": "INFRASTRUCTURE" },
+    { "prefix": "/help", "surface": "app-shell", "stage": "INFRASTRUCTURE" }
+  ],
+  "fallback": { "surface": "unknown", "stage": "UNCERTAIN" }
+}

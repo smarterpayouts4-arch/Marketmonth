@@ -1,0 +1,8 @@
+# MarketMonth — keep defaults; ensure generated reports are not excluded.
+title = "MarketMonth"
+
+[extend]
+useDefault = true
+
+# Do not broadly exclude project-knowledge. Generated reports must remain scannable
+# for accidental secret leakage in closeout / quality artifacts.

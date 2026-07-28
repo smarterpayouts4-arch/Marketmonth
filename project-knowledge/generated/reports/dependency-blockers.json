@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-07-25",
+  "sourceDoc": "project-knowledge/DEPENDENCY_BLOCKERS.md",
+  "blockers": [
+    {
+      "id": "sharp-outside-next-16.2.11-range",
+      "severity": "high",
+      "package": "sharp",
+      "summary": "sharp@0.34.5 via next@16.2.11 optionalDependency ^0.34.5; patched >=0.35.0 is outside Next's declared range. Blocked until stable Next ships sharp>=0.35. No canary without approval."
+    },
+    {
+      "id": "next-npm-force-downgrade-ignore",
+      "severity": "high",
+      "package": "next",
+      "summary": "npm may suggest a force-downgrade for next. Ignored. Nested postcss cleared via overrides.next.postcss=8.5.22 (review 2026-07-25). next remains high via sharp until upstream ships sharp>=0.35."
+    },
+    {
+      "id": "eslint-10-peer-blocked",
+      "severity": "high",
+      "package": "eslint",
+      "summary": "eslint@10.8.0 attempted; eslint-config-next@16.2.11 plugins peer only eslint@^9 (invalid peer state). Reverted to eslint@^9.39.5. Remaining minimatch/plugin highs wait on upstream."
+    }
+  ],
+  "appliedOverrides": [
+    {
+      "key": "overrides.next.postcss",
+      "package": "postcss",
+      "version": "8.5.22",
+      "reviewDate": "2026-07-25",
+      "expiryReview": "2026-08-25",
+      "verifiedResolved": "next → postcss@8.5.22 (deduped); postcss high advisory cleared"
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "status": "ready",
+  "brandName": "Zynava",
+  "generatedAt": "2026-07-28T14:08:43.112Z",
+  "contextVersion": "8fc91ffa87c1ac74",
+  "generationId": "tgen_5b47dc7082a9",
+  "mode": "manual",
+  "masterTopic": {
+    "id": "master_5f1e0690898c",
+    "source": "manual",
+    "punchline": "Wellness and living a healthier life",
+    "subheading": "Compare supplement prices and formulations in one search so shoppers can choose with more clarity and less guesswork",
+    "rationale": "Owner-selected master topic for Zynava. Six alternative editorial directions will explore this umbrella without replacing it.",
+    "evidenceIds": [
+      "ev_fc77e614564e70a4",
+      "ev_da958acd1410ea62",
+      "ev_ed7b1b27df4a3991"
+    ],
+    "confidence": "medium",
+    "safety": {
+      "status": "safe",
+      "reasons": []
+    }
+  },
+  "variations": [
+    {
+      "id": "var_70266fb2c771",
+      "angle": "beginner_guide",
+      "punchline": "A practical starting guide to Wellness and living a healthier life",
+      "subheading": "Orient newcomers with one concrete starting move around Supplement search.",
+      "brief": "Beginner path for Wellness and living a healthier life: what to learn first, what to ignore early.",
+      "ideaSummary": "Shoppers comparing supplements who want clearer… often stall when first approaching Wellness and living a healthier life. This beginner guide gives one concrete starting decision using Zynava's Supplement search. It names what to ignore early and what matters before investing more time. The payoff is a reusable first step under the selected master topic — not a full category tour.",
+      "audienceProblem": "Shoppers comparing supplements who want clearer… lack a clear first step for Wellness and living a healthier life.",
+      "strategicPurpose": "Starter path · Introduce the category and position the brand for recognition.",
+      "specificTopic": "First steps for Shoppers comparing supplements who want clearer… new to Wellness and living a healthier life",
+      "corePromise": "Leave with one clear first step on Wellness and living a healthier life",
+      "suggestedFormat": "narrative_explainer",
+      "suggestedCta": "See the first step",
+      "destination": "https://zynava.com",
+      "evidenceIds": [
+        "ev_fc77e614564e70a4",
+        "ev_da958acd1410ea62",
+        "ev_ed7b1b27df4a3991"
+      ],
+      "assumptionIds": [
+        "asm_public_positioning"
+      ],
+      "confidence": "medium",
+      "safety": {
+        "status": "safe",
+        "reasons": []
+      }
+    },
+    {
+      "id": "var_0696f128443f",
+      "angle": "faq",
+      "punchline": "Questions Shoppers comparing supplements who want clearer… ask before trusting Supplement…",
+      "subheading": "Answer the objections that stall commitment.",
+      "brief": "FAQ on Wellness and living a healthier life: specific questions, honest limits, grounded in Zynava.",
+      "ideaSummary": "People researching Wellness and living a healthier life get stuck on the same practical questions before they trust a next step. This FAQ answers those questions in Zynava's voice, using known context about Supplement search without inventing unsupported claims. It separates what is proven from what is still a judgment call. The card should feel like a decision unblocker, not a glossary.",
+      "audienceProblem": "Uncertainty about Wellness and living a healthier life delays action for Shoppers comparing supplements who want clearer….",
+      "strategicPurpose": "Q&A unblocker · Introduce the category and position the brand for recognition.",
+      "specificTopic": "Practical questions about Wellness and living a healthier life before acting",
+      "corePromise": "Unblock the decision with honest, specific answers",
+      "suggestedFormat": "q_and_a",
+      "suggestedCta": "Get answers",
+      "destination": "https://zynava.com",
+      "evidenceIds": [
+        "ev_fc77e614564e70a4",
+        "ev_da958acd1410ea62",
+        "ev_ed7b1b27df4a3991"
+      ],
+      "assumptionIds": [
+        "asm_public_positioning"
+      ],
+      "confidence": "medium",
+      "safety": {
+        "status": "safe",
+        "reasons": []
+      }
+    },
+    {
+      "id": "var_c721ccb76631",
+      "angle": "problem_solution",
+      "punchline": "Why Wellness and living a healthier life feels hard — and a clearer path",
+      "subheading": "Name the pain (Help overwhelmed shoppers compare suppl…), then show a clearer path.",
+      "brief": "Problem → relief for Wellness and living a healthier life, grounded in Zynava's offer (Supplement search).",
+      "ideaSummary": "Scattered advice makes Wellness and living a healthier life feel harder than it should for Shoppers comparing supplements who want clearer…. This idea names that friction in their language, then shows how Zynava organizes a clearer path through Supplement search. It stays concrete: one problem, one organized next move, and proof language tied to known context (Compare supplement prices and formulations in one search so shoppers can choose with more clarity and less guesswork). Do not expand into a full product tour.",
+      "audienceProblem": "Scattered advice about Wellness and living a healthier life wastes attention.",
+      "strategicPurpose": "Friction relief · Introduce the category and position the brand for recognition.",
+      "specificTopic": "The friction behind Wellness and living a healthier life and how Zynava organizes next moves",
+      "corePromise": "Replace scatter with one coherent next move",
+      "suggestedFormat": "before_after",
+      "suggestedCta": "Start with clarity",
+      "destination": "https://zynava.com",
+      "evidenceIds": [
+        "ev_fc77e614564e70a4",
+        "ev_da958acd1410ea62",
+        "ev_ed7b1b27df4a3991"
+      ],
+      "assumptionIds": [
+        "asm_public_positioning"
+      ],
+      "confidence": "medium",
+      "safety": {
+        "status": "safe",
+        "reasons": []
+      }
+    },
+    {
+      "id": "var_78268432a41f",
+      "angle": "decision_guide",
+      "punchline": "Five checks before relying on Supplement search",
+      "subheading": "A reusable decision checklist for this topic.",
+      "brief": "Decision checklist for Wellness and living a healthier life: criteria and where Supplement search fits.",
+      "ideaSummary": "Buyers comparing options around Wellness and living a healthier life need shared criteria, not more opinions. This checklist is tied to Zynava's positioning and Supplement search, so decisions can be repeated. Each check should be evaluable without inventing metrics beyond known context. The promise is a reusable decision tool under the master topic, not a one-off tip.",
+      "audienceProblem": "Buyers lack a shared checklist for Wellness and living a healthier life.",
+      "strategicPurpose": "Checklist · Introduce the category and position the brand for recognition.",
+      "specificTopic": "A short checklist for evaluating Wellness and living a healthier life",
+      "corePromise": "Walk away with criteria you can reuse",
+      "suggestedFormat": "checklist",
+      "suggestedCta": "Use the checklist",
+      "destination": "https://zynava.com",
+      "evidenceIds": [
+        "ev_fc77e614564e70a4",
+        "ev_da958acd1410ea62",
+        "ev_ed7b1b27df4a3991"
+      ],
+      "assumptionIds": [
+        "asm_public_positioning"
+      ],
+      "confidence": "medium",
+      "safety": {
+        "status": "safe",
+        "reasons": []
+      }
+    },
+    {
+      "id": "var_b24ac932d4b0",
+      "angle": "comparison",
+      "punchline": "What matters when comparing Supplement search",
+      "subheading": "Contrast approaches on criteria that change outcomes.",
+      "brief": "Comparison under Wellness and living a healthier life: dimensions that matter for Shoppers comparing supplements who want clearer….",
+      "ideaSummary": "Side-by-side evaluation around Wellness and living a healthier life feels opaque when every option claims the same benefits. This idea defines the few dimensions that change outcomes for Shoppers comparing supplements who want clearer…, grounded in Zynava context and Supplement search. It avoids trash-talking rivals and stays within what is supportable from known proof. The result is a fair comparison frame buyers can reuse when shortlisting.",
+      "audienceProblem": "Side-by-side evaluation of Wellness and living a healthier life feels opaque.",
+      "strategicPurpose": "Fair contrast · Introduce the category and position the brand for recognition.",
+      "specificTopic": "Side-by-side dimensions for Wellness and living a healthier life (no rival trash-talk)",
+      "corePromise": "Compare approaches on criteria that actually matter",
+      "suggestedFormat": "side_by_side",
+      "suggestedCta": "Compare approaches",
+      "destination": "https://zynava.com",
+      "evidenceIds": [
+        "ev_fc77e614564e70a4",
+        "ev_da958acd1410ea62",
+        "ev_ed7b1b27df4a3991"
+      ],
+      "assumptionIds": [
+        "asm_public_positioning"
+      ],
+      "confidence": "medium",
+      "safety": {
+        "status": "safe",
+        "reasons": []
+      }
+    },
+    {
+      "id": "var_a22e682a8b8a",
+      "angle": "trust_transparency",
+      "punchline": "What Zynava will and will not claim about Wellness and living a healthier life",
+      "subheading": "Show receipts and honest limits before the ask.",
+      "brief": "Trust direction on Wellness and living a healthier life: known context, assumptions, and Zynava limits.",
+      "ideaSummary": "Skepticism about Wellness and living a healthier life is rational when claims outrun evidence. This idea shows what Zynava can support from known context (Compare supplement prices and formulations in one search so shoppers can choose with more clarity and less guesswork), what remains an assumption, and what stays off-limits. It builds credibility for Shoppers comparing supplements who want clearer… before any conversion ask related to Supplement search. Keep the tone transparent and specific — a trust asset under the master topic, not a soft brand anthem.",
+      "audienceProblem": "Skepticism about Wellness and living a healthier life blocks engagement.",
+      "strategicPurpose": "Trust asset · Introduce the category and position the brand for recognition.",
+      "specificTopic": "Proven vs assumed vs off-limits for Wellness and living a healthier life",
+      "corePromise": "See what is proven, assumed, and off-limits",
+      "suggestedFormat": "case_narrative",
+      "suggestedCta": "Learn more",
+      "destination": "https://zynava.com",
+      "evidenceIds": [
+        "ev_fc77e614564e70a4",
+        "ev_da958acd1410ea62",
+        "ev_ed7b1b27df4a3991"
+      ],
+      "assumptionIds": [
+        "asm_public_positioning"
+      ],
+      "confidence": "medium",
+      "safety": {
+        "status": "safe",
+        "reasons": []
+      }
+    }
+  ],
+  "warnings": []
+}

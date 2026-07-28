@@ -1,0 +1,563 @@
+{
+  "schemaVersion": 2,
+  "generator": "project-knowledge/scripts/knowledge-os-audit.mjs",
+  "title": "Knowledge OS Audit",
+  "evaluatedAt": "2026-07-28T00:31:58.047Z",
+  "runId": "21d8219a-2b47-4c28-975d-8d6a3b011244",
+  "auditScope": "MarketMonth Project Knowledge OS — structure, security, independence, MCP, living detection, known risks",
+  "knowledgeOsOperationalStatus": "DEGRADED",
+  "projectCloseoutReadiness": "NOT READY",
+  "finalReadinessStatus": "NOT READY",
+  "statusReasons": {
+    "knowledgeOs": [
+      "daily-closeout.mjs is 284 lines and still mixes orchestration and report body; no split required this pass"
+    ],
+    "projectCloseout": [
+      "audit:deps failed (exit 1)",
+      "11 high/critical dependency advisories remain",
+      "3 documented blocked remediation(s) — see DEPENDENCY_BLOCKERS.md"
+    ]
+  },
+  "projectAuditEquivalence": {
+    "definition": "npm run project:audit → knowledge:check && quality:check",
+    "invokedSeparatelyInThisRun": false,
+    "reason": "Shared probes already include knowledge:check and quality:check once; project:audit kept as convenience npm script only.",
+    "knowledgeCheckOk": true,
+    "qualityCheckOk": true,
+    "equivalentWouldPass": true
+  },
+  "git": {
+    "commitSha": "unavailable",
+    "commitShort": "unavailable",
+    "workingTreeStatus": "unavailable",
+    "gitScope": "parent-repo-outside-project",
+    "gitNote": "MarketMonth is not its own git root; a parent directory owns .git. Commit SHA is intentionally unavailable until MarketMonth is a dedicated repository (or a documented monorepo package with an explicit root policy)."
+  },
+  "knowledgeStructure": {
+    "result": "PASS",
+    "notes": "Adapted to actual tree; no CONTROL_MATRIX.md; cold start remains docs/START_HERE.md",
+    "canonical": [
+      "project-knowledge/PRODUCT.md",
+      "project-knowledge/ARCHITECTURE.md",
+      "project-knowledge/CURRENT_STATE.md"
+    ],
+    "supportingMaintained": "see docs-index.json kind=supporting generated=false",
+    "generated": "project-knowledge/generated/**",
+    "historical": [],
+    "deprecated": [],
+    "orphaned": [],
+    "duplicateAuthorityRisks": [
+      "Soft: CURRENT_STATE vs FEATURES briefs (status vs feature detail)",
+      "Soft: QUALITY_RUBRIC.md vs quality-rules.json (human vs machine)"
+    ]
+  },
+  "canonicalAuthority": {
+    "result": "PASS",
+    "canonicalCount": 3,
+    "scriptsWriteOutsideGenerated": false
+  },
+  "monolithicFiles": {
+    "result": "PASS",
+    "note": "Advisory snapshot from current scan — line counts computed this run (quality oversized threshold ≥500).",
+    "scan": {
+      "pkScriptCount": 41,
+      "largestPkScript": {
+        "path": "project-knowledge/scripts/knowledge-os-audit.mjs",
+        "lines": 1035
+      },
+      "knowledgeOsAuditLines": 1035,
+      "dailyCloseoutLines": 284,
+      "filesAtOrOver500": [
+        "project-knowledge/scripts/knowledge-os-audit.mjs"
+      ]
+    },
+    "reviewed": [
+      {
+        "path": "project-knowledge/scripts/daily-closeout.mjs",
+        "lines": 284,
+        "classification": "REVIEW",
+        "reason": "Orchestrates probes + inline daily report formatting (mixed responsibility advisory)"
+      }
+    ]
+  },
+  "mixedResponsibility": {
+    "result": "READY WITH WARNINGS",
+    "note": "daily-closeout.mjs is 284 lines and still mixes orchestration and report body; no split required this pass"
+  },
+  "componentIndependence": {
+    "result": "READY WITH WARNINGS",
+    "uiImportsEngine": false,
+    "siteSeoOwned": true,
+    "unownedCount": 27
+  },
+  "secretLeak": {
+    "result": "PASS",
+    "notes": "Generated reports scanned for value patterns; AI allowlist strict; MCP registry rejects .env; .gitleaks.toml present",
+    "valuesFoundInReports": false
+  },
+  "documentationCompleteness": {
+    "result": "PASS",
+    "knowledgeReadmeExpanded": true,
+    "rootReadmeLinked": true
+  },
+  "mcpReadiness": {
+    "result": "PASS",
+    "soleDocsIndex": "project-knowledge/generated/indexes/docs-index.json",
+    "docsIndexHasIds": true,
+    "schemaVersion": 1
+  },
+  "staleContentDetection": {
+    "result": "PASS",
+    "visibility": {
+      "knowledge:update": "regenerates maps/indexes",
+      "knowledge:sync": "update + guardian warnings",
+      "knowledge:check": "stale compare + hard fail",
+      "quality:check": "stale quality artifacts + probes",
+      "daily:closeout": "full gate set",
+      "CI": "knowledge-check.yml"
+    },
+    "continuousWatch": false
+  },
+  "deadAndDuplicateFiles": {
+    "result": "PASS",
+    "deleted": [],
+    "referenceOnlyNoise": [
+      "Refrence folder/"
+    ]
+  },
+  "scriptsAndHooks": {
+    "result": "PASS",
+    "ciWorkflow": ".github/workflows/knowledge-check.yml",
+    "dependabot": ".github/dependabot.yml",
+    "stopHook": ".cursor/hooks/aps-stop.mjs"
+  },
+  "dependencySeverityCounts": {
+    "critical": 0,
+    "high": 11,
+    "moderate": 6,
+    "low": 0,
+    "info": 0
+  },
+  "dependencyAuditNote": "`npm run audit:deps` uses --audit-level=high (nonzero exit on high/critical only). Moderate and low findings still exist and are counted above.",
+  "dependencyVulnerabilitiesHigh": [
+    {
+      "package": "@eslint/config-array",
+      "severity": "high",
+      "isDirect": false,
+      "range": "<=0.22.0",
+      "installedVersion": "0.21.2",
+      "via": [
+        "minimatch"
+      ],
+      "fixAvailable": {
+        "name": "eslint",
+        "version": "10.8.0",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "npmSuggestedFix": "eslint@10.8.0",
+      "isNpmForceDowngrade": false,
+      "safeRemediationPath": "Requires reviewed major upgrade to eslint@10.8.0 — do not npm audit fix --force"
+    },
+    {
+      "package": "@eslint/eslintrc",
+      "severity": "high",
+      "isDirect": false,
+      "range": "0.0.1 || >=0.1.1",
+      "installedVersion": "3.3.6",
+      "via": [
+        "minimatch"
+      ],
+      "fixAvailable": {
+        "name": "eslint",
+        "version": "10.8.0",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "npmSuggestedFix": "eslint@10.8.0",
+      "isNpmForceDowngrade": false,
+      "safeRemediationPath": "Requires reviewed major upgrade to eslint@10.8.0 — do not npm audit fix --force"
+    },
+    {
+      "package": "brace-expansion",
+      "severity": "high",
+      "isDirect": false,
+      "range": "<=5.0.7",
+      "installedVersion": "5.0.8",
+      "via": [
+        "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash"
+      ],
+      "fixAvailable": {
+        "name": "eslint",
+        "version": "10.8.0",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "npmSuggestedFix": "eslint@10.8.0",
+      "isNpmForceDowngrade": false,
+      "safeRemediationPath": "Requires reviewed major upgrade to eslint@10.8.0 — do not npm audit fix --force"
+    },
+    {
+      "package": "eslint",
+      "severity": "high",
+      "isDirect": true,
+      "range": "0.12.0 - 2.0.0-rc.1 || 4.1.0 - 10.0.0-rc.2",
+      "installedVersion": "9.39.5",
+      "via": [
+        "@eslint/config-array",
+        "@eslint/eslintrc",
+        "minimatch"
+      ],
+      "fixAvailable": {
+        "name": "eslint",
+        "version": "10.8.0",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "npmSuggestedFix": "eslint@10.8.0",
+      "isNpmForceDowngrade": false,
+      "safeRemediationPath": "Requires reviewed major upgrade to eslint@10.8.0 — do not npm audit fix --force"
+    },
+    {
+      "package": "eslint-config-next",
+      "severity": "high",
+      "isDirect": true,
+      "range": ">=10.2.1-canary.2",
+      "installedVersion": "16.2.11",
+      "via": [
+        "eslint-plugin-import",
+        "eslint-plugin-jsx-a11y",
+        "eslint-plugin-react"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-next",
+        "version": "0.2.4",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "npmSuggestedFix": "eslint-config-next@0.2.4",
+      "isNpmForceDowngrade": true,
+      "safeRemediationPath": "Ignore npm force-downgrade suggestion (eslint-config-next@0.2.4) — do not npm audit fix --force"
+    },
+    {
+      "package": "eslint-plugin-import",
+      "severity": "high",
+      "isDirect": false,
+      "range": ">=1.15.0",
+      "installedVersion": null,
+      "via": [
+        "minimatch"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-next",
+        "version": "0.2.4",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "npmSuggestedFix": "eslint-config-next@0.2.4",
+      "isNpmForceDowngrade": true,
+      "safeRemediationPath": "Ignore npm force-downgrade suggestion (eslint-config-next@0.2.4) — do not npm audit fix --force"
+    },
+    {
+      "package": "eslint-plugin-jsx-a11y",
+      "severity": "high",
+      "isDirect": false,
+      "range": ">=6.5.0",
+      "installedVersion": null,
+      "via": [
+        "minimatch"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-next",
+        "version": "0.2.4",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "npmSuggestedFix": "eslint-config-next@0.2.4",
+      "isNpmForceDowngrade": true,
+      "safeRemediationPath": "Ignore npm force-downgrade suggestion (eslint-config-next@0.2.4) — do not npm audit fix --force"
+    },
+    {
+      "package": "eslint-plugin-react",
+      "severity": "high",
+      "isDirect": false,
+      "range": ">=7.23.0",
+      "installedVersion": null,
+      "via": [
+        "minimatch"
+      ],
+      "fixAvailable": true,
+      "breakingUpgradeLikely": false,
+      "npmSuggestedFix": "true (unspecified)",
+      "isNpmForceDowngrade": false,
+      "safeRemediationPath": "Non-major fix may be available — review changelog then upgrade"
+    },
+    {
+      "package": "minimatch",
+      "severity": "high",
+      "isDirect": false,
+      "range": "2.0.0 - 10.0.2",
+      "installedVersion": "10.2.5",
+      "via": [
+        "brace-expansion"
+      ],
+      "fixAvailable": {
+        "name": "eslint",
+        "version": "10.8.0",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "npmSuggestedFix": "eslint@10.8.0",
+      "isNpmForceDowngrade": false,
+      "safeRemediationPath": "Requires reviewed major upgrade to eslint@10.8.0 — do not npm audit fix --force"
+    },
+    {
+      "package": "next",
+      "severity": "high",
+      "isDirect": true,
+      "range": "9.5.6-canary.0 - 10.0.7 || 14.3.0-canary.0 - 16.3.0-preview.7",
+      "installedVersion": "16.2.11",
+      "via": [
+        "sharp"
+      ],
+      "fixAvailable": {
+        "name": "next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "npmSuggestedFix": "next@14.2.35",
+      "isNpmForceDowngrade": true,
+      "safeRemediationPath": "Ignore npm force-downgrade suggestion (next@14.2.35) — do not npm audit fix --force"
+    },
+    {
+      "package": "sharp",
+      "severity": "high",
+      "isDirect": false,
+      "range": "<0.35.0",
+      "installedVersion": "0.34.5",
+      "via": [
+        "sharp inherited vulnerabilities in libvips: CVE-2026-33327, CVE-2026-33328, CVE-2026-35590, CVE-2026-35591"
+      ],
+      "fixAvailable": {
+        "name": "next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "npmSuggestedFix": "next@14.2.35",
+      "isNpmForceDowngrade": false,
+      "safeRemediationPath": "Requires reviewed major upgrade to next@14.2.35 — do not npm audit fix --force"
+    }
+  ],
+  "blockedRemediations": [
+    {
+      "id": "sharp-outside-next-16.2.11-range",
+      "severity": "high",
+      "package": "sharp",
+      "summary": "sharp@0.34.5 via next@16.2.11 optionalDependency ^0.34.5; patched >=0.35.0 is outside Next's declared range. Blocked until stable Next ships sharp>=0.35. No canary without approval."
+    },
+    {
+      "id": "next-npm-force-downgrade-ignore",
+      "severity": "high",
+      "package": "next",
+      "summary": "npm may suggest a force-downgrade for next. Ignored. Nested postcss cleared via overrides.next.postcss=8.5.22 (review 2026-07-25). next remains high via sharp until upstream ships sharp>=0.35."
+    },
+    {
+      "id": "eslint-10-peer-blocked",
+      "severity": "high",
+      "package": "eslint",
+      "summary": "eslint@10.8.0 attempted; eslint-config-next@16.2.11 plugins peer only eslint@^9 (invalid peer state). Reverted to eslint@^9.39.5. Remaining minimatch/plugin highs wait on upstream."
+    }
+  ],
+  "typecheckReliability": {
+    "currentResult": "PASS",
+    "currentExitCode": 0,
+    "probeReliabilityHistory": "FLAKY",
+    "last10": {
+      "total": 2,
+      "pass": 1,
+      "fail": 1
+    },
+    "previouslyReportedIntermittentFailure": "unresolved/unreproduced"
+  },
+  "knownUnresolvedRisks": [
+    {
+      "id": "dep-vulns-high",
+      "severity": "high",
+      "summary": "11 high/critical advisories remain; audit:deps exit=1. No force-fix applied. See dependencyVulnerabilitiesHigh and DEPENDENCY_BLOCKERS.md."
+    },
+    {
+      "id": "git-parent-scope",
+      "severity": "low",
+      "summary": "MarketMonth is not its own git root; a parent directory owns .git. Commit SHA is intentionally unavailable until MarketMonth is a dedicated repository (or a documented monorepo package with an explicit root policy)."
+    },
+    {
+      "id": "sharp-outside-next-16.2.11-range",
+      "severity": "high",
+      "summary": "sharp@0.34.5 via next@16.2.11 optionalDependency ^0.34.5; patched >=0.35.0 is outside Next's declared range. Blocked until stable Next ships sharp>=0.35. No canary without approval."
+    },
+    {
+      "id": "next-npm-force-downgrade-ignore",
+      "severity": "high",
+      "summary": "npm may suggest a force-downgrade for next. Ignored. Nested postcss cleared via overrides.next.postcss=8.5.22 (review 2026-07-25). next remains high via sharp until upstream ships sharp>=0.35."
+    },
+    {
+      "id": "eslint-10-peer-blocked",
+      "severity": "high",
+      "summary": "eslint@10.8.0 attempted; eslint-config-next@16.2.11 plugins peer only eslint@^9 (invalid peer state). Reverted to eslint@^9.39.5. Remaining minimatch/plugin highs wait on upstream."
+    }
+  ],
+  "internalScore": {
+    "scoreOutOf10": 8.4,
+    "formula": "84/100 = 8.4/10",
+    "rubricVersion": "2.1.0"
+  },
+  "externalBaseline": {
+    "coveragePercent": 52,
+    "status": "Limited",
+    "certification": "None"
+  },
+  "aiAudit": {
+    "status": "completed",
+    "advisoryOnly": true,
+    "affectsOfficialScore": false
+  },
+  "commandResults": [
+    {
+      "script": "typecheck",
+      "command": "npm run typecheck",
+      "cwd": "C:\\Users\\ofran\\Desktop\\MarketMonth",
+      "startedAt": "2026-07-28T00:31:58.162Z",
+      "finishedAt": "2026-07-28T00:32:16.468Z",
+      "durationMs": 18306,
+      "exitCode": 0,
+      "ok": true,
+      "spawnError": null,
+      "runId": "21d8219a-2b47-4c28-975d-8d6a3b011244"
+    },
+    {
+      "script": "lint",
+      "command": "npm run lint",
+      "cwd": "C:\\Users\\ofran\\Desktop\\MarketMonth",
+      "startedAt": "2026-07-28T00:32:16.468Z",
+      "finishedAt": "2026-07-28T00:32:47.805Z",
+      "durationMs": 31337,
+      "exitCode": 0,
+      "ok": true,
+      "spawnError": null,
+      "runId": "21d8219a-2b47-4c28-975d-8d6a3b011244"
+    },
+    {
+      "script": "test",
+      "command": "npm run test",
+      "cwd": "C:\\Users\\ofran\\Desktop\\MarketMonth",
+      "startedAt": "2026-07-28T00:32:47.805Z",
+      "finishedAt": "2026-07-28T00:32:57.742Z",
+      "durationMs": 9938,
+      "exitCode": 0,
+      "ok": true,
+      "spawnError": null,
+      "runId": "21d8219a-2b47-4c28-975d-8d6a3b011244"
+    },
+    {
+      "script": "knowledge:update",
+      "command": "npm run knowledge:update",
+      "cwd": "C:\\Users\\ofran\\Desktop\\MarketMonth",
+      "startedAt": "2026-07-28T00:32:57.743Z",
+      "finishedAt": "2026-07-28T00:32:59.937Z",
+      "durationMs": 2194,
+      "exitCode": 0,
+      "ok": true,
+      "spawnError": null,
+      "runId": "21d8219a-2b47-4c28-975d-8d6a3b011244"
+    },
+    {
+      "script": "knowledge:check",
+      "command": "npm run knowledge:check",
+      "cwd": "C:\\Users\\ofran\\Desktop\\MarketMonth",
+      "startedAt": "2026-07-28T00:32:59.937Z",
+      "finishedAt": "2026-07-28T00:33:02.594Z",
+      "durationMs": 2657,
+      "exitCode": 0,
+      "ok": true,
+      "spawnError": null,
+      "runId": "21d8219a-2b47-4c28-975d-8d6a3b011244"
+    },
+    {
+      "script": "quality:update",
+      "command": "npm run quality:update",
+      "cwd": "C:\\Users\\ofran\\Desktop\\MarketMonth",
+      "startedAt": "2026-07-28T00:33:02.594Z",
+      "finishedAt": "2026-07-28T00:34:25.011Z",
+      "durationMs": 82417,
+      "exitCode": 0,
+      "ok": true,
+      "spawnError": null,
+      "runId": "21d8219a-2b47-4c28-975d-8d6a3b011244"
+    },
+    {
+      "script": "quality:check",
+      "command": "npm run quality:check",
+      "cwd": "C:\\Users\\ofran\\Desktop\\MarketMonth",
+      "startedAt": "2026-07-28T00:34:25.012Z",
+      "finishedAt": "2026-07-28T00:35:33.369Z",
+      "durationMs": 68357,
+      "exitCode": 0,
+      "ok": true,
+      "spawnError": null,
+      "runId": "21d8219a-2b47-4c28-975d-8d6a3b011244"
+    },
+    {
+      "script": "audit:deps",
+      "command": "npm run audit:deps",
+      "cwd": "C:\\Users\\ofran\\Desktop\\MarketMonth",
+      "startedAt": "2026-07-28T00:35:33.369Z",
+      "finishedAt": "2026-07-28T00:35:51.081Z",
+      "durationMs": 17712,
+      "exitCode": 1,
+      "ok": false,
+      "spawnError": null,
+      "tail": " versions of eslint-plugin-jsx-a11y\n      Depends on vulnerable versions of eslint-plugin-react\n      node_modules/eslint-config-next\n    eslint-plugin-jsx-a11y  >=6.5.0\n    Depends on vulnerable versions of minimatch\n    node_modules/eslint-config-next/node_modules/eslint-plugin-jsx-a11y\n    eslint-plugin-react  >=7.23.0\n    Depends on vulnerable versions of minimatch\n    node_modules/eslint-config-next/node_modules/eslint-plugin-react\n\nesbuild  <=0.24.2\nSeverity: moderate\nesbuild enables any website to send any requests to the development server and read the response - https://github.com/advisories/GHSA-67mh-4wv8-2f99\nfix available via `npm audit fix --force`\nWill install drizzle-kit@0.18.1, which is a breaking change\nnode_modules/@esbuild-kit/core-utils/node_modules/esbuild\n  @esbuild-kit/core-utils  *\n  Depends on vulnerable versions of esbuild\n  node_modules/@esbuild-kit/core-utils\n    @esbuild-kit/esm-loader  *\n    Depends on vulnerable versions of @esbuild-kit/core-utils\n    node_modules/@esbuild-kit/esm-loader\n      drizzle-kit  0.19.0 - 1.0.0-beta.1-fd8bfcc\n      Depends on vulnerable versions of @esbuild-kit/esm-loader\n      node_modules/drizzle-kit\n\nsharp  <0.35.0\nSeverity: high\nsharp inherited vulnerabilities in libvips: CVE-2026-33327, CVE-2026-33328, CVE-2026-35590, CVE-2026-35591 - https://github.com/advisories/GHSA-f88m-g3jw-g9cj\nfix available via `npm audit fix --force`\nWill install next@14.2.35, which is a breaking change\nnode_modules/sharp\n  next  9.5.6-canary.0 - 10.0.7 || 14.3.0-canary.0 - 16.3.0-preview.7\n  Depends on vulnerable versions of sharp\n  node_modules/next\n\n17 vulnerabilities (6 moderate, 11 high)\n\nTo address issues that do not require attention, run:\n  npm audit fix\n\nTo address all issues (including breaking changes), run:\n  npm audit fix --force\n\nnpm warn Unknown env config \"devdir\". This will stop working in the next major version of npm.\nnpm warn Unknown env config \"devdir\". This will stop working in the next major version of npm.",
+      "runId": "21d8219a-2b47-4c28-975d-8d6a3b011244"
+    },
+    {
+      "script": "ai:audit",
+      "command": "npm run ai:audit",
+      "cwd": "C:\\Users\\ofran\\Desktop\\MarketMonth",
+      "startedAt": "2026-07-28T00:35:51.081Z",
+      "finishedAt": "2026-07-28T00:36:15.941Z",
+      "durationMs": 24860,
+      "exitCode": 0,
+      "ok": true,
+      "spawnError": null,
+      "runId": "21d8219a-2b47-4c28-975d-8d6a3b011244"
+    },
+    {
+      "script": "mcp:test",
+      "command": "npm run mcp:test",
+      "cwd": "C:\\Users\\ofran\\Desktop\\MarketMonth",
+      "startedAt": "2026-07-28T00:36:15.942Z",
+      "finishedAt": "2026-07-28T00:36:31.767Z",
+      "durationMs": 15825,
+      "exitCode": 0,
+      "ok": true,
+      "spawnError": null,
+      "runId": "21d8219a-2b47-4c28-975d-8d6a3b011244"
+    },
+    {
+      "script": "daily:closeout",
+      "command": "npm run daily:closeout",
+      "cwd": "C:\\Users\\ofran\\Desktop\\MarketMonth",
+      "startedAt": "2026-07-28T00:36:31.767Z",
+      "finishedAt": "2026-07-28T00:40:23.658Z",
+      "durationMs": 231891,
+      "exitCode": 0,
+      "ok": true,
+      "spawnError": null,
+      "runId": "21d8219a-2b47-4c28-975d-8d6a3b011244"
+    }
+  ],
+  "honestWording": "Knowledge OS operational status: DEGRADED. Project closeout readiness: NOT READY. Closeout reasons: audit:deps failed (exit 1); 11 high/critical dependency advisories remain; 3 documented blocked remediation(s) — see DEPENDENCY_BLOCKERS.md. This does not constitute external certification. Limited external baseline coverage does not imply Knowledge OS malfunction."
+}
+

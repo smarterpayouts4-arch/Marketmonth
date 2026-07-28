@@ -1,0 +1,318 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-sans);
+  --font-heading: var(--font-display);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-dark: var(--primary-dark);
+  --color-warm: var(--warm);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-subtle: var(--subtle);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+:root {
+  --background: #f8f7f3;
+  --foreground: #202522;
+  --card: #ffffff;
+  --card-foreground: #202522;
+  --popover: #ffffff;
+  --popover-foreground: #202522;
+  --primary: #31695a;
+  --primary-foreground: #ffffff;
+  --primary-hover: #285548;
+  --primary-dark: #1f4338;
+  --warm: #d97757;
+  --success: #31695a;
+  --warning: #c4892a;
+  --danger: #c44b4b;
+  --text-secondary: #5c6560;
+  --text-muted: #8a918c;
+  --subtle: #eef1ed;
+  --secondary: #eef1ed;
+  --secondary-foreground: #1f4338;
+  --muted: #f1f0eb;
+  --muted-foreground: #5c6560;
+  --accent: #d97757;
+  --accent-foreground: #ffffff;
+  --destructive: #c44b4b;
+  --border: #e4e4de;
+  --input: #e4e4de;
+  --ring: #31695a;
+  --radius: 0.875rem;
+  --sidebar: #202522;
+  --sidebar-foreground: #eef1ed;
+  --sidebar-primary: #31695a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2c332f;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #343b37;
+  --sidebar-ring: #31695a;
+  /* Measured empty-state Discovery card height at lg (~1291×748). */
+  --discovery-card-height: 528px;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  html {
+    @apply font-sans;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring/40 ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer utilities {
+  .shadow-soft {
+    box-shadow: 0 1px 2px rgb(32 37 34 / 0.04), 0 8px 24px rgb(32 37 34 / 0.05);
+  }
+
+  .shadow-lift {
+    box-shadow:
+      0 1px 1px rgb(32 37 34 / 0.03),
+      0 12px 32px rgb(32 37 34 / 0.07),
+      0 28px 56px rgb(32 37 34 / 0.05);
+  }
+
+  .font-display {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .text-page-hero {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(2.75rem, 5.2vw, 4.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    font-weight: 700;
+  }
+
+  .text-page-title {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(1.85rem, 2.4vw, 2.35rem);
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+  }
+
+  .text-section {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(1.65rem, 2.1vw, 2.15rem);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    font-weight: 650;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 280ms ease-out both;
+  }
+
+  .animate-pop-in {
+    animation: pop-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-rise {
+    animation: rise-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-rise-delay {
+    animation: rise-in 800ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+  }
+
+  .animate-rise-delay-2 {
+    animation: rise-in 850ms cubic-bezier(0.22, 1, 0.36, 1) 220ms both;
+  }
+
+  .animate-soft-pulse {
+    animation: soft-pulse 2.2s ease-in-out infinite;
+  }
+
+  .cu-tree .cu-node-in {
+    animation: cu-node-in 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .cu-tree .cu-metric-tick {
+    animation: cu-views-pulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes soft-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 1px 2px rgb(32 37 34 / 0.04),
+      0 0 0 0 color-mix(in oklch, var(--primary) 40%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 1px 2px rgb(32 37 34 / 0.04),
+      0 0 0 8px color-mix(in oklch, var(--primary) 0%, transparent);
+  }
+}
+
+@keyframes cu-node-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cu-views-pulse {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-pop-in,
+  .animate-rise,
+  .animate-rise-delay,
+  .animate-rise-delay-2,
+  .animate-soft-pulse,
+  .cu-tree .cu-node-in,
+  .cu-tree .cu-metric-tick {
+    animation: none;
+  }
+
+  .cu-tree .cu-metric-tick {
+    opacity: 1;
+  }
+}
+
+/* Discovery shell: fixed desktop height; body scrolls separately. */
+.discovery-card-shell {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .discovery-card-shell {
+    height: var(--discovery-card-height);
+  }
+}
+
+/* Short viewport / heavy zoom: drop fixed shell height so CTAs stay reachable. */
+@media (min-width: 1024px) and (max-height: 720px) {
+  .discovery-card-shell {
+    height: auto;
+  }
+}
+
+/* Subtle premium scrollbar for Discovery body only. */
+.discovery-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--muted-foreground) 28%, transparent)
+    transparent;
+}
+
+.discovery-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.discovery-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.discovery-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--muted-foreground) 22%, transparent);
+  border-radius: 999px;
+}
+
+.discovery-scroll:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--muted-foreground) 38%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .discovery-scroll {
+    scroll-behavior: auto;
+  }
+}

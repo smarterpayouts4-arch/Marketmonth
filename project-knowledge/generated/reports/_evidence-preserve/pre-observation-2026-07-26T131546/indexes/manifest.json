@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 1,
+  "routes": [
+    {
+      "route": "/analytics",
+      "sourceFile": "src/app/(app)/analytics/page.tsx",
+      "expectedSurface": "analytics",
+      "expectedStage": "PUBLISH_LEARN"
+    },
+    {
+      "route": "/brand",
+      "sourceFile": "src/app/(app)/brand/page.tsx",
+      "expectedSurface": "brand",
+      "expectedStage": "LEARN"
+    },
+    {
+      "route": "/calendar",
+      "sourceFile": "src/app/(app)/calendar/page.tsx",
+      "expectedSurface": "calendar",
+      "expectedStage": "SCHEDULE"
+    },
+    {
+      "route": "/content",
+      "sourceFile": "src/app/(app)/content/page.tsx",
+      "expectedSurface": "content",
+      "expectedStage": "CONTENT_UNIVERSE"
+    },
+    {
+      "route": "/dashboard",
+      "sourceFile": "src/app/(app)/dashboard/page.tsx",
+      "expectedSurface": "dashboard",
+      "expectedStage": "ORCHESTRATION"
+    },
+    {
+      "route": "/help",
+      "sourceFile": "src/app/(app)/help/page.tsx",
+      "expectedSurface": "app-shell",
+      "expectedStage": "INFRASTRUCTURE"
+    },
+    {
+      "route": "/review",
+      "sourceFile": "src/app/(app)/review/page.tsx",
+      "expectedSurface": "review",
+      "expectedStage": "REVIEW"
+    },
+    {
+      "route": "/settings",
+      "sourceFile": "src/app/(app)/settings/page.tsx",
+      "expectedSurface": "app-shell",
+      "expectedStage": "INFRASTRUCTURE"
+    },
+    {
+      "route": "/strategy",
+      "sourceFile": "src/app/(app)/strategy/page.tsx",
+      "expectedSurface": "strategy",
+      "expectedStage": "STRATEGIZE"
+    },
+    {
+      "route": "/",
+      "sourceFile": "src/app/page.tsx",
+      "expectedSurface": "landing",
+      "expectedStage": "LANDING"
+    }
+  ],
+  "apis": [
+    {
+      "path": "/api/auth/[...nextauth]",
+      "sourceFile": "src/app/api/auth/[...nextauth]/route.ts"
+    },
+    {
+      "path": "/api/brain/content-atom",
+      "sourceFile": "src/app/api/brain/content-atom/route.ts"
+    },
+    {
+      "path": "/api/brain/content-directions",
+      "sourceFile": "src/app/api/brain/content-directions/route.ts"
+    },
+    {
+      "path": "/api/brain/content/production",
+      "sourceFile": "src/app/api/brain/content/production/route.ts"
+    },
+    {
+      "path": "/api/brain/facebook-package",
+      "sourceFile": "src/app/api/brain/facebook-package/route.ts"
+    },
+    {
+      "path": "/api/discovery/analyze",
+      "sourceFile": "src/app/api/discovery/analyze/route.ts"
+    },
+    {
+      "path": "/api/discovery/strategy",
+      "sourceFile": "src/app/api/discovery/strategy/route.ts"
+    },
+    {
+      "path": "/api/onboarding/create-plan",
+      "sourceFile": "src/app/api/onboarding/create-plan/route.ts"
+    },
+    {
+      "path": "/api/onboarding/workspace-context",
+      "sourceFile": "src/app/api/onboarding/workspace-context/route.ts"
+    },
+    {
+      "path": "/api/project-knowledge/ask",
+      "sourceFile": "src/app/api/project-knowledge/ask/route.ts"
+    },
+    {
+      "path": "/api/seo/refresh",
+      "sourceFile": "src/app/api/seo/refresh/route.ts"
+    },
+    {
+      "path": "/api/seo/status",
+      "sourceFile": "src/app/api/seo/status/route.ts"
+    }
+  ],
+  "envKeys": [
+    {
+      "variable": "AUTH_SECRET",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "server-only"
+    },
+    {
+      "variable": "AUTH_URL",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "server-only"
+    },
+    {
+      "variable": "DATABASE_URL",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "server-only"
+    },
+    {
+      "variable": "DEV_AUTH_BYPASS",
+      "inEnvExample": true,
+      "referencedInSrc": false,
+      "classification": "documented-unused"
+    },
+    {
+      "variable": "DISCOVERY_PLAYWRIGHT",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
+      "variable": "GOOGLE_CLIENT_ID",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "server-only"
+    },
+    {
+      "variable": "GOOGLE_CLIENT_SECRET",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "server-only"
+    },
+    {
+      "variable": "JSON2VIDEO_API_KEY",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
+      "variable": "MM_IMAGE_API_KEY",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
+      "variable": "MM_IMAGE_MODEL",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
+      "variable": "MM_IMAGE_PROVIDER",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
+      "variable": "MM_IMAGE_RENDER",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
+      "variable": "MM_VOICE_MODEL",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
+      "variable": "MM_VOICE_PROVIDER",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
+      "variable": "NEXT_PUBLIC_APP_URL",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "client-exposed"
+    },
+    {
+      "variable": "NEXT_PUBLIC_SITE_URL",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "client-exposed"
+    },
+    {
+      "variable": "NODE_ENV",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "server-only"
+    },
+    {
+      "variable": "OPENAI_API_KEY",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "server-only"
+    },
+    {
+      "variable": "OPENAI_CONTENT_BRAIN_MODEL",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
+      "variable": "OPENAI_DISCOVERY_MODEL",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "server-only"
+    },
+    {
+      "variable": "PERPLEXITY_API_KEY",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "server-only"
+    },
+    {
+      "variable": "PERPLEXITY_SEO_MODEL",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "server-only"
+    },
+    {
+      "variable": "PERPLEXITY_SEO_TIMEOUT_MS",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "server-only"
+    },
+    {
+      "variable": "SITE_ORIGIN",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "server-only"
+    }
+  ],
+  "duplicateRoutes": [],
+  "ownership": {
+    "unownedCount": 2,
+    "qualifyingFeatureRoots": [
+      "src/engine/discovery",
+      "src/components/discovery",
+      "src/components/landing",
+      "src/seo"
+    ]
+  },
+  "contentFingerprints": {
+    "routes": "7677ac9c6a25fbeb",
+    "apis": "4fec913ab6c09892",
+    "env": "7963f1fe268f67fe"
+  }
+}

@@ -1,0 +1,468 @@
+{
+  "name": "Agent Prompt System",
+  "systemVersion": "1.0.5",
+  "schemaVersion": 1,
+  "description": "Portable Cursor task-routing kit: classify → ≤3 workflows → selective project-context → task spec → evidence-labeled verification. Distinct from MarketMonth product runtime prompts and Next.js APIs.",
+  "core": [
+    "core/request-router.md",
+    "core/spec-builder.md",
+    "core/context-selection.md",
+    "core/verification-contract.md",
+    "core/safety-and-scope.md",
+    "core/workflow-composition.md"
+  ],
+  "projectContext": [
+    "PROJECT.md",
+    "ARCHITECTURE.md",
+    "PRODUCT.md",
+    "COMMANDS.md",
+    "DESIGN-SYSTEM.md",
+    "DATA-FLOWS.md",
+    "PROTECTED-AREAS.md",
+    "KNOWN-RISKS.md",
+    "DEFINITION-OF-DONE.md"
+  ],
+  "adapter": {
+    "cursor": {
+      "template": "adapters/cursor/agent-prompt-router.mdc",
+      "installTarget": ".cursor/rules/agent-prompt-router.mdc",
+      "skillTemplate": "adapters/cursor/skills/aps-router/SKILL.md",
+      "skillInstallTarget": ".cursor/skills/aps-router/SKILL.md"
+    }
+  },
+  "workflows": [
+    {
+      "id": "use-agent-toolchain",
+      "version": "1.0.0",
+      "path": "workflows/use-agent-toolchain/WORKFLOW.md",
+      "title": "Use Agent Toolchain",
+      "description": "Pick the narrowest authoritative tool or knowledge source for the question.",
+      "categories": [
+        "investigation",
+        "tooling"
+      ],
+      "tags": [
+        "mcp",
+        "toolchain",
+        "context7",
+        "routing"
+      ],
+      "risk_levels": [
+        "low",
+        "medium"
+      ],
+      "compatible_with": [
+        "investigate-codebase",
+        "implement-feature",
+        "plan-feature",
+        "test-and-verify",
+        "audit-existing-system"
+      ],
+      "required_context": [
+        "PROJECT.md",
+        "COMMANDS.md"
+      ]
+    },
+    {
+      "id": "investigate-codebase",
+      "version": "1.0.0",
+      "path": "workflows/investigate-codebase/WORKFLOW.md",
+      "title": "Investigate Codebase",
+      "description": "Map owners, sources of truth, and risks before changing code.",
+      "categories": [
+        "investigation"
+      ],
+      "tags": [
+        "explore",
+        "owners",
+        "sot"
+      ],
+      "risk_levels": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "compatible_with": [
+        "plan-feature",
+        "audit-existing-system",
+        "debug-runtime-problem",
+        "refactor-safely"
+      ],
+      "required_context": [
+        "PROJECT.md",
+        "ARCHITECTURE.md",
+        "PROTECTED-AREAS.md"
+      ]
+    },
+    {
+      "id": "plan-feature",
+      "version": "1.0.0",
+      "path": "workflows/plan-feature/WORKFLOW.md",
+      "title": "Plan Feature",
+      "description": "Clarify scope, options, and a task spec before implementation.",
+      "categories": [
+        "planning"
+      ],
+      "tags": [
+        "spec",
+        "tradeoffs",
+        "scope"
+      ],
+      "risk_levels": [
+        "medium",
+        "high"
+      ],
+      "compatible_with": [
+        "investigate-codebase",
+        "implement-feature"
+      ],
+      "required_context": [
+        "PROJECT.md",
+        "PRODUCT.md",
+        "DEFINITION-OF-DONE.md"
+      ]
+    },
+    {
+      "id": "implement-feature",
+      "version": "1.0.0",
+      "path": "workflows/implement-feature/WORKFLOW.md",
+      "title": "Implement Feature",
+      "description": "Ship surgical changes within an approved task specification.",
+      "categories": [
+        "implementation"
+      ],
+      "tags": [
+        "feature",
+        "build"
+      ],
+      "risk_levels": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "compatible_with": [
+        "plan-feature",
+        "test-and-verify",
+        "investigate-codebase",
+        "refine-ui-ux"
+      ],
+      "required_context": [
+        "PROJECT.md",
+        "ARCHITECTURE.md",
+        "COMMANDS.md",
+        "DESIGN-SYSTEM.md"
+      ]
+    },
+    {
+      "id": "debug-runtime-problem",
+      "version": "1.0.0",
+      "path": "workflows/debug-runtime-problem/WORKFLOW.md",
+      "title": "Debug Runtime Problem",
+      "description": "Reproduce, isolate, fix, and verify a runtime defect or regression.",
+      "categories": [
+        "debugging",
+        "implementation"
+      ],
+      "tags": [
+        "bug",
+        "runtime",
+        "regression"
+      ],
+      "risk_levels": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "compatible_with": [
+        "investigate-codebase",
+        "test-and-verify"
+      ],
+      "required_context": [
+        "PROJECT.md",
+        "COMMANDS.md",
+        "KNOWN-RISKS.md",
+        "DATA-FLOWS.md"
+      ]
+    },
+    {
+      "id": "refine-ui-ux",
+      "version": "1.0.0",
+      "path": "workflows/refine-ui-ux/WORKFLOW.md",
+      "title": "Refine UI/UX",
+      "description": "Polish UI surgically while preserving behavior and responsive integrity.",
+      "categories": [
+        "ui",
+        "implementation"
+      ],
+      "tags": [
+        "design",
+        "responsive",
+        "polish"
+      ],
+      "risk_levels": [
+        "low",
+        "medium"
+      ],
+      "compatible_with": [
+        "implement-feature",
+        "test-and-verify"
+      ],
+      "required_context": [
+        "PROJECT.md",
+        "DESIGN-SYSTEM.md",
+        "COMMANDS.md"
+      ]
+    },
+    {
+      "id": "refactor-safely",
+      "version": "1.0.0",
+      "path": "workflows/refactor-safely/WORKFLOW.md",
+      "title": "Refactor Safely",
+      "description": "Restructure code with behavior parity and protected-area awareness.",
+      "categories": [
+        "refactor"
+      ],
+      "tags": [
+        "parity",
+        "structure"
+      ],
+      "risk_levels": [
+        "medium",
+        "high"
+      ],
+      "compatible_with": [
+        "test-and-verify",
+        "investigate-codebase"
+      ],
+      "required_context": [
+        "PROJECT.md",
+        "ARCHITECTURE.md",
+        "PROTECTED-AREAS.md",
+        "COMMANDS.md"
+      ]
+    },
+    {
+      "id": "test-and-verify",
+      "version": "1.0.0",
+      "path": "workflows/test-and-verify/WORKFLOW.md",
+      "title": "Test and Verify",
+      "description": "Choose and run appropriate verification; label evidence honestly.",
+      "categories": [
+        "testing",
+        "verification"
+      ],
+      "tags": [
+        "tests",
+        "evidence",
+        "ci"
+      ],
+      "risk_levels": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "compatible_with": [
+        "implement-feature",
+        "debug-runtime-problem",
+        "refactor-safely",
+        "improve-seo-and-llm-readiness"
+      ],
+      "required_context": [
+        "PROJECT.md",
+        "COMMANDS.md",
+        "DEFINITION-OF-DONE.md"
+      ]
+    },
+    {
+      "id": "audit-existing-system",
+      "version": "1.0.0",
+      "path": "workflows/audit-existing-system/WORKFLOW.md",
+      "title": "Audit Existing System",
+      "description": "Findings-first audit with evidence; separate findings from fixes unless asked.",
+      "categories": [
+        "audit"
+      ],
+      "tags": [
+        "review",
+        "findings",
+        "evidence"
+      ],
+      "risk_levels": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "compatible_with": [
+        "investigate-codebase",
+        "improve-seo-and-llm-readiness",
+        "review-security-and-privacy"
+      ],
+      "required_context": [
+        "PROJECT.md",
+        "ARCHITECTURE.md",
+        "PROTECTED-AREAS.md",
+        "KNOWN-RISKS.md"
+      ]
+    },
+    {
+      "id": "improve-seo-and-llm-readiness",
+      "version": "1.0.0",
+      "path": "workflows/improve-seo-and-llm-readiness/WORKFLOW.md",
+      "title": "Improve SEO and LLM Readiness",
+      "description": "Improve crawlability, metadata parity, and AI-readable surfaces without inventing claims.",
+      "categories": [
+        "seo",
+        "content"
+      ],
+      "tags": [
+        "metadata",
+        "sitemap",
+        "llm",
+        "indexing"
+      ],
+      "risk_levels": [
+        "medium",
+        "high"
+      ],
+      "compatible_with": [
+        "audit-existing-system",
+        "test-and-verify",
+        "investigate-codebase"
+      ],
+      "required_context": [
+        "PROJECT.md",
+        "ARCHITECTURE.md",
+        "PRODUCT.md",
+        "COMMANDS.md",
+        "KNOWN-RISKS.md"
+      ]
+    },
+    {
+      "id": "review-security-and-privacy",
+      "version": "1.0.0",
+      "path": "workflows/review-security-and-privacy/WORKFLOW.md",
+      "title": "Review Security and Privacy",
+      "description": "Check secrets, authz, PII handling, and unsafe logging before or after changes.",
+      "categories": [
+        "security"
+      ],
+      "tags": [
+        "secrets",
+        "privacy",
+        "auth"
+      ],
+      "risk_levels": [
+        "medium",
+        "high"
+      ],
+      "compatible_with": [
+        "audit-existing-system",
+        "test-and-verify",
+        "investigate-codebase"
+      ],
+      "required_context": [
+        "PROJECT.md",
+        "PROTECTED-AREAS.md",
+        "KNOWN-RISKS.md",
+        "COMMANDS.md"
+      ]
+    },
+    {
+      "id": "optimize-performance",
+      "version": "1.0.0",
+      "path": "workflows/optimize-performance/WORKFLOW.md",
+      "title": "Optimize Performance",
+      "description": "Measure, prioritize bottlenecks, and verify before/after with evidence.",
+      "categories": [
+        "performance"
+      ],
+      "tags": [
+        "latency",
+        "bundle",
+        "vitals"
+      ],
+      "risk_levels": [
+        "medium",
+        "high"
+      ],
+      "compatible_with": [
+        "investigate-codebase",
+        "test-and-verify",
+        "refactor-safely"
+      ],
+      "required_context": [
+        "PROJECT.md",
+        "ARCHITECTURE.md",
+        "COMMANDS.md",
+        "KNOWN-RISKS.md"
+      ]
+    },
+    {
+      "id": "onboard-new-project",
+      "version": "1.0.0",
+      "path": "workflows/onboard-new-project/WORKFLOW.md",
+      "title": "Onboard New Project",
+      "description": "Fill or refresh project-context after copying APS into a repository.",
+      "categories": [
+        "onboarding",
+        "docs"
+      ],
+      "tags": [
+        "project-context",
+        "portability",
+        "init"
+      ],
+      "risk_levels": [
+        "low",
+        "medium"
+      ],
+      "compatible_with": [
+        "investigate-codebase",
+        "audit-existing-system"
+      ],
+      "required_context": [
+        "PROJECT.md"
+      ]
+    },
+    {
+      "id": "daily-project-closeout",
+      "version": "1.0.0",
+      "path": "workflows/daily-project-closeout/WORKFLOW.md",
+      "title": "Daily Project Closeout",
+      "description": "End-of-day gates: typecheck, lint, tests, knowledge, quality, advisory AI audit, daily report.",
+      "categories": [
+        "verification",
+        "audit"
+      ],
+      "tags": [
+        "closeout",
+        "daily",
+        "quality",
+        "wrap-up"
+      ],
+      "use_when": [
+        "wrap up for today",
+        "finish for today",
+        "end the development day",
+        "close out today",
+        "daily project closeout",
+        "progress is wrapped up for today"
+      ],
+      "risk_levels": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "compatible_with": [
+        "test-and-verify",
+        "audit-existing-system"
+      ],
+      "required_context": [
+        "PROJECT.md",
+        "COMMANDS.md",
+        "DEFINITION-OF-DONE.md",
+        "KNOWN-RISKS.md"
+      ]
+    }
+  ]
+}

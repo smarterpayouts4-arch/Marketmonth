@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "rubricVersion": "2.1.0",
+  "maxScore": 100,
+  "displayDivisor": 10,
+  "failBelowOutOf10": null,
+  "thresholds": {
+    "oversizedFileLines": 500,
+    "excessiveExports": 25,
+    "mixedLayerMin": 3,
+    "staleDocDays": 45,
+    "unownedDeductionPerPath": 1
+  },
+  "categories": [
+    { "id": "architecture", "label": "Architecture quality", "maxPoints": 20 },
+    { "id": "organization", "label": "File and folder organization", "maxPoints": 15 },
+    { "id": "ownership", "label": "Ownership clarity", "maxPoints": 15 },
+    { "id": "documentation", "label": "Documentation freshness", "maxPoints": 15 },
+    { "id": "code_quality", "label": "Type safety and code quality", "maxPoints": 15 },
+    { "id": "testing", "label": "Testing and verification", "maxPoints": 10 },
+    { "id": "security", "label": "Security and configuration", "maxPoints": 10 }
+  ],
+  "rules": [
+    {
+      "ruleId": "PK-QUALITY-001",
+      "category": "architecture",
+      "description": "No duplicate resolved App Router page routes",
+      "reason": "Duplicate routes break navigation and confuse ownership.",
+      "check": "duplicate_routes",
+      "deductionPerFinding": 8,
+      "maximumDeduction": 8
+    },
+    {
+      "ruleId": "PK-QUALITY-002",
+      "category": "architecture",
+      "description": "Engine/UI/db independence boundaries must hold",
+      "reason": "UI must not import engine or database internals.",
+      "check": "dependency_boundary_violations",
+      "deductionPerFinding": 2,
+      "maximumDeduction": 8
+    },
+    {
+      "ruleId": "PK-QUALITY-003",
+      "category": "architecture",
+      "description": "Product authority and APS pointer stubs must be valid",
+      "reason": "Hard knowledge authority failures mean the living system cannot be trusted.",
+      "check": "product_authority_hard",
+      "deductionPerFinding": 4,
+      "maximumDeduction": 4
+    },
+    {
+      "ruleId": "PK-QUALITY-063",
+      "category": "architecture",
+      "description": "Features must not deep-import another feature’s internals",
+      "reason": "Cross-feature coupling must go through declared public APIs.",
+      "check": "cross_feature_deep_imports",
+      "deductionPerFinding": 1,
+      "maximumDeduction": 4
+    },
+    {
+      "ruleId": "PK-QUALITY-064",
+      "category": "architecture",
+      "description": "Declared public API entrypoints must exist",
+      "reason": "Independence requires an explicit public surface.",
+      "check": "missing_public_api_entrypoints",
+      "deductionPerFinding": 2,
+      "maximumDeduction": 4
+    },
+    {
+      "ruleId": "PK-QUALITY-065",
+      "category": "architecture",
+      "description": "No circular dependencies in src import graph",
+      "reason": "Cycles prevent clean ownership and safe refactors.",
+      "check": "circular_dependencies",
+      "deductionPerFinding": 2,
+      "maximumDeduction": 4
+    },
+    {
+      "ruleId": "PK-QUALITY-060",
+      "category": "organization",
+      "description": "Source files should stay under the agreed line threshold",
+      "reason": "Oversized files hide mixed responsibilities.",
+      "check": "oversized_source_files",
+      "deductionPerFinding": 1,
+      "maximumDeduction": 6
+    },
+    {
+      "ruleId": "PK-QUALITY-061",
+      "category": "organization",
+      "description": "Files should not mix many architectural layers",
+      "reason": "UI + engine + db + server in one file is a responsibility smell.",
+      "check": "mixed_architectural_responsibilities",
+      "deductionPerFinding": 1,
+      "maximumDeduction": 5
+    },
+    {
+      "ruleId": "PK-QUALITY-062",
+      "category": "organization",
+      "description": "Modules should not expose an excessive public surface",
+      "reason": "Too many exports usually means mixed jobs.",
+      "check": "excessive_module_surface",
+      "deductionPerFinding": 1,
+      "maximumDeduction": 4
+    },
+    {
+      "ruleId": "PK-QUALITY-004",
+      "category": "ownership",
+      "description": "Structural src paths must have an owner",
+      "reason": "Unowned paths drift without a responsible surface.",
+      "check": "unowned_src_paths",
+      "deductionPerFinding": 1,
+      "maximumDeduction": 8
+    },
+    {
+      "ruleId": "PK-QUALITY-005",
+      "category": "ownership",
+      "description": "Ownership exceptions must not be expired",
+      "reason": "Expired exceptions silently hide real ownership debt.",
+      "check": "expired_ownership_exceptions",
+      "deductionPerFinding": 2,
+      "maximumDeduction": 7
+    },
+    {
+      "ruleId": "PK-QUALITY-020",
+      "category": "documentation",
+      "description": "Generated knowledge maps/indexes must match the tree",
+      "reason": "Stale maps are worse than no maps.",
+      "check": "stale_generated_maps",
+      "deductionPerFinding": 3,
+      "maximumDeduction": 6
+    },
+    {
+      "ruleId": "PK-QUALITY-021",
+      "category": "documentation",
+      "description": "CURRENT_STATE last_verified must be within the freshness window",
+      "reason": "Agents must know what is live vs mocked.",
+      "check": "current_state_freshness",
+      "deductionPerFinding": 4,
+      "maximumDeduction": 4
+    },
+    {
+      "ruleId": "PK-QUALITY-022",
+      "category": "documentation",
+      "description": "Qualifying feature roots need FEATURES briefs",
+      "reason": "Meaningful surfaces need a short intent doc.",
+      "check": "missing_feature_docs",
+      "deductionPerFinding": 2,
+      "maximumDeduction": 5
+    },
+    {
+      "ruleId": "PK-QUALITY-030",
+      "category": "code_quality",
+      "description": "TypeScript strict mode enabled",
+      "reason": "Strict typing catches boundary bugs early.",
+      "check": "tsconfig_strict",
+      "deductionPerFinding": 3,
+      "maximumDeduction": 3
+    },
+    {
+      "ruleId": "PK-QUALITY-031",
+      "category": "code_quality",
+      "description": "ESLint config is present",
+      "reason": "Shared lint rules keep mechanical quality consistent.",
+      "check": "eslint_config_present",
+      "deductionPerFinding": 2,
+      "maximumDeduction": 2
+    },
+    {
+      "ruleId": "PK-QUALITY-033",
+      "category": "code_quality",
+      "description": "TypeScript compile must pass",
+      "reason": "A project with type errors cannot be 10/10.",
+      "check": "typecheck_pass",
+      "probe": true,
+      "deductionPerFinding": 5,
+      "maximumDeduction": 5
+    },
+    {
+      "ruleId": "PK-QUALITY-034",
+      "category": "code_quality",
+      "description": "Lint must pass",
+      "reason": "Lint failures block a perfect code-quality score.",
+      "check": "lint_pass",
+      "probe": true,
+      "deductionPerFinding": 3,
+      "maximumDeduction": 3
+    },
+    {
+      "ruleId": "PK-QUALITY-032",
+      "category": "code_quality",
+      "description": "No extreme oversized source files (>2× threshold)",
+      "reason": "Extreme size usually means multiple jobs in one file.",
+      "check": "extreme_oversized_source_files",
+      "deductionPerFinding": 1,
+      "maximumDeduction": 2
+    },
+    {
+      "ruleId": "PK-QUALITY-040",
+      "category": "testing",
+      "description": "Knowledge route resolver tests pass",
+      "reason": "Route maps are foundational.",
+      "check": "route_resolver_tests",
+      "deductionPerFinding": 2,
+      "maximumDeduction": 2
+    },
+    {
+      "ruleId": "PK-QUALITY-041",
+      "category": "testing",
+      "description": "CI knowledge-check workflow exists",
+      "reason": "Without CI, knowledge drift lands silently.",
+      "check": "ci_knowledge_workflow",
+      "deductionPerFinding": 1,
+      "maximumDeduction": 1
+    },
+    {
+      "ruleId": "PK-QUALITY-042",
+      "category": "testing",
+      "description": "Feature-level tests exist under src/",
+      "reason": "Critical flows need meaningful assertions.",
+      "check": "feature_test_presence",
+      "deductionPerFinding": 2,
+      "maximumDeduction": 2
+    },
+    {
+      "ruleId": "PK-QUALITY-043",
+      "category": "testing",
+      "description": "npm test suite must pass",
+      "reason": "Failing tests block a perfect testing score.",
+      "check": "test_suite_pass",
+      "probe": true,
+      "deductionPerFinding": 5,
+      "maximumDeduction": 5
+    },
+    {
+      "ruleId": "PK-QUALITY-050",
+      "category": "security",
+      "description": ".env.example must exist",
+      "reason": "Onboarding needs a documented env surface.",
+      "check": "env_example_present",
+      "deductionPerFinding": 2,
+      "maximumDeduction": 2
+    },
+    {
+      "ruleId": "PK-QUALITY-051",
+      "category": "security",
+      "description": "Referenced process.env keys should appear in .env.example",
+      "reason": "Undocumented env vars hide required configuration.",
+      "check": "undocumented_env_vars",
+      "deductionPerFinding": 1,
+      "maximumDeduction": 4
+    },
+    {
+      "ruleId": "PK-QUALITY-052",
+      "category": "security",
+      "description": "Secret-like names must not use NEXT_PUBLIC_",
+      "reason": "Browser-exposed secrets are a hard security failure.",
+      "check": "next_public_secret_names",
+      "deductionPerFinding": 4,
+      "maximumDeduction": 4
+    },
+    {
+      "ruleId": "PK-QUALITY-053",
+      "category": "security",
+      "description": "Client components must not import server-only modules",
+      "reason": "Leaks server/db into the browser bundle.",
+      "check": "client_server_boundary",
+      "deductionPerFinding": 2,
+      "maximumDeduction": 4
+    }
+  ],
+  "aiAdvisory": {
+    "enabled": true,
+    "note": "AI findings are advisory only and never alter officialScore.",
+    "providerEnv": "PROJECT_AUDIT_PROVIDER",
+    "modelEnv": "PROJECT_AUDIT_MODEL",
+    "defaultProvider": "openai",
+    "defaultModel": "gpt-5-mini"
+  }
+}

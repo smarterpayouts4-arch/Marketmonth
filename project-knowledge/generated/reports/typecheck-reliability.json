@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "previouslyReportedIntermittentFailure": "unresolved/unreproduced",
+  "runs": [
+    {
+      "at": "2026-07-26T17:28:14.154Z",
+      "ok": false,
+      "runId": "14b0ce61-49ea-4ef7-badb-31ac3805d30a"
+    },
+    {
+      "at": "2026-07-28T00:40:30.124Z",
+      "ok": true,
+      "runId": "21d8219a-2b47-4c28-975d-8d6a3b011244"
+    }
+  ],
+  "last10": {
+    "total": 2,
+    "pass": 1,
+    "fail": 1
+  },
+  "reliabilityStatus": "FLAKY"
+}
+

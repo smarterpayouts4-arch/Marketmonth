@@ -1,0 +1,514 @@
+{
+  "schemaVersion": 2,
+  "kind": "daily-closeout",
+  "date": "2026-07-26",
+  "commit": "unavailable",
+  "status": "READY WITH WARNINGS",
+  "scoreType": "Internal Engineering Quality Score",
+  "officialScore": {
+    "label": "Internal Engineering Quality Score",
+    "totalPoints": 91,
+    "maxScore": 100,
+    "scoreOutOf10": 9.1,
+    "formula": "91/100 = 9.1/10",
+    "evaluationsComplete": true,
+    "perfectEligible": false,
+    "notEvaluatedRules": [],
+    "disclaimer": "MarketMonth Internal Engineering Quality Score against the project rubric only. Not industry-certified, independently certified, or externally validated."
+  },
+  "provenance": {
+    "scoreType": "Internal Engineering Quality Score",
+    "scoreAuthority": "MarketMonth internal rubric only — not external certification",
+    "rubricVersion": "2.1.0",
+    "rubricFile": "project-knowledge/quality-rules.json",
+    "rubricFileHash": "16cf6a0540c1e5f9",
+    "commitSha": "unavailable",
+    "commitShort": "unavailable",
+    "workingTreeStatus": "unavailable",
+    "gitScope": "parent-repo-outside-project",
+    "gitNote": "MarketMonth is not its own git root; a parent directory owns .git. Commit SHA is intentionally unavailable until MarketMonth is a dedicated repository (or a documented monorepo package with an explicit root policy).",
+    "commandsExecuted": [
+      "npm run typecheck",
+      "npm run lint",
+      "npm test",
+      "knowledge route resolver test",
+      "guardian + ownership/env/structure collectors"
+    ],
+    "probeStatus": {
+      "typecheck": {
+        "status": "pass",
+        "exitCode": 0,
+        "error": null
+      },
+      "lint": {
+        "status": "pass",
+        "exitCode": 0,
+        "error": null
+      },
+      "test": {
+        "status": "pass",
+        "exitCode": 0,
+        "error": null
+      }
+    },
+    "generatedFromRealExecution": true,
+    "skippedProbes": [],
+    "failedProbes": [],
+    "passedProbes": [
+      "typecheck",
+      "lint",
+      "test"
+    ],
+    "notEvaluatedProbes": [],
+    "visibleIgnorePatterns": [
+      ".git",
+      ".next",
+      "Refrence folder",
+      "generated",
+      "node_modules"
+    ],
+    "aiAffectsOfficialScore": false
+  },
+  "externalBaseline": {
+    "schemaVersion": 1,
+    "label": "External Baseline Coverage",
+    "coveragePercent": 52,
+    "externalValidationStatus": "Limited",
+    "externalCertification": "None",
+    "areas": [
+      {
+        "id": "typescript_strict_build",
+        "label": "TypeScript strictness and build integrity",
+        "status": "covered",
+        "evidence": "tsconfig strict check + npm run typecheck exit=0",
+        "recommended": "now"
+      },
+      {
+        "id": "eslint_static",
+        "label": "ESLint / static analysis",
+        "status": "covered",
+        "evidence": "eslint.config present; lint exit=0",
+        "recommended": "now"
+      },
+      {
+        "id": "automated_tests",
+        "label": "Automated testing with meaningful assertions",
+        "status": "covered",
+        "evidence": "npm test + 17 feature test files under src/",
+        "recommended": "now"
+      },
+      {
+        "id": "coverage_tooling",
+        "label": "Coverage tooling",
+        "status": "absent",
+        "evidence": "No dedicated coverage gate in package scripts",
+        "recommended": "later"
+      },
+      {
+        "id": "circular_deps",
+        "label": "Circular dependency detection",
+        "status": "partial",
+        "evidence": "In-repo import graph cycle detector (quality collector); not dependency-cruiser/madge",
+        "recommended": "later"
+      },
+      {
+        "id": "dead_code",
+        "label": "Dead-code / unused-export analysis",
+        "status": "absent",
+        "evidence": "No Knip/ts-prune wired into CI",
+        "recommended": "later"
+      },
+      {
+        "id": "dep_vulnerability",
+        "label": "Dependency vulnerability scanning",
+        "status": "covered",
+        "evidence": "npm run audit:deps (npm audit --audit-level=high) gated in knowledge-check CI",
+        "recommended": "now"
+      },
+      {
+        "id": "secret_scanning",
+        "label": "Secret scanning",
+        "status": "covered",
+        "evidence": "Gitleaks (or equivalent) step in knowledge-check CI",
+        "recommended": "now"
+      },
+      {
+        "id": "owasp_sast",
+        "label": "OWASP-oriented / Semgrep / CodeQL",
+        "status": "absent",
+        "evidence": "No Semgrep or CodeQL workflow",
+        "recommended": "later"
+      },
+      {
+        "id": "authz_boundaries",
+        "label": "Authentication and authorization boundaries",
+        "status": "partial",
+        "evidence": "Auth scaffold exists; CURRENT_STATE marks production auth gates incomplete — not fully verified by automated matrix",
+        "recommended": "now"
+      },
+      {
+        "id": "env_handling",
+        "label": "Secure environment-variable handling",
+        "status": "partial",
+        "evidence": ".env.example + undocumented/NEXT_PUBLIC secret-name checks in rubric",
+        "recommended": "now"
+      },
+      {
+        "id": "accessibility",
+        "label": "Accessibility testing",
+        "status": "absent",
+        "evidence": "No axe/pa11y/Playwright a11y gate",
+        "recommended": "later"
+      },
+      {
+        "id": "performance_budget",
+        "label": "Performance / bundle-size budgets",
+        "status": "absent",
+        "evidence": "No Lighthouse CI or bundle analyzer budget",
+        "recommended": "later"
+      },
+      {
+        "id": "api_contracts",
+        "label": "API contract validation",
+        "status": "partial",
+        "evidence": "Zod schemas for discovery requests/events; no OpenAPI contract suite",
+        "recommended": "later"
+      },
+      {
+        "id": "db_migrations",
+        "label": "Database migration discipline",
+        "status": "partial",
+        "evidence": "Drizzle present; no automated migration-drift gate in quality closeout",
+        "recommended": "later"
+      },
+      {
+        "id": "resilience",
+        "label": "Error handling and resilience",
+        "status": "partial",
+        "evidence": "Feature tests cover validation failures; no chaos/resilience suite",
+        "recommended": "later"
+      },
+      {
+        "id": "observability",
+        "label": "Logging and observability",
+        "status": "absent",
+        "evidence": "CURRENT_STATE lists production observability as missing",
+        "recommended": "now"
+      },
+      {
+        "id": "ci_gates",
+        "label": "CI quality gates",
+        "status": "covered",
+        "evidence": "CI runs audit:deps, secret scan, typecheck, lint, test, knowledge:check, quality:check",
+        "recommended": "now"
+      },
+      {
+        "id": "supply_chain",
+        "label": "Supply-chain / dependency integrity",
+        "status": "partial",
+        "evidence": "Dependabot for npm + GitHub Actions (weekly); no SBOM/attestation gate yet",
+        "recommended": "later"
+      },
+      {
+        "id": "docs_ownership",
+        "label": "Documentation and ownership",
+        "status": "partial",
+        "evidence": "ownership-rules.json + CURRENT_STATE freshness + FEATURES docs checks",
+        "recommended": "now"
+      },
+      {
+        "id": "arch_enforcement",
+        "label": "Architectural dependency enforcement",
+        "status": "covered",
+        "evidence": "Guardian + quality independence rules (UI/engine/db, public APIs)",
+        "recommended": "now"
+      }
+    ],
+    "note": "This is coverage of recognized engineering practices with executable evidence — not a certification and not merged into the Internal Engineering Quality Score."
+  },
+  "categories": [
+    {
+      "id": "architecture",
+      "label": "Architecture quality",
+      "points": 19,
+      "maxPoints": 20,
+      "scoreOutOf10": 9.5,
+      "checksContributing": [
+        "PK-QUALITY-001",
+        "PK-QUALITY-002",
+        "PK-QUALITY-003",
+        "PK-QUALITY-063",
+        "PK-QUALITY-064",
+        "PK-QUALITY-065"
+      ]
+    },
+    {
+      "id": "organization",
+      "label": "File and folder organization",
+      "points": 13,
+      "maxPoints": 15,
+      "scoreOutOf10": 8.7,
+      "checksContributing": [
+        "PK-QUALITY-060",
+        "PK-QUALITY-061",
+        "PK-QUALITY-062"
+      ]
+    },
+    {
+      "id": "ownership",
+      "label": "Ownership clarity",
+      "points": 13,
+      "maxPoints": 15,
+      "scoreOutOf10": 8.7,
+      "checksContributing": [
+        "PK-QUALITY-004",
+        "PK-QUALITY-005"
+      ]
+    },
+    {
+      "id": "documentation",
+      "label": "Documentation freshness",
+      "points": 15,
+      "maxPoints": 15,
+      "scoreOutOf10": 10,
+      "checksContributing": [
+        "PK-QUALITY-020",
+        "PK-QUALITY-021",
+        "PK-QUALITY-022"
+      ]
+    },
+    {
+      "id": "code_quality",
+      "label": "Type safety and code quality",
+      "points": 15,
+      "maxPoints": 15,
+      "scoreOutOf10": 10,
+      "checksContributing": [
+        "PK-QUALITY-030",
+        "PK-QUALITY-031",
+        "PK-QUALITY-033",
+        "PK-QUALITY-034",
+        "PK-QUALITY-032"
+      ]
+    },
+    {
+      "id": "testing",
+      "label": "Testing and verification",
+      "points": 10,
+      "maxPoints": 10,
+      "scoreOutOf10": 10,
+      "checksContributing": [
+        "PK-QUALITY-040",
+        "PK-QUALITY-041",
+        "PK-QUALITY-042",
+        "PK-QUALITY-043"
+      ]
+    },
+    {
+      "id": "security",
+      "label": "Security and configuration",
+      "points": 6,
+      "maxPoints": 10,
+      "scoreOutOf10": 6,
+      "checksContributing": [
+        "PK-QUALITY-050",
+        "PK-QUALITY-051",
+        "PK-QUALITY-052",
+        "PK-QUALITY-053"
+      ]
+    }
+  ],
+  "hardFailures": [],
+  "softWarnings": [],
+  "deductions": [
+    {
+      "ruleId": "PK-QUALITY-063",
+      "category": "architecture",
+      "description": "Features must not deep-import another feature’s internals",
+      "reason": "Cross-feature coupling must go through declared public APIs.",
+      "deducted": 1,
+      "findingCount": 1,
+      "evidence": [
+        "src/components/brand/brand-approved.tsx → @/components/dashboard/dashboard-home/phase-query (bypass dashboard public API)"
+      ],
+      "evidenceTruncated": false,
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-060",
+      "category": "organization",
+      "description": "Source files should stay under the agreed line threshold",
+      "reason": "Oversized files hide mixed responsibilities.",
+      "deducted": 1,
+      "findingCount": 1,
+      "evidence": [
+        "src/lib/dev/bootstrap-dev-workspace.ts (532 lines > 500)"
+      ],
+      "evidenceTruncated": false,
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-061",
+      "category": "organization",
+      "description": "Files should not mix many architectural layers",
+      "reason": "UI + engine + db + server in one file is a responsibility smell.",
+      "deducted": 1,
+      "findingCount": 1,
+      "evidence": [
+        "src/app/api/onboarding/workspace-context/route.ts layers=[db,server,next,engine] (min 3)"
+      ],
+      "evidenceTruncated": false,
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-004",
+      "category": "ownership",
+      "description": "Structural src paths must have an owner",
+      "reason": "Unowned paths drift without a responsible surface.",
+      "deducted": 2,
+      "findingCount": 2,
+      "evidence": [
+        "src/app/api/onboarding/create-plan/route.ts",
+        "src/app/api/onboarding/workspace-context/route.ts"
+      ],
+      "evidenceTruncated": false,
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-051",
+      "category": "security",
+      "description": "Referenced process.env keys should appear in .env.example",
+      "reason": "Undocumented env vars hide required configuration.",
+      "deducted": 4,
+      "findingCount": 9,
+      "evidence": [
+        "DISCOVERY_PLAYWRIGHT",
+        "JSON2VIDEO_API_KEY",
+        "MM_IMAGE_API_KEY",
+        "MM_IMAGE_MODEL",
+        "MM_IMAGE_PROVIDER",
+        "MM_IMAGE_RENDER",
+        "MM_VOICE_MODEL",
+        "MM_VOICE_PROVIDER",
+        "OPENAI_CONTENT_BRAIN_MODEL"
+      ],
+      "evidenceTruncated": false,
+      "status": "deducted"
+    }
+  ],
+  "probes": {
+    "typecheck": {
+      "status": "pass",
+      "exitCode": 0,
+      "error": null
+    },
+    "lint": {
+      "status": "pass",
+      "exitCode": 0,
+      "error": null
+    },
+    "test": {
+      "status": "pass",
+      "exitCode": 0,
+      "error": null
+    }
+  },
+  "steps": [
+    {
+      "script": "knowledge:update",
+      "ok": true,
+      "status": 0
+    },
+    {
+      "script": "typecheck",
+      "ok": true,
+      "status": 0
+    },
+    {
+      "script": "lint",
+      "ok": true,
+      "status": 0
+    },
+    {
+      "script": "test",
+      "ok": true,
+      "status": 0
+    },
+    {
+      "script": "knowledge:check",
+      "ok": true,
+      "status": 0
+    },
+    {
+      "script": "quality:check",
+      "ok": true,
+      "status": 0
+    }
+  ],
+  "aiAudit": {
+    "reviewType": "Advisory AI review",
+    "status": "ok",
+    "provider": "openai",
+    "requestedModel": "gpt-5-mini",
+    "returnedModel": "gpt-5-mini-2025-08-07",
+    "responseGeneratedFromLiveApi": true,
+    "aiAffectsOfficialScore": false,
+    "advisoryOnly": true,
+    "summary": "Summary (concise): the repo is in good shape (9.1/10 internal score) but has a few concrete architecture and ownership issues and several missing env/config docs. Below are focused observations and action-oriented recommendations you can triage by priority.\n\n1) Top architecture risks\n- Missing/undocumented runtime secrets (security): nine process.env keys referenced but not in .env.example (PK-QUALITY-051). Risk: deploys break or secrets leak via implicit assumptions.\n  - Files/keys called out: DISCOVERY_PLAYWRIGHT, JSON2VIDEO_API_KEY, MM_IMAGE_API_KEY, MM_IMAGE_MODEL, MM_IMAGE_PROVIDER, MM_IMAGE_RENDER, MM_VOICE_MODEL, MM_VOICE_PROVIDER, OPENAI_CONTENT_BRAIN_MODEL.\n  - Recommendation: immediately add these to .env.example (with safe placeholders), mark which are required in production, and add CI gating that fails if referenced env vars are undocumented.\n- Cross-feature deep-import (coupling): brand UI deep-imports dashboard internals (PK-QUALITY-063: src/components/brand/brand-approved.tsx → @/components/dashboard/dashboard-home/phase-query). Risk: brittle coupling, harder to refactor, ownership conflicts.\n  - Recommendation: extract the required API into a dashboard public entry (index.ts) or move shared logic to a domain/shared module and replace the deep import with the public API.\n- Mixed-layer route file (separation-of-concerns): src/app/api/onboarding/workspace-context/route.ts mixes db, server, next, engine logic (PK-QUALITY-061). Risk: testing and security surface g"
+  },
+  "changedFiles": [],
+  "improvementsNote": "See git diff / session commits for completed work; this report does not invent progress.",
+  "remainingIssues": [
+    {
+      "ruleId": "PK-QUALITY-051",
+      "priority": "high",
+      "action": "Referenced process.env keys should appear in .env.example",
+      "evidenceSample": [
+        "DISCOVERY_PLAYWRIGHT",
+        "JSON2VIDEO_API_KEY",
+        "MM_IMAGE_API_KEY",
+        "MM_IMAGE_MODEL",
+        "MM_IMAGE_PROVIDER"
+      ],
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-004",
+      "priority": "medium",
+      "action": "Structural src paths must have an owner",
+      "evidenceSample": [
+        "src/app/api/onboarding/create-plan/route.ts",
+        "src/app/api/onboarding/workspace-context/route.ts"
+      ],
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-063",
+      "priority": "low",
+      "action": "Features must not deep-import another feature’s internals",
+      "evidenceSample": [
+        "src/components/brand/brand-approved.tsx → @/components/dashboard/dashboard-home/phase-query (bypass dashboard public API)"
+      ],
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-060",
+      "priority": "low",
+      "action": "Source files should stay under the agreed line threshold",
+      "evidenceSample": [
+        "src/lib/dev/bootstrap-dev-workspace.ts (532 lines > 500)"
+      ],
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-061",
+      "priority": "low",
+      "action": "Files should not mix many architectural layers",
+      "evidenceSample": [
+        "src/app/api/onboarding/workspace-context/route.ts layers=[db,server,next,engine] (min 3)"
+      ],
+      "status": "deducted"
+    }
+  ],
+  "recommendedNextPriority": "Referenced process.env keys should appear in .env.example"
+}

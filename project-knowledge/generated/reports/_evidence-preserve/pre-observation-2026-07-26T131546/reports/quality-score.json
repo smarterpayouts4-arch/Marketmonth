@@ -1,0 +1,417 @@
+{
+  "schemaVersion": 2,
+  "scoreType": "Internal Engineering Quality Score",
+  "rubricVersion": "2.1.0",
+  "evaluatedAt": "2026-07-25T10:56:23.123Z",
+  "withProbes": true,
+  "probeStatus": {
+    "typecheck": {
+      "status": "pass",
+      "exitCode": 0,
+      "error": null
+    },
+    "lint": {
+      "status": "pass",
+      "exitCode": 0,
+      "error": null
+    },
+    "test": {
+      "status": "pass",
+      "exitCode": 0,
+      "error": null
+    }
+  },
+  "provenance": {
+    "scoreType": "Internal Engineering Quality Score",
+    "scoreAuthority": "MarketMonth internal rubric only — not external certification",
+    "rubricVersion": "2.1.0",
+    "rubricFile": "project-knowledge/quality-rules.json",
+    "rubricFileHash": "16cf6a0540c1e5f9",
+    "commitSha": "unavailable",
+    "commitShort": "unavailable",
+    "workingTreeStatus": "unavailable",
+    "gitScope": "parent-repo-outside-project",
+    "gitNote": "MarketMonth is not its own git root; a parent directory owns .git. Commit SHA is intentionally unavailable until MarketMonth is a dedicated repository (or a documented monorepo package with an explicit root policy).",
+    "commandsExecuted": [
+      "npm run typecheck",
+      "npm run lint",
+      "npm test",
+      "knowledge route resolver test",
+      "guardian + ownership/env/structure collectors"
+    ],
+    "probeStatus": {
+      "typecheck": {
+        "status": "pass",
+        "exitCode": 0,
+        "error": null
+      },
+      "lint": {
+        "status": "pass",
+        "exitCode": 0,
+        "error": null
+      },
+      "test": {
+        "status": "pass",
+        "exitCode": 0,
+        "error": null
+      }
+    },
+    "generatedFromRealExecution": true,
+    "skippedProbes": [],
+    "failedProbes": [],
+    "passedProbes": [
+      "typecheck",
+      "lint",
+      "test"
+    ],
+    "notEvaluatedProbes": [],
+    "visibleIgnorePatterns": [
+      ".git",
+      ".next",
+      "Refrence folder",
+      "generated",
+      "node_modules"
+    ],
+    "aiAffectsOfficialScore": false
+  },
+  "officialScore": {
+    "label": "Internal Engineering Quality Score",
+    "totalPoints": 99,
+    "maxScore": 100,
+    "scoreOutOf10": 9.9,
+    "formula": "99/100 = 9.9/10",
+    "evaluationsComplete": true,
+    "perfectEligible": false,
+    "notEvaluatedRules": [],
+    "disclaimer": "MarketMonth Internal Engineering Quality Score against the project rubric only. Not industry-certified, independently certified, or externally validated."
+  },
+  "externalBaseline": {
+    "schemaVersion": 1,
+    "label": "External Baseline Coverage",
+    "coveragePercent": 55,
+    "externalValidationStatus": "Limited",
+    "externalCertification": "None",
+    "areas": [
+      {
+        "id": "typescript_strict_build",
+        "label": "TypeScript strictness and build integrity",
+        "status": "covered",
+        "evidence": "tsconfig strict check + npm run typecheck exit=0",
+        "recommended": "now"
+      },
+      {
+        "id": "eslint_static",
+        "label": "ESLint / static analysis",
+        "status": "covered",
+        "evidence": "eslint.config present; lint exit=0",
+        "recommended": "now"
+      },
+      {
+        "id": "automated_tests",
+        "label": "Automated testing with meaningful assertions",
+        "status": "covered",
+        "evidence": "npm test + 4 feature test files under src/",
+        "recommended": "now"
+      },
+      {
+        "id": "coverage_tooling",
+        "label": "Coverage tooling",
+        "status": "absent",
+        "evidence": "No dedicated coverage gate in package scripts",
+        "recommended": "later"
+      },
+      {
+        "id": "circular_deps",
+        "label": "Circular dependency detection",
+        "status": "partial",
+        "evidence": "In-repo import graph cycle detector (quality collector); not dependency-cruiser/madge",
+        "recommended": "later"
+      },
+      {
+        "id": "dead_code",
+        "label": "Dead-code / unused-export analysis",
+        "status": "absent",
+        "evidence": "No Knip/ts-prune wired into CI",
+        "recommended": "later"
+      },
+      {
+        "id": "dep_vulnerability",
+        "label": "Dependency vulnerability scanning",
+        "status": "covered",
+        "evidence": "npm run audit:deps (npm audit --audit-level=high) gated in knowledge-check CI",
+        "recommended": "now"
+      },
+      {
+        "id": "secret_scanning",
+        "label": "Secret scanning",
+        "status": "covered",
+        "evidence": "Gitleaks (or equivalent) step in knowledge-check CI",
+        "recommended": "now"
+      },
+      {
+        "id": "owasp_sast",
+        "label": "OWASP-oriented / Semgrep / CodeQL",
+        "status": "absent",
+        "evidence": "No Semgrep or CodeQL workflow",
+        "recommended": "later"
+      },
+      {
+        "id": "authz_boundaries",
+        "label": "Authentication and authorization boundaries",
+        "status": "partial",
+        "evidence": "Auth scaffold exists; CURRENT_STATE marks production auth gates incomplete — not fully verified by automated matrix",
+        "recommended": "now"
+      },
+      {
+        "id": "env_handling",
+        "label": "Secure environment-variable handling",
+        "status": "partial",
+        "evidence": ".env.example + undocumented/NEXT_PUBLIC secret-name checks in rubric",
+        "recommended": "now"
+      },
+      {
+        "id": "accessibility",
+        "label": "Accessibility testing",
+        "status": "absent",
+        "evidence": "No axe/pa11y/Playwright a11y gate",
+        "recommended": "later"
+      },
+      {
+        "id": "performance_budget",
+        "label": "Performance / bundle-size budgets",
+        "status": "absent",
+        "evidence": "No Lighthouse CI or bundle analyzer budget",
+        "recommended": "later"
+      },
+      {
+        "id": "api_contracts",
+        "label": "API contract validation",
+        "status": "partial",
+        "evidence": "Zod schemas for discovery requests/events; no OpenAPI contract suite",
+        "recommended": "later"
+      },
+      {
+        "id": "db_migrations",
+        "label": "Database migration discipline",
+        "status": "partial",
+        "evidence": "Drizzle present; no automated migration-drift gate in quality closeout",
+        "recommended": "later"
+      },
+      {
+        "id": "resilience",
+        "label": "Error handling and resilience",
+        "status": "partial",
+        "evidence": "Feature tests cover validation failures; no chaos/resilience suite",
+        "recommended": "later"
+      },
+      {
+        "id": "observability",
+        "label": "Logging and observability",
+        "status": "absent",
+        "evidence": "CURRENT_STATE lists production observability as missing",
+        "recommended": "now"
+      },
+      {
+        "id": "ci_gates",
+        "label": "CI quality gates",
+        "status": "covered",
+        "evidence": "CI runs audit:deps, secret scan, typecheck, lint, test, knowledge:check, quality:check",
+        "recommended": "now"
+      },
+      {
+        "id": "supply_chain",
+        "label": "Supply-chain / dependency integrity",
+        "status": "partial",
+        "evidence": "Dependabot for npm + GitHub Actions (weekly); no SBOM/attestation gate yet",
+        "recommended": "later"
+      },
+      {
+        "id": "docs_ownership",
+        "label": "Documentation and ownership",
+        "status": "covered",
+        "evidence": "ownership-rules.json + CURRENT_STATE freshness + FEATURES docs checks",
+        "recommended": "now"
+      },
+      {
+        "id": "arch_enforcement",
+        "label": "Architectural dependency enforcement",
+        "status": "covered",
+        "evidence": "Guardian + quality independence rules (UI/engine/db, public APIs)",
+        "recommended": "now"
+      }
+    ],
+    "note": "This is coverage of recognized engineering practices with executable evidence — not a certification and not merged into the Internal Engineering Quality Score."
+  },
+  "categories": [
+    {
+      "id": "architecture",
+      "label": "Architecture quality",
+      "points": 20,
+      "maxPoints": 20,
+      "scoreOutOf10": 10,
+      "deductions": [],
+      "notEvaluated": [],
+      "checksContributing": [
+        "PK-QUALITY-001",
+        "PK-QUALITY-002",
+        "PK-QUALITY-003",
+        "PK-QUALITY-063",
+        "PK-QUALITY-064",
+        "PK-QUALITY-065"
+      ]
+    },
+    {
+      "id": "organization",
+      "label": "File and folder organization",
+      "points": 15,
+      "maxPoints": 15,
+      "scoreOutOf10": 10,
+      "deductions": [],
+      "notEvaluated": [],
+      "checksContributing": [
+        "PK-QUALITY-060",
+        "PK-QUALITY-061",
+        "PK-QUALITY-062"
+      ]
+    },
+    {
+      "id": "ownership",
+      "label": "Ownership clarity",
+      "points": 15,
+      "maxPoints": 15,
+      "scoreOutOf10": 10,
+      "deductions": [],
+      "notEvaluated": [],
+      "checksContributing": [
+        "PK-QUALITY-004",
+        "PK-QUALITY-005"
+      ]
+    },
+    {
+      "id": "documentation",
+      "label": "Documentation freshness",
+      "points": 15,
+      "maxPoints": 15,
+      "scoreOutOf10": 10,
+      "deductions": [],
+      "notEvaluated": [],
+      "checksContributing": [
+        "PK-QUALITY-020",
+        "PK-QUALITY-021",
+        "PK-QUALITY-022"
+      ]
+    },
+    {
+      "id": "code_quality",
+      "label": "Type safety and code quality",
+      "points": 15,
+      "maxPoints": 15,
+      "scoreOutOf10": 10,
+      "deductions": [],
+      "notEvaluated": [],
+      "checksContributing": [
+        "PK-QUALITY-030",
+        "PK-QUALITY-031",
+        "PK-QUALITY-033",
+        "PK-QUALITY-034",
+        "PK-QUALITY-032"
+      ]
+    },
+    {
+      "id": "testing",
+      "label": "Testing and verification",
+      "points": 10,
+      "maxPoints": 10,
+      "scoreOutOf10": 10,
+      "deductions": [],
+      "notEvaluated": [],
+      "checksContributing": [
+        "PK-QUALITY-040",
+        "PK-QUALITY-041",
+        "PK-QUALITY-042",
+        "PK-QUALITY-043"
+      ]
+    },
+    {
+      "id": "security",
+      "label": "Security and configuration",
+      "points": 9,
+      "maxPoints": 10,
+      "scoreOutOf10": 9,
+      "deductions": [
+        {
+          "ruleId": "PK-QUALITY-051",
+          "category": "security",
+          "description": "Referenced process.env keys should appear in .env.example",
+          "reason": "Undocumented env vars hide required configuration.",
+          "deducted": 1,
+          "findingCount": 1,
+          "evidence": [
+            "DISCOVERY_PLAYWRIGHT"
+          ],
+          "evidenceTruncated": false,
+          "status": "deducted"
+        }
+      ],
+      "notEvaluated": [],
+      "checksContributing": [
+        "PK-QUALITY-050",
+        "PK-QUALITY-051",
+        "PK-QUALITY-052",
+        "PK-QUALITY-053"
+      ]
+    }
+  ],
+  "deductions": [
+    {
+      "ruleId": "PK-QUALITY-051",
+      "category": "security",
+      "description": "Referenced process.env keys should appear in .env.example",
+      "reason": "Undocumented env vars hide required configuration.",
+      "deducted": 1,
+      "findingCount": 1,
+      "evidence": [
+        "DISCOVERY_PLAYWRIGHT"
+      ],
+      "evidenceTruncated": false,
+      "status": "deducted"
+    }
+  ],
+  "stats": {
+    "unownedCount": 0,
+    "duplicateRouteCount": 0,
+    "oversizedCount": 0,
+    "undocumentedEnvCount": 1,
+    "guardianHard": 0,
+    "guardianSoft": 0,
+    "featureTestFiles": 4,
+    "knowledgeTestFiles": 5,
+    "deepCrossFeatureCount": 0,
+    "cycleCount": 0
+  },
+  "thresholds": {
+    "oversizedFileLines": 500,
+    "staleDocDays": 45,
+    "excessiveExports": 25,
+    "mixedLayerMin": 3
+  },
+  "improvementPlan": [
+    {
+      "ruleId": "PK-QUALITY-051",
+      "priority": "low",
+      "action": "Referenced process.env keys should appear in .env.example",
+      "evidenceSample": [
+        "DISCOVERY_PLAYWRIGHT"
+      ],
+      "status": "deducted"
+    }
+  ],
+  "aiReview": {
+    "enabled": true,
+    "note": "AI findings are advisory only and never alter officialScore.",
+    "observations": [],
+    "affectsOfficialScore": false
+  },
+  "hardFailures": 0,
+  "softWarnings": 0
+}

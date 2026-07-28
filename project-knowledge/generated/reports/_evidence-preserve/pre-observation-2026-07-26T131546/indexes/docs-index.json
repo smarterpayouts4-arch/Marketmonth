@@ -1,0 +1,394 @@
+{
+  "schemaVersion": 1,
+  "documents": [
+    {
+      "id": "architecture",
+      "path": "project-knowledge/ARCHITECTURE.md",
+      "title": "MarketMonth Architecture",
+      "description": " Product loop authority: [`PRODUCT.md`](./PRODUCT.md).",
+      "kind": "canonical",
+      "authority": "canonical",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "brand-change-map",
+      "path": "project-knowledge/BRAND_CHANGE_MAP.md",
+      "title": "Brand Change Map",
+      "description": "Public naming and domain changes are **treatments**, not a repo-wide string hunt.",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "commands",
+      "path": "project-knowledge/COMMANDS.md",
+      "title": "MarketMonth Commands",
+      "description": "bash",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "content-brain",
+      "path": "project-knowledge/CONTENT_BRAIN.md",
+      "title": "Content Brain",
+      "description": " AI creates structured strategic and creative decisions. Application code controls the workflow, validates boundaries, and compiles provider-specific payloads.",
+      "kind": "canonical",
+      "authority": "canonical",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "current-state",
+      "path": "project-knowledge/CURRENT_STATE.md",
+      "title": "MarketMonth Current State",
+      "description": "What is **actually functional today** — not the long-term vision in PRODUCT.md.",
+      "kind": "canonical",
+      "authority": "canonical",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "data-model",
+      "path": "project-knowledge/DATA_MODEL.md",
+      "title": "Data Model",
+      "description": "Verified Phase-1 persistence (Drizzle + Neon). Expand only when migrations land.",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "data-flows",
+      "path": "project-knowledge/DATA-FLOWS.md",
+      "title": "MarketMonth Data Flows",
+      "description": "- Discovery: website URL → crawl → analyzers → Brand Profile / strategy draft → optional DB persist",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "-template",
+      "path": "project-knowledge/DECISIONS/_template.md",
+      "title": "ADR NNNN — Title",
+      "description": "ADR NNNN — Title",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "proposed",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "0001-knowledge-os",
+      "path": "project-knowledge/DECISIONS/0001-knowledge-os.md",
+      "title": "Establish project-knowledge as SoT",
+      "description": "MarketMonth product and engineering truth lives in `project-knowledge/`. APS holds portable process and pointer stubs only. Discovery MCP serves tools; it does ",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "definition-of-done",
+      "path": "project-knowledge/DEFINITION-OF-DONE.md",
+      "title": "MarketMonth Definition of Done",
+      "description": "A substantial change is done only when:",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "dependency-blockers",
+      "path": "project-knowledge/DEPENDENCY_BLOCKERS.md",
+      "title": "Dependency remediation blockers",
+      "description": "This document records **why** high/critical advisories remain, and any **narrow overrides** that were reviewed. It is intentional that Knowledge OS keeps projec",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "design-system",
+      "path": "project-knowledge/DESIGN-SYSTEM.md",
+      "title": "MarketMonth Design System",
+      "description": "All colors and brand-adjacent tokens come from [`src/app/globals.css`](../src/app/globals.css).",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "external-quality-baseline",
+      "path": "project-knowledge/EXTERNAL_QUALITY_BASELINE.md",
+      "title": "External Quality Baseline",
+      "description": "Maps MarketMonth’s **Internal Engineering Quality Score** to recognized engineering and security practice areas.",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "discovery-engine",
+      "path": "project-knowledge/FEATURES/discovery-engine.md",
+      "title": "Discovery Engine",
+      "description": "LEARN-stage pipeline: website → crawl → brand/SEO/social/competitor signals → Brand Profile + strategy draft.",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "site-seo",
+      "path": "project-knowledge/FEATURES/site-seo.md",
+      "title": "Site SEO Subsystem",
+      "description": "Bounded subsystem for **this product’s** public discoverability (Google + AI crawlers) and recommend-only SEO intelligence.",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "knowledge-changelog",
+      "path": "project-knowledge/KNOWLEDGE_CHANGELOG.md",
+      "title": "Knowledge Changelog",
+      "description": "Meaningful **knowledge** events only (not ordinary code/style commits).",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "known-risks",
+      "path": "project-knowledge/KNOWN-RISKS.md",
+      "title": "MarketMonth Known Risks",
+      "description": "MarketMonth Known Risks",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "product",
+      "path": "project-knowledge/PRODUCT.md",
+      "title": "MarketMonth Product",
+      "description": " **This file is the unequivocal product SoT.",
+      "kind": "canonical",
+      "authority": "canonical",
+      "status": "active",
+      "owner": "product",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "project",
+      "path": "project-knowledge/PROJECT.md",
+      "title": "MarketMonth Project Entry",
+      "description": "MarketMonth** — customer- and industry-agnostic AI marketing OS (Next.js prototype + Discovery LEARN pipeline).",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "protected-areas",
+      "path": "project-knowledge/PROTECTED-AREAS.md",
+      "title": "MarketMonth Protected Areas",
+      "description": "- **`Refrence folder/`** — read-only engineering reference. Never copy host-product doctrine into MarketMonth or `PRODUCT.md`.",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "quality-rubric",
+      "path": "project-knowledge/QUALITY_RUBRIC.md",
+      "title": "Project Quality Rubric",
+      "description": "Rubric version:** see `quality-rules.json` → `rubricVersion` (currently **2.1.0**).",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "readme",
+      "path": "project-knowledge/README.md",
+      "title": "MarketMonth Knowledge System",
+      "description": "This folder is the **living project partner** for MarketMonth: the source of truth for product doctrine, architecture, current implementation status, ownership,",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "current-state-area",
+      "path": "project-knowledge/templates/CURRENT_STATE_AREA.md",
+      "title": "CURRENT_STATE_AREA",
+      "description": "Status: Live | Partial | Prototype | Mocked | Planned | Blocked | Deprecated",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": null,
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "feature",
+      "path": "project-knowledge/templates/FEATURE.md",
+      "title": "FEATURE_NAME",
+      "description": "One paragraph.",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    }
+  ],
+  "ignoredPaths": [
+    "Refrence folder/",
+    "project-knowledge/generated/",
+    "node_modules/"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "supplement-comparison",
+  "brandContext": {
+    "brandName": "Zynava",
+    "domain": "zynava.com",
+    "website": "https://zynava.com",
+    "description": "Free AI-powered supplement search and price-comparison engine.",
+    "audience": "Shoppers comparing supplements before buying",
+    "products": ["Supplement search", "Price comparison"],
+    "services": ["Multi-retailer discovery"],
+    "valueProposition": "Compare supplement prices and formulations in one search",
+    "marketingOpportunity": "Help shoppers compare prices and ingredients before they buy",
+    "contentOpportunities": [
+      "How to compare supplement prices across retailers",
+      "What to check on a supplement label before buying"
+    ],
+    "evidenceById": {},
+    "contextVersion": "fixture-supplement-v1",
+    "source": "fixture"
+  },
+  "selectedTopic": {
+    "topicId": "tc_supp_eval_1",
+    "masterTitle": "How to evaluate Supplement search before buying",
+    "objective": "product_education",
+    "audience": "Shoppers comparing supplements before buying",
+    "audiencePain": "Too many options and unclear first steps",
+    "strategicAngle": "Evaluation guide",
+    "relevanceReasons": ["Product education framing"],
+    "evidenceIds": []
+  },
+  "absentCapability": "lab-certified medical dosing advice",
+  "awkwardMasterTitle": "How Should Buyers Evaluate AI Tools—Before They Commit?"
+}

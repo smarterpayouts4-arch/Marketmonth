@@ -1,0 +1,406 @@
+{
+  "schemaVersion": 1,
+  "title": "Knowledge OS Audit",
+  "evaluatedAt": "2026-07-25T05:10:21.355Z",
+  "auditScope": "MarketMonth Project Knowledge OS — structure, security, independence, MCP, living detection, known risks",
+  "git": {
+    "commitSha": "unavailable",
+    "commitShort": "unavailable",
+    "workingTreeStatus": "unavailable",
+    "gitScope": "parent-repo-outside-project",
+    "gitNote": "MarketMonth is not its own git root; a parent directory owns .git. Commit SHA is intentionally unavailable until MarketMonth is a dedicated repository (or a documented monorepo package with an explicit root policy)."
+  },
+  "knowledgeStructure": {
+    "result": "PASS",
+    "notes": "Adapted to actual tree; no CONTROL_MATRIX.md; cold start remains docs/START_HERE.md",
+    "canonical": [
+      "project-knowledge/PRODUCT.md",
+      "project-knowledge/ARCHITECTURE.md",
+      "project-knowledge/CURRENT_STATE.md"
+    ],
+    "supportingMaintained": "see docs-index.json kind=supporting generated=false",
+    "generated": "project-knowledge/generated/**",
+    "historical": [],
+    "deprecated": [],
+    "orphaned": [],
+    "duplicateAuthorityRisks": [
+      "Soft: CURRENT_STATE vs FEATURES briefs (status vs feature detail)",
+      "Soft: QUALITY_RUBRIC.md vs quality-rules.json (human vs machine)"
+    ]
+  },
+  "canonicalAuthority": {
+    "result": "PASS",
+    "canonicalCount": 3,
+    "scriptsWriteOutsideGenerated": false
+  },
+  "monolithicFiles": {
+    "result": "PASS",
+    "note": "No files ≥500 lines (quality oversized threshold); largest PK script ~261 lines",
+    "reviewed": [
+      {
+        "path": "project-knowledge/scripts/daily-closeout.mjs",
+        "classification": "REVIEW",
+        "reason": "Orchestrates probes + inline daily report formatting"
+      },
+      {
+        "path": "src/db/schema.ts",
+        "classification": "REFACTOR",
+        "reason": "Deep engine type import — fixed to barrel"
+      },
+      {
+        "path": "src/app/(app)/brand/page.tsx",
+        "classification": "REFACTOR",
+        "reason": "Deep brand import — fixed to public barrel"
+      }
+    ]
+  },
+  "mixedResponsibility": {
+    "result": "READY WITH WARNINGS",
+    "note": "daily-closeout still mixes orchestration and report body; no split required this pass"
+  },
+  "componentIndependence": {
+    "result": "PASS",
+    "uiImportsEngine": false,
+    "siteSeoOwned": true,
+    "unownedCount": 0,
+    "publicApiBypassesFixed": [
+      "src/db/schema.ts → @/engine/discovery",
+      "brand/page → @/components/brand"
+    ]
+  },
+  "secretLeak": {
+    "result": "PASS",
+    "notes": "Generated reports scanned for value patterns; AI allowlist strict; MCP registry rejects .env; .gitleaks.toml present",
+    "valuesFoundInReports": false
+  },
+  "documentationCompleteness": {
+    "result": "PASS",
+    "knowledgeReadmeExpanded": true,
+    "rootReadmeLinked": true
+  },
+  "mcpReadiness": {
+    "result": "PASS",
+    "soleDocsIndex": "project-knowledge/generated/indexes/docs-index.json",
+    "docsIndexHasIds": true,
+    "schemaVersion": 1
+  },
+  "staleContentDetection": {
+    "result": "PASS",
+    "visibility": {
+      "knowledge:update": "regenerates maps/indexes",
+      "knowledge:sync": "update + guardian warnings",
+      "knowledge:check": "stale compare + hard fail",
+      "quality:check": "stale quality artifacts + probes",
+      "daily:closeout": "full gate set",
+      "CI": "knowledge-check.yml"
+    },
+    "continuousWatch": false
+  },
+  "deadAndDuplicateFiles": {
+    "result": "PASS",
+    "deleted": [],
+    "referenceOnlyNoise": [
+      "Refrence folder/"
+    ]
+  },
+  "scriptsAndHooks": {
+    "result": "PASS",
+    "ciWorkflow": ".github/workflows/knowledge-check.yml",
+    "dependabot": ".github/dependabot.yml",
+    "stopHook": ".cursor/hooks/aps-stop.mjs"
+  },
+  "dependencyVulnerabilitiesHigh": [
+    {
+      "package": "@eslint/config-array",
+      "severity": "high",
+      "isDirect": false,
+      "range": "<=0.22.0",
+      "via": [
+        "minimatch"
+      ],
+      "fixAvailable": {
+        "name": "eslint",
+        "version": "10.8.0",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "safeRemediationPath": "Requires reviewed major upgrade — do not npm audit fix --force"
+    },
+    {
+      "package": "@eslint/eslintrc",
+      "severity": "high",
+      "isDirect": false,
+      "range": "0.0.1 || >=0.1.1",
+      "via": [
+        "minimatch"
+      ],
+      "fixAvailable": {
+        "name": "eslint",
+        "version": "10.8.0",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "safeRemediationPath": "Requires reviewed major upgrade — do not npm audit fix --force"
+    },
+    {
+      "package": "brace-expansion",
+      "severity": "high",
+      "isDirect": false,
+      "range": "<=5.0.7",
+      "via": [
+        "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash"
+      ],
+      "fixAvailable": {
+        "name": "eslint",
+        "version": "10.8.0",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "safeRemediationPath": "Requires reviewed major upgrade — do not npm audit fix --force"
+    },
+    {
+      "package": "eslint",
+      "severity": "high",
+      "isDirect": true,
+      "range": "0.12.0 - 2.0.0-rc.1 || 4.1.0 - 10.0.0-rc.2",
+      "via": [
+        "@eslint/config-array",
+        "@eslint/eslintrc",
+        "minimatch"
+      ],
+      "fixAvailable": {
+        "name": "eslint",
+        "version": "10.8.0",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "safeRemediationPath": "Requires reviewed major upgrade — do not npm audit fix --force"
+    },
+    {
+      "package": "eslint-config-next",
+      "severity": "high",
+      "isDirect": true,
+      "range": ">=10.2.1-canary.2",
+      "via": [
+        "eslint-plugin-import",
+        "eslint-plugin-jsx-a11y",
+        "eslint-plugin-react"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-next",
+        "version": "0.2.4",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "safeRemediationPath": "Requires reviewed major upgrade — do not npm audit fix --force"
+    },
+    {
+      "package": "eslint-plugin-import",
+      "severity": "high",
+      "isDirect": false,
+      "range": ">=1.15.0",
+      "via": [
+        "minimatch"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-next",
+        "version": "0.2.4",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "safeRemediationPath": "Requires reviewed major upgrade — do not npm audit fix --force"
+    },
+    {
+      "package": "eslint-plugin-jsx-a11y",
+      "severity": "high",
+      "isDirect": false,
+      "range": ">=6.5.0",
+      "via": [
+        "minimatch"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-next",
+        "version": "0.2.4",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "safeRemediationPath": "Requires reviewed major upgrade — do not npm audit fix --force"
+    },
+    {
+      "package": "eslint-plugin-react",
+      "severity": "high",
+      "isDirect": false,
+      "range": ">=7.23.0",
+      "via": [
+        "minimatch"
+      ],
+      "fixAvailable": true,
+      "breakingUpgradeLikely": false,
+      "safeRemediationPath": "Non-major fix may be available — review changelog then upgrade"
+    },
+    {
+      "package": "minimatch",
+      "severity": "high",
+      "isDirect": false,
+      "range": "2.0.0 - 10.0.2",
+      "via": [
+        "brace-expansion"
+      ],
+      "fixAvailable": {
+        "name": "eslint",
+        "version": "10.8.0",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "safeRemediationPath": "Requires reviewed major upgrade — do not npm audit fix --force"
+    },
+    {
+      "package": "next",
+      "severity": "high",
+      "isDirect": true,
+      "range": "9.3.4-canary.0 - 16.3.0-preview.7",
+      "via": [
+        "postcss",
+        "sharp"
+      ],
+      "fixAvailable": {
+        "name": "next",
+        "version": "9.3.3",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "safeRemediationPath": "Requires reviewed major upgrade — do not npm audit fix --force"
+    },
+    {
+      "package": "postcss",
+      "severity": "high",
+      "isDirect": false,
+      "range": "<=8.5.17",
+      "via": [
+        "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output",
+        "PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments",
+        "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure"
+      ],
+      "fixAvailable": {
+        "name": "next",
+        "version": "9.3.3",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "safeRemediationPath": "Requires reviewed major upgrade — do not npm audit fix --force"
+    },
+    {
+      "package": "sharp",
+      "severity": "high",
+      "isDirect": false,
+      "range": "<0.35.0",
+      "via": [
+        "sharp inherited vulnerabilities in libvips: CVE-2026-33327, CVE-2026-33328, CVE-2026-35590, CVE-2026-35591"
+      ],
+      "fixAvailable": {
+        "name": "next",
+        "version": "9.3.3",
+        "isSemVerMajor": true
+      },
+      "breakingUpgradeLikely": true,
+      "safeRemediationPath": "Requires reviewed major upgrade — do not npm audit fix --force"
+    }
+  ],
+  "knownUnresolvedRisks": [
+    {
+      "id": "dep-vulns-high",
+      "severity": "high",
+      "summary": "12 high/critical advisories remain; audit:deps exit=1. No force-fix applied. See dependencyVulnerabilitiesHigh."
+    },
+    {
+      "id": "typecheck-flake",
+      "severity": "medium",
+      "summary": "Prior daily:closeout observed typecheck exit 2 while isolated quality:update passed. Re-run twice this audit: both exit 0. Root cause NOT EVALUATED (possible concurrent generated-file writers / resource pressure during closeout)."
+    },
+    {
+      "id": "git-parent-scope",
+      "severity": "low",
+      "summary": "MarketMonth is not its own git root; a parent directory owns .git. Commit SHA is intentionally unavailable until MarketMonth is a dedicated repository (or a documented monorepo package with an explicit root policy)."
+    }
+  ],
+  "internalScore": {
+    "scoreOutOf10": 9.9,
+    "formula": "99/100 = 9.9/10",
+    "rubricVersion": "2.1.0"
+  },
+  "externalBaseline": {
+    "coveragePercent": 55,
+    "status": "Limited",
+    "certification": "None"
+  },
+  "aiAudit": {
+    "status": "completed",
+    "advisoryOnly": true,
+    "affectsOfficialScore": false
+  },
+  "commandResults": [
+    {
+      "script": "typecheck",
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "script": "lint",
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "script": "test",
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "script": "knowledge:update",
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "script": "knowledge:check",
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "script": "quality:update",
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "script": "quality:check",
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "script": "audit:deps",
+      "exitCode": 1,
+      "ok": false
+    },
+    {
+      "script": "ai:audit",
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "script": "project:audit",
+      "exitCode": 1,
+      "ok": false
+    },
+    {
+      "script": "mcp:test",
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "script": "daily:closeout",
+      "exitCode": 0,
+      "ok": true
+    }
+  ],
+  "finalReadinessStatus": "NOT READY",
+  "honestWording": "The MarketMonth Knowledge OS is structurally verified and operational within its documented scope. This does not constitute external certification, and any unresolved security, reliability, or coverage findings remain explicitly listed."
+}
+

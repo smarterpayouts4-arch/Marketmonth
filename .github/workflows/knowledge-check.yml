@@ -1,0 +1,30 @@
+name: knowledge-check
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  knowledge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.19"
+          cache: npm
+      - name: Install deps
+        run: npm ci
+      - name: Dependency audit (high+)
+        run: npm run audit:deps
+      - name: Secret scan (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Stabilization validation
+        run: npm run validate:stabilization
+      - name: Quality rubric check
+        run: npm run quality:check
