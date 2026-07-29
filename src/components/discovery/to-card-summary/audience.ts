@@ -39,7 +39,7 @@ export function mapAudience({
     ? `They already meet the brand on ${summaryJoin(activeChannels)}. Lead with proof about ${leadOffer}; treat undetected links as unverified, not proven gaps (${summaryJoin(
         missedChannels.length ? missedChannels : missedArticlePlatforms
       ) || "none listed"}).`
-    : `Website social links were not detected. First win: lead with proof about ${leadOffer}, then choose formats—not a channel checklist.`;
+    : `Website social links were not detected. First win: lead with proof about ${leadOffer}, then choose formats, not a channel checklist.`;
 
   const audience = previewField(
     profile.audience || "Customers in this category",

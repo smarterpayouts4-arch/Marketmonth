@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { MARKETING_FOCUS_VALUES } from "@/brain/content/marketing-focus";
+import { TOPIC_CATEGORY_IDS } from "@/brain/content/topic-category";
 import { normalizeInputTopic } from "@/brain/content/normalize-topic";
 
 /** Lean contract: Lab + product + history share one normalized topic shape. */
@@ -11,7 +11,7 @@ export const normalizedTopicSchema = z.object({
   originalInput: z.string(),
   normalizedTitle: z.string().min(1),
   audience: z.string().optional(),
-  objective: z.enum(MARKETING_FOCUS_VALUES).optional(),
+  objective: z.enum(TOPIC_CATEGORY_IDS).optional(),
   productOrSubject: z.string().optional(),
   constraints: z.array(z.string()).default([]),
   completeness: z.enum(["complete", "partial", "insufficient"]),
@@ -23,7 +23,7 @@ export type NormalizedTopic = z.infer<typeof normalizedTopicSchema>;
 export function buildNormalizedTopic(input: {
   originalInput: string;
   audience?: string;
-  objective?: (typeof MARKETING_FOCUS_VALUES)[number];
+  objective?: (typeof TOPIC_CATEGORY_IDS)[number];
   productOrSubject?: string;
   constraints?: string[];
   completeness?: NormalizedTopic["completeness"];

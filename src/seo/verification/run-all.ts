@@ -1,4 +1,5 @@
 import { verifyBrandConsistency } from "./verify-brand-consistency";
+import { verifyClaimParity } from "./verify-claim-parity";
 import { verifyCrawlFiles } from "./verify-crawl-files";
 import { verifyRenderedMetadata } from "./verify-rendered-metadata";
 
@@ -6,6 +7,7 @@ function main() {
   const brand = verifyBrandConsistency();
   const crawl = verifyCrawlFiles();
   const meta = verifyRenderedMetadata();
+  const claims = verifyClaimParity();
 
   let failed = false;
   if (!brand.ok) {
@@ -32,6 +34,14 @@ function main() {
     for (const e of meta.errors) console.error(`  - ${e}`);
   } else {
     console.log("ok rendered metadata");
+  }
+
+  if (!claims.ok) {
+    failed = true;
+    console.error("Claim parity failed:");
+    for (const e of claims.errors) console.error(`  - ${e}`);
+  } else {
+    console.log("ok claim parity");
   }
 
   if (failed) process.exit(1);

@@ -7,7 +7,7 @@ export function stripDashes(text: string): string {
     .trim();
 }
 
-/** Legacy hard clamp — prefer truncateAtSentence for body copy. */
+/** Legacy hard clamp - prefer truncateAtSentence for body copy. */
 export function clamp(text: string, max: number): string {
   const cleaned = stripDashes(text);
   if (!cleaned) return "";

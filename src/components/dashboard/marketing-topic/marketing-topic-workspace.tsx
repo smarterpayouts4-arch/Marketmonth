@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 
 import { ContentVariationGrid } from "./content-variation-grid";
 import {
@@ -36,7 +36,7 @@ export function MarketingTopicWorkspace({
   const [contextState, setContextState] = useState<ExtraContextUiState>(
     emptyExtraContextUi
   );
-  const [marketingFocus, setMarketingFocus] = useState<MarketingFocus | null>(
+  const [topicCategory, setTopicCategoryId] = useState<TopicCategoryId | null>(
     null
   );
 
@@ -68,7 +68,7 @@ export function MarketingTopicWorkspace({
   async function handleGenerate() {
     setPendingMode("manual");
     try {
-      await createFromTopic(contextState, marketingFocus);
+      await createFromTopic(contextState, topicCategory);
     } finally {
       setPendingMode(null);
     }
@@ -77,7 +77,7 @@ export function MarketingTopicWorkspace({
   async function handleAutoGenerate() {
     setPendingMode("automatic");
     try {
-      await autoGenerate(contextState, marketingFocus);
+      await autoGenerate(contextState, topicCategory);
     } finally {
       setPendingMode(null);
     }
@@ -86,7 +86,7 @@ export function MarketingTopicWorkspace({
   async function handleRegenerate() {
     setPendingMode("manual");
     try {
-      await regenerateIdeas(contextState, marketingFocus);
+      await regenerateIdeas(contextState, topicCategory);
     } finally {
       setPendingMode(null);
     }
@@ -97,7 +97,7 @@ export function MarketingTopicWorkspace({
     const extraSummary =
       buildExtraContextPayload(contextState)?.text.trim() || undefined;
     const saved = saveSelectedDirection(variationId, {
-      marketingFocus,
+      topicCategory,
       extraContextSummary: extraSummary,
     });
     if (saved) {
@@ -142,8 +142,8 @@ export function MarketingTopicWorkspace({
           loading={loading}
           generateDisabled={!canGenerate}
           compact={hasDirections}
-          marketingFocus={marketingFocus}
-          onMarketingFocusChange={setMarketingFocus}
+          topicCategory={topicCategory}
+          onTopicCategoryIdChange={setTopicCategoryId}
           contextExpanded={contextExpanded}
           onContextExpandedChange={setContextExpanded}
           contextState={contextState}

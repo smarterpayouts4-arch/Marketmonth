@@ -8,7 +8,7 @@ import type {
   GenerateContentDirectionsInput,
   MasterTopic,
 } from "../types";
-import type { MarketingFocus } from "../marketing-focus";
+import type { TopicCategoryId } from "../topic-category";
 import { blockedProvenance } from "./provenance";
 import type { GenerateContentDirectionsBundle } from "./types";
 import { buildAutomaticMasterFromCandidates } from "./build-automatic-master-from-candidates";
@@ -33,7 +33,7 @@ export function buildMasterTopicStage(input: {
   lockedMasterTopic?: string;
   topic?: string;
   recentMasterTopics?: string[];
-  marketingFocus?: MarketingFocus;
+  topicCategory?: TopicCategoryId;
   warnings: string[];
 }): MasterTopicStageResult {
   const {
@@ -44,7 +44,7 @@ export function buildMasterTopicStage(input: {
     lockedMasterTopic,
     topic,
     recentMasterTopics,
-    marketingFocus,
+    topicCategory,
     warnings,
   } = input;
 
@@ -182,7 +182,7 @@ export function buildMasterTopicStage(input: {
   const masterTopic = buildAutomaticMasterFromCandidates(
     context,
     recentMasterTopics ?? [],
-    marketingFocus ?? "product_education"
+    topicCategory ?? "product_education"
   );
   if (!masterTopic) {
     return {

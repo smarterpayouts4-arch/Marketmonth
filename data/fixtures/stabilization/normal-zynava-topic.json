@@ -4,6 +4,6 @@
   "domain": "zynava.com",
   "mode": "manual",
   "topic": "Does magnesium actually help with sleep?",
-  "marketingFocus": "product_education",
+  "topicCategory": "product_education",
   "notes": "Canonical Zynava educational topic used in e2e"
 }

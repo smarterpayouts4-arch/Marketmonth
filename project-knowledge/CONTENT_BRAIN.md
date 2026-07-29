@@ -3,7 +3,7 @@ title: Content Brain
 status: active
 authority: canonical
 owner: engineering
-last_verified: 2026-07-28
+last_verified: 2026-07-29
 related_paths:
   - src/brain/**
   - src/app/api/brain/**
@@ -153,17 +153,20 @@ Exactly six `ContentVariation`s under one `masterTopic` / `masterTitle` (byte-st
 
 ## Idea Lab
 
-Dev-only sandbox. Topic candidates: see [`IDEA_LAB_TOPIC_STRATEGY.md`](./IDEA_LAB_TOPIC_STRATEGY.md). Directions: always `deterministic-v1` via shared `generateAndRecordContentDirections`. Structured handoff: [`IDEA_LAB_DIRECTION_HARDENING.md`](./IDEA_LAB_DIRECTION_HARDENING.md), ADR 0003.
+Dev-only sandbox. Topic candidates: four **TopicCategoryId** chips (`customer_questions`, `product_education`, `trust_proof`, `offers_conversion`) per ADR 0004 — see [`IDEA_LAB_TOPIC_STRATEGY.md`](./IDEA_LAB_TOPIC_STRATEGY.md). Stage 1 tries optional LLM candidates (`topicLlmCandidates` / `gpt-5.4-nano`) with shared OpenAI client (retry, circuit breaker, cost caps), strict `json_schema`, one repair retry, rejection taxonomy, then deterministic fallback. Prompt A/B by version and optional LLM-as-judge sampling are advisory quality ops (P3.1). Directions: always `deterministic-v1` via shared `generateAndRecordContentDirections`. Structured handoff: [`IDEA_LAB_DIRECTION_HARDENING.md`](./IDEA_LAB_DIRECTION_HARDENING.md), ADR 0003.
 
-**Topic-title-hook:** deterministic templates by default. `TOPIC_TITLE_HOOK_PROVIDER=openai` is **remapped to deterministic** (OpenAI path not live). Title polish / hook-enrichment OpenAI are separate opt-in flags.
+**Topic-title-hook:** deterministic templates by default; shell families are **subject-kind-conditioned** (retail buy/check shells only for buyer-comparable kinds). `TOPIC_TITLE_HOOK_PROVIDER=openai` is **remapped to deterministic** (OpenAI path not live). Hook-enrichment OpenAI is a separate opt-in flag (`HOOK_ENRICHMENT_PROVIDER=openai`).
+
+**Two-generator policy:** Idea Lab = LLM + deterministic fallback. Product Marketing Topic / `content-directions` = deterministic `generateTopicCandidates` only. Do not claim they are the same pipeline. Full remediation record: [`docs/audits/topic-generator-architecture-health-audit.md`](../docs/audits/topic-generator-architecture-health-audit.md).
 
 ## APIs
 
 | Route | Role |
 |-------|------|
-| `POST /api/brain/content-directions` | → `generateAndRecordContentDirections` |
-| `POST /api/brain/topic-generation` | History status |
-| `POST /api/brain/content-atom` | → `buildContentAtomFromHandoff` |
+| `POST /api/brain/content-directions` | → `generateAndRecordContentDirections` (session + rate limit + tenant; may persist `content_run_traces`) |
+| `POST /api/brain/topic-candidates` | Deterministic topic candidates (session + rate limit + tenant; product path) |
+| `POST /api/brain/topic-generation` | History status (session + rate limit + tenant; prod store = `topic_generations`) |
+| `POST /api/brain/content-atom` | → `buildContentAtomFromHandoff` (session + rate limit + tenant) |
 | `POST /api/brain/content/production` | → `produceContentFromHandoff` |
 | `POST/GET /api/brain/session` | Dev handoff by `generationId` |
 
@@ -205,5 +208,5 @@ Runs typecheck, lint, tests (incl. Content Brain regressions), brain cycle check
 - Final package: [`docs/ai/content-brain-stabilization-final.md`](../docs/ai/content-brain-stabilization-final.md)
 - MCP matrix: [`docs/ai/mcp-capability-matrix.md`](../docs/ai/mcp-capability-matrix.md)
 - Glossary: [`DOMAIN_GLOSSARY.md`](./DOMAIN_GLOSSARY.md)
-- ADR 0002 / 0003 under `DECISIONS/`
+- ADR 0002 / 0003 / 0004 under `DECISIONS/`
 - Active brand spelling: **Zynava** / `https://zynava.com`

@@ -177,7 +177,7 @@ flowchart TD
 
 **Measurement (ClearFlow Plumbing):**
 
-- Brain path leaks: **0** across objectives (`brand_awareness`, `value_proposition`, `product_education`, `trust_authority`; `decision_support` insufficient_context).
+- Brain path leaks: **0** across categories (`customer_questions`, `product_education`, `trust_proof`, `offers_conversion`; legacy `MarketingFocus` values migrate via `parseTopicCategory`).
 - Discovery opportunities post-fix: catalog-named generic templates only (“What to know about … before you buy”).
 - Residual quality issues: English scaffolding still generic (“label check”, “comparing …”); not industry leakage but can feel template-y. **Inferred** as P2 polish.
 

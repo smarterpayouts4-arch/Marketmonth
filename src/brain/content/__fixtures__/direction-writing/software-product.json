@@ -21,11 +21,11 @@
   "selectedTopic": {
     "topicId": "tc_soft_retry_1",
     "masterTitle": "How to debug failed webhook deliveries",
-    "objective": "decision_support",
+    "objective": "customer_questions",
     "audience": "Backend engineers owning webhook reliability",
     "audiencePain": "Silent failures waste engineering hours",
     "strategicAngle": "Decision criteria",
-    "relevanceReasons": ["Decision support framing"],
+    "relevanceReasons": ["Customer questions framing"],
     "evidenceIds": []
   },
   "absentCapability": "zero-latency global CDN acceleration",

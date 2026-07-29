@@ -11,7 +11,7 @@ type ContentFormatCardProps = {
   className?: string;
 };
 
-/** Small decorative upward trend line — reinforces "distributing now"
+/** Small decorative upward trend line - reinforces "distributing now"
  * without implying a specific real value. */
 function TrendSquiggle({ className }: { className?: string }) {
   return (
@@ -33,7 +33,7 @@ function TrendSquiggle({ className }: { className?: string }) {
 }
 
 /** One illustrative output tile in the Content Flow diagram. All five share
- * this component and this card's fixed internal rhythm — a CSS Grid row
+ * this component and this card's fixed internal rhythm - a CSS Grid row
  * stretches them to equal height, so nothing here needs manual sizing. */
 export function ContentFormatCard({
   format,

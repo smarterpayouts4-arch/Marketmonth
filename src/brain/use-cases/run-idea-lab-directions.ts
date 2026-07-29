@@ -67,7 +67,7 @@ export async function runIdeaLabDirections(
     brandCore: loaded.value.brandCore,
     identity: loaded.value.identity,
     selectedTopicContext: gated.value.selectedTopicContext,
-    marketingFocus: gated.value.marketingFocus,
+    topicCategory: gated.value.topicCategory,
     selectedCandidateId: input.selectedCandidateId,
     fixturePath: loaded.value.fixturePath,
     hash: loaded.value.hash,

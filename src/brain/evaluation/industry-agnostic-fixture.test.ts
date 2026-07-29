@@ -10,8 +10,8 @@ import { describe, it } from "node:test";
 
 import { parseFixtureCsv } from "@/brain/content/repository/parse-fixture-csv";
 import { compileBrandCore } from "@/brain/core/compile-brand-core";
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
-import { MARKETING_FOCUS_VALUES } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
+import { TOPIC_CATEGORY_IDS } from "@/brain/content/topic-category";
 
 import { contentOpportunitiesForCatalog } from "@/engine/discovery/extract-catalog-names/content-opportunities";
 
@@ -25,8 +25,15 @@ const FIXTURE_RELATIVE =
 const LEAKAGE_RE =
   /\b(supplement|supplements|vitamin|vitamins|magnesium|glycinate|price per serving|softgel|gummies|bioavailab|nutrient|dosage|capsule|methylcobalamin|cyanocobalamin|ashwagandha|creatine|omega-?3|probiotic)\b/i;
 
+/**
+ * Retail shopping shells that must not frame titles for a non-retail brand
+ * unless grounded in a comparison attribute (ClearFlow has none).
+ */
+const RETAIL_SHELL_RE =
+  /\b(label check|check the label|before you buy|the longer you shop|serving size|comparison trap before you buy)\b/i;
+
 type LeakHit = {
-  objective: MarketingFocus;
+  objective: TopicCategoryId;
   where: "title" | "audiencePain" | "strategicAngle" | "relevanceReason" | "subjectLabel";
   text: string;
   match: string;
@@ -61,7 +68,7 @@ function loadClearflowContext() {
 }
 
 function collectLeaks(
-  objective: MarketingFocus,
+  objective: TopicCategoryId,
   result: ReturnType<typeof generateTopicCandidates>
 ): LeakHit[] {
   const hits: LeakHit[] = [];
@@ -131,7 +138,7 @@ describe("industry-agnostic clearflow fixture measurement", () => {
       report.subjectKinds[s.kind] = (report.subjectKinds[s.kind] ?? 0) + 1;
     }
 
-    for (const objective of MARKETING_FOCUS_VALUES) {
+    for (const objective of TOPIC_CATEGORY_IDS) {
       const result = generateTopicCandidates({
         context,
         objective,
@@ -204,6 +211,20 @@ describe("industry-agnostic clearflow fixture measurement", () => {
       titleLeaks.length,
       0,
       `titles must not mention supplement industry terms: ${JSON.stringify(titleLeaks)}`
+    );
+
+    // Retail-shell gate: deterministic title-hook shells must stay
+    // industry-neutral for a plumbing brand with no comparison attributes.
+    const retailShellLeaks = Object.entries(report.byObjective).flatMap(
+      ([objective, o]) =>
+        o.titles
+          .filter((t) => RETAIL_SHELL_RE.test(t))
+          .map((t) => ({ objective, title: t }))
+    );
+    assert.equal(
+      retailShellLeaks.length,
+      0,
+      `titles must not use retail shopping shells: ${JSON.stringify(retailShellLeaks)}`
     );
 
     // After de-hardcode: discovery must not inject industry vocabulary.

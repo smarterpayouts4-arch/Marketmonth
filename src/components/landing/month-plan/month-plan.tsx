@@ -23,7 +23,7 @@ type MonthPlanProps = {
 };
 
 /**
- * Real product interface for the monthly content roadmap — replaces the
+ * Real product interface for the monthly content roadmap - replaces the
  * former demo-theater panel. Keeps the same Play/Pause affordance: pressing
  * Play auto-advances the selected week across the roadmap; clicking any
  * week card selects it directly and overrides auto-advance until Play is
@@ -56,14 +56,14 @@ export function MonthPlan({ playing, visibleWeeks, onToggle }: MonthPlanProps) {
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="font-display text-lg font-semibold tracking-[-0.02em] text-foreground">
-                Your August Marketing Month
+                Example August Marketing Month
               </h3>
               <span className="rounded-full border border-border bg-subtle px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-text-muted">
                 Illustrative demo month
               </span>
             </div>
             <p className="mt-1 text-xs text-text-secondary">
-              Your monthly content roadmap at a glance.
+              Illustrative roadmap concept - not a generated customer plan.
             </p>
           </div>
           <Button

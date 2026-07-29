@@ -114,13 +114,13 @@ describe("Idea Lab use case (deterministic-v1)", () => {
     assert.equal(labHistoryRecordCount(), before);
   });
 
-  it("candidates: value_proposition succeeds without history write (honesty over padding)", async () => {
+  it("candidates: offers_conversion succeeds without history write (honesty over padding)", async () => {
     resetIdeaLabTopicHistory();
     assert.equal(labHistoryRecordCount(), 0);
 
     const outcome = await runIdeaLabTopicCandidates({
       companyId: "zynava.com",
-      marketingFocus: "value_proposition",
+      topicCategory: "offers_conversion",
     });
     assert.equal(outcome.ok, true);
     if (!outcome.ok) return;
@@ -138,13 +138,13 @@ describe("Idea Lab use case (deterministic-v1)", () => {
     if (result.generation.completeness === "complete") {
       assert.equal(result.candidates.length, 6);
     }
-    assert.equal(result.objective, "value_proposition");
+    assert.equal(result.objective, "offers_conversion");
     assert.equal(result.candidates[0].recommended, true);
     assert.equal(result.candidates[0].rank, 1);
     for (const [i, c] of result.candidates.entries()) {
       assert.equal(c.rank, i + 1);
       assert.ok(c.title.trim().length > 0);
-      assert.equal(c.objective, "value_proposition");
+      assert.equal(c.objective, "offers_conversion");
       assert.equal(c.scoreVersion, "topic-candidate-score-v2");
       assert.equal(/marketing os/i.test(c.title), false);
       assert.equal(/clarify lead offer/i.test(c.title), false);
@@ -162,7 +162,7 @@ describe("Idea Lab use case (deterministic-v1)", () => {
     resetIdeaLabTopicHistory();
     const edu = await runIdeaLabTopicCandidates({
       companyId: "zynava.com",
-      marketingFocus: "product_education",
+      topicCategory: "product_education",
     });
     assert.equal(edu.ok, true);
     if (!edu.ok) return;
@@ -183,14 +183,14 @@ describe("Idea Lab use case (deterministic-v1)", () => {
     }
   });
 
-  it("product_education and value_proposition yield different topic families", async () => {
+  it("product_education and offers_conversion yield different topic families", async () => {
     const edu = await runIdeaLabTopicCandidates({
       companyId: "zynava.com",
-      marketingFocus: "product_education",
+      topicCategory: "product_education",
     });
     const val = await runIdeaLabTopicCandidates({
       companyId: "zynava.com",
-      marketingFocus: "value_proposition",
+      topicCategory: "offers_conversion",
     });
     assert.equal(edu.ok, true);
     assert.equal(val.ok, true);
@@ -208,7 +208,7 @@ describe("Idea Lab use case (deterministic-v1)", () => {
     resetIdeaLabTopicHistory();
     const cand = await runIdeaLabTopicCandidates({
       companyId: "zynava.com",
-      marketingFocus: "product_education",
+      topicCategory: "product_education",
     });
     assert.equal(cand.ok, true);
     if (!cand.ok) return;
@@ -218,7 +218,7 @@ describe("Idea Lab use case (deterministic-v1)", () => {
     const run = await runIdeaLabDirections({
       companyId: "zynava.com",
       topicMode: "manual",
-      marketingFocus: "product_education",
+      topicCategory: "product_education",
       selectedTopicContext: {
         topicId: selected.topicId,
         masterTitle: selected.title,
@@ -305,7 +305,7 @@ describe("Idea Lab use case (deterministic-v1)", () => {
         companyId: "zynava.com",
         topicMode: "manual",
         manualTopic: "Seed Lab directions topic",
-        marketingFocus: "brand_awareness",
+        topicCategory: "offers_conversion",
       });
       assert.equal(seed.generationSucceeded, true);
     }
@@ -316,7 +316,7 @@ describe("Idea Lab use case (deterministic-v1)", () => {
       companyId: "zynava.com",
       topicMode: "manual",
       manualTopic: "Second Lab directions topic for novelty",
-      marketingFocus: "brand_awareness",
+      topicCategory: "offers_conversion",
     });
     assert.equal(run.input.labHistoryRecordCountBefore, beforeCount);
     assert.equal(run.input.historyRepositoryPath, getIdeaLabHistoryPath());
@@ -356,7 +356,7 @@ describe("Idea Lab use case (deterministic-v1)", () => {
       companyId: "zynava.com",
       topicMode: "manual",
       manualTopic: "Any topic",
-      marketingFocus: "product_education",
+      topicCategory: "product_education",
       fixturePath: badPath,
     });
     assert.equal(run.generationSucceeded, false);

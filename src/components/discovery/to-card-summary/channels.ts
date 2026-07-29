@@ -1,6 +1,7 @@
 import type { BrandProfileView } from "@/components/discovery/types";
+import { platformDisplayName } from "@/lib/discovery/platform-names";
 
-import { ARTICLE_PLATFORM_HINTS, META_VISIBLE, PLATFORM_LABELS } from "./limits";
+import { ARTICLE_PLATFORM_HINTS, META_VISIBLE } from "./limits";
 
 export type ChannelsMapped = {
   activeChannels: string[];
@@ -29,11 +30,11 @@ function detectArticleMentions(profile: BrandProfileView): Set<string> {
 export function mapChannels(profile: BrandProfileView): ChannelsMapped {
   const activeChannelsFull = profile.socialProfiles
     .filter((s) => s.status === "present")
-    .map((s) => PLATFORM_LABELS[s.platform] ?? s.platform);
+    .map((s) => platformDisplayName(s.platform));
 
   const missedChannelsFull = profile.socialProfiles
     .filter((s) => s.status === "missing")
-    .map((s) => PLATFORM_LABELS[s.platform] ?? s.platform);
+    .map((s) => platformDisplayName(s.platform));
 
   const presentArticles = detectArticleMentions(profile);
   const missedArticlePlatformsFull = ARTICLE_PLATFORM_HINTS.filter(

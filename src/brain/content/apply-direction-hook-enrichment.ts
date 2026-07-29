@@ -4,7 +4,7 @@ import {
   type HookEnrichmentApplyMeta,
   type HookEnrichmentProviderUsed,
 } from "./hook-enrichment";
-import type { MarketingFocus } from "./marketing-focus";
+import type { TopicCategoryId } from "./topic-category";
 import type { ContentBrainContext, ContentVariation } from "./types";
 
 export type DirectionHookEnrichmentOutcome = {
@@ -34,7 +34,7 @@ export async function applyDirectionHookEnrichment(args: {
     ContentVariation,
   ];
   lockedMasterTitle: string;
-  objective: MarketingFocus;
+  objective: TopicCategoryId;
   context: ContentBrainContext;
   selectedTopicContext?: SelectedTopicContext;
   provider?: HookEnrichmentProviderUsed | "auto";

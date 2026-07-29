@@ -4,7 +4,7 @@ import type {
   DirectionWritingContext,
   SelectedTopicContext,
 } from "../direction-writing-context";
-import type { MarketingFocus } from "../marketing-focus";
+import type { TopicCategoryId } from "../topic-category";
 import type {
   ContentBrainContext,
   ContentVariation,
@@ -26,7 +26,7 @@ export type DirectionsProviderRequest = {
   context: ContentBrainContext;
   mode: "automatic" | "manual";
   masterTopic: MasterTopic;
-  marketingFocus?: MarketingFocus;
+  topicCategory?: TopicCategoryId;
   priorities?: string[];
   /** Structured Lab/product handoff — preferred over title-only meaning. */
   selectedTopicContext?: SelectedTopicContext;

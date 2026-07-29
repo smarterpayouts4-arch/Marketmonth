@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 import {
-  MARKETING_FOCUS_VALUES,
-  type MarketingFocus,
-} from "./marketing-focus";
+  TOPIC_CATEGORY_IDS,
+  type TopicCategoryId,
+} from "./topic-category";
 import type { ContentBrainContext } from "./types";
 
 export const WRITING_CONTEXT_VERSION =
@@ -15,7 +15,6 @@ export const DIRECTIONS_GENERATOR_VERSION =
 export type ObjectiveFramingStrategy =
   | "education_process"
   | "value_differentiation"
-  | "awareness_positioning"
   | "decision_criteria"
   | "trust_credibility";
 
@@ -37,7 +36,7 @@ export type DerivedLabel<T = string> = {
 export type SelectedTopicContext = {
   topicId: string;
   masterTitle: string;
-  objective: MarketingFocus;
+  objective: TopicCategoryId;
   audience?: string;
   audiencePain?: string;
   strategicAngle?: string;
@@ -55,7 +54,7 @@ export type DirectionWritingContext = {
   offerLabel: DerivedLabel;
   audiencePain?: DerivedLabel;
   valuePromise?: DerivedLabel;
-  objective: MarketingFocus;
+  objective: TopicCategoryId;
   framingStrategy: ObjectiveFramingStrategy;
 };
 
@@ -65,7 +64,7 @@ export const selectedTopicContextSchema = z.object({
     (value) => value.trim().length > 0,
     "Master title is required"
   ),
-  objective: z.enum(MARKETING_FOCUS_VALUES),
+  objective: z.enum(TOPIC_CATEGORY_IDS),
   audience: z.string().optional(),
   audiencePain: z.string().optional(),
   strategicAngle: z.string().optional(),
@@ -75,18 +74,16 @@ export const selectedTopicContextSchema = z.object({
 });
 
 export function framingStrategyForObjective(
-  objective: MarketingFocus
+  objective: TopicCategoryId
 ): ObjectiveFramingStrategy {
   switch (objective) {
     case "product_education":
       return "education_process";
-    case "value_proposition":
+    case "offers_conversion":
       return "value_differentiation";
-    case "brand_awareness":
-      return "awareness_positioning";
-    case "decision_support":
+    case "customer_questions":
       return "decision_criteria";
-    case "trust_authority":
+    case "trust_proof":
       return "trust_credibility";
   }
 }
@@ -152,7 +149,7 @@ export function buildDirectionWritingContext(args: {
   context: ContentBrainContext;
   /** Exact master title when selected is absent (legacy). Not trim-assigned. */
   fallbackMasterTitle?: string;
-  fallbackObjective?: MarketingFocus;
+  fallbackObjective?: TopicCategoryId;
 }): DirectionWritingContext {
   const selected = args.selected ?? null;
   const masterTopic = selected
@@ -162,7 +159,7 @@ export function buildDirectionWritingContext(args: {
     throw new Error("masterTopic is required to build DirectionWritingContext");
   }
 
-  const objective: MarketingFocus =
+  const objective: TopicCategoryId =
     selected?.objective ?? args.fallbackObjective ?? "product_education";
   const framingStrategy = framingStrategyForObjective(objective);
 

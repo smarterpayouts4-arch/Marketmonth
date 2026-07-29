@@ -29,3 +29,14 @@ export {
   type PublicRouteEntry,
 } from "./public-routes";
 export { APPROVED_CAPABILITIES } from "./approved-capabilities";
+export {
+  PUBLIC_POSITIONING,
+  PUBLIC_PROCESS,
+  PUBLIC_DIFFERENTIATORS,
+  PUBLIC_WHAT_YOU_GET,
+  PUBLIC_ILLUSTRATIVE_STATS,
+  CLAIM_LEDGER,
+  PROHIBITED_PUBLIC_PHRASES,
+  type CapabilityStatus,
+  type ClaimLedgerEntry,
+} from "./public-positioning";

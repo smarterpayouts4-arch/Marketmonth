@@ -4,7 +4,7 @@ import type { DiscoveryInvestments } from "./types";
 
 /**
  * Apply stored investments onto a strategy preview so user choices have
- * visible, testable consequences. Pure — no network.
+ * visible, testable consequences. Pure - no network.
  */
 export function applyInvestmentsToStrategy(
   strategy: StrategyPreviewView,

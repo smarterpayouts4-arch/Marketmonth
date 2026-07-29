@@ -1,5 +1,5 @@
 import type { SelectedTopicContext } from "@/brain/content/direction-writing-context";
-import type { ExtraContextInput, MarketingFocus } from "@/brain/content/types";
+import type { ExtraContextInput, TopicCategoryId } from "@/brain/content/types";
 import type { TopicGenerationMode, TopicRunPurpose } from "@/brain/content/topic-generation-record";
 
 export type DirectionProviderChoice = "deterministic-v1" | "intelligent-v1";
@@ -8,7 +8,7 @@ export type GenerateAndRecordContentDirectionsInput = {
   domain: string;
   mode: "automatic" | "manual";
   topic?: string;
-  marketingFocus?: MarketingFocus | string;
+  topicCategory?: TopicCategoryId | string;
   priorities?: string[];
   extraContext?: ExtraContextInput;
   requestedVariations?: number;
@@ -72,7 +72,7 @@ export type ValidatedGenerateInput = {
   topic?: string;
   lockedMasterTopic?: string;
   priorities?: string[];
-  marketingFocus?: MarketingFocus;
+  topicCategory?: TopicCategoryId;
   extraContext?: ExtraContextInput;
   requestedVariations: number;
   parentGenerationId?: string;

@@ -27,7 +27,7 @@ export const START_OVER_BUTTON_LABEL = "Start over";
 /** Keeps master topic; creates a new directions set + history record. */
 export const REGENERATE_IDEAS_BUTTON_LABEL = "Regenerate ideas";
 
-export const MARKETING_FOCUS_LEGEND =
+export const TOPIC_CATEGORY_LEGEND =
   "What do you want this topic to accomplish?";
 
 export const CONTEXT_TRIGGER_LABEL = "Add helpful context";

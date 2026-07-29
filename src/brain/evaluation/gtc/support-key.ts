@@ -28,6 +28,18 @@ export function groundedSupportKey(seed: TopicSeed): string {
  */
 export function primarySubjectFamily(seed: TopicSeed): string {
   const raw = seed.subject.trim().replace(/\s+/g, " ");
+  if (seed.subjectType === "health_outcome") {
+    const ingredient = raw.split(/\s[—→]\s/)[0]?.trim();
+    if (ingredient) {
+      const matched = ingredient.match(POSITIVE_INGREDIENT_TOKEN_RE)?.[1]?.trim();
+      const lead = (matched ?? ingredient).toLowerCase().split(/\s+/)[0]!;
+      if (/^omega-?3$/i.test(matched ?? ingredient)) return "omega-3";
+      if (/^vitamin\s+/i.test(matched ?? ingredient)) {
+        return (matched ?? ingredient).toLowerCase().replace(/\s+/g, " ");
+      }
+      return lead;
+    }
+  }
   const ingredient = raw.match(POSITIVE_INGREDIENT_TOKEN_RE)?.[1]?.trim();
   if (ingredient) {
     const lead = ingredient.toLowerCase().split(/\s+/)[0]!;
@@ -47,6 +59,28 @@ export function primarySubjectFamily(seed: TopicSeed): string {
 }
 
 function attributeOrActionBucket(seed: TopicSeed): string {
+  // LLM candidates carry a title-derived intent — distinct angles on the
+  // same subject must not all collapse into generic_label_check.
+  if (seed.displayIntentHint?.trim()) {
+    return seed.displayIntentHint.trim();
+  }
+  if (seed.subjectType === "health_outcome") {
+    const raw = seed.subject.trim();
+    const arrow = raw.match(/\s→\s(.+)$/);
+    if (arrow?.[1]) {
+      return arrow[1].trim().toLowerCase().replace(/\s+/g, "_").slice(0, 40);
+    }
+    const emdash = raw.match(/\s—\s(.+)$/);
+    if (emdash?.[1]) {
+      return emdash[1]
+        .trim()
+        .toLowerCase()
+        .replace(/^(the|a|an)\s+/, "")
+        .replace(/\s+/g, "_")
+        .slice(0, 40);
+    }
+    return raw.toLowerCase().replace(/\s+/g, "_").slice(0, 40);
+  }
   const ctx = buildTopicTitleHookContext(seed);
   const attr = ctx.comparisonAttribute?.trim().toLowerCase();
   if (attr === "price per serving") return "price_per_serving";

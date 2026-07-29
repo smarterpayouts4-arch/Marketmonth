@@ -1,6 +1,7 @@
 import {
   hasMedicalOrStudyClaim,
   hasNewNumbers,
+  outcomeClaimSafety,
   subjectTokensPresent,
   titleLengthOk,
 } from "../../creative-safety";
@@ -49,6 +50,10 @@ export function validateHookedTitle(args: {
   }
   if (hasMedicalOrStudyClaim(title)) {
     return { ok: false, reason: "medical/study claim" };
+  }
+  const outcomeSafety = outcomeClaimSafety(title);
+  if (!outcomeSafety.ok) {
+    return { ok: false, reason: outcomeSafety.reason };
   }
   if (hasNewNumbers(title, `${framedTitle} ${seed.subject}`)) {
     return { ok: false, reason: "new number introduced" };

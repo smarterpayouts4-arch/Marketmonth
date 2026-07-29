@@ -19,7 +19,7 @@ const REACH_FRAME: Record<StrategyIntentAnswers["reach"], string> = {
   online_broad: "global audiences through searchable and short-form content",
 };
 
-/** Exceptional length only — ordinary moves scroll fully in-card. */
+/** Exceptional length only - ordinary moves scroll fully in-card. */
 const MOVE_HEADLINE_MAX = 120;
 const MOVE_BODY_MAX = 420;
 
@@ -37,7 +37,7 @@ function moveField(
   };
 }
 
-/** Pure presentation helper — no AI, fetch, or server imports. */
+/** Pure presentation helper - no AI, fetch, or server imports. */
 export function toStrategyMoves(
   strategy: StrategyPreviewView,
   intent: StrategyIntentAnswers
@@ -62,12 +62,12 @@ export function toStrategyMoves(
           : null;
 
   const move1BodyFull = directionLine
-    ? `Lead with ${offer} through ${directionLine} — grounded in what your site already promotes${
+    ? `Lead with ${offer} through ${directionLine} - grounded in what your site already promotes${
         intent.buyerTension ? ` and the tension “${intent.buyerTension}”` : ""
       }.`
-    : `Lead with ${offer} to ${GOAL_VERB[intent.goal]} your brand — grounded in what your site already promotes.`;
+    : `Lead with ${offer} to ${GOAL_VERB[intent.goal]} your brand - grounded in what your site already promotes.`;
   const move2BodyFull = place
-    ? `Reach ${place} through ${channels || "organic channels"}, using detected profiles as starting points — not performance claims.`
+    ? `Reach ${place} through ${channels || "organic channels"}, using detected profiles as starting points - not performance claims.`
     : `Reach ${REACH_FRAME[intent.reach]} via ${channels || "organic channels"}, testing roles without claiming engagement wins.`;
   const move3BodyFull = `Guide people to ${strategy.conversionPath.audienceAction} → ${strategy.conversionPath.destination} with “${strategy.conversionPath.primaryCta}”.`;
 

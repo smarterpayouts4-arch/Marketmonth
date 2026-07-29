@@ -6,7 +6,7 @@ import {
   buildContentDirectionsHandoff,
   summarizeExtraContext,
 } from "@/brain/content/handoff";
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 
 import { buildContentDirectionsRequest } from "../build-content-directions-request";
 import { saveContentDirectionsHandoff } from "../content-directions-storage";
@@ -52,7 +52,7 @@ export function useContentDirections({
   >(null);
   const [savedNotice, setSavedNotice] = useState<string | null>(null);
 
-  const lastFocusRef = useRef<MarketingFocus | null>(null);
+  const lastFocusRef = useRef<TopicCategoryId | null>(null);
   const lastExtraSummaryRef = useRef<string | undefined>(undefined);
   const requestIdRef = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
@@ -100,7 +100,7 @@ export function useContentDirections({
   async function requestDirections(args: {
     mode: "automatic" | "manual";
     contextState: ExtraContextUiState;
-    marketingFocus: MarketingFocus | null;
+    topicCategory: TopicCategoryId | null;
     generationReason?: "manual" | "automatic" | "regenerate";
     lockedMasterTopic?: string;
     parentGenerationId?: string | null;
@@ -121,7 +121,7 @@ export function useContentDirections({
           : args.mode === "manual"
             ? topicDraft
             : undefined,
-      marketingFocus: args.marketingFocus,
+      topicCategory: args.topicCategory,
       contextState: args.contextState,
       generationReason: args.generationReason,
       parentGenerationId: args.parentGenerationId ?? undefined,
@@ -133,7 +133,7 @@ export function useContentDirections({
       return;
     }
 
-    lastFocusRef.current = args.marketingFocus;
+    lastFocusRef.current = args.topicCategory;
     lastExtraSummaryRef.current = built.body.extraContext?.text
       ? summarizeExtraContext(built.body.extraContext.text)
       : undefined;
@@ -226,14 +226,14 @@ export function useContentDirections({
   function saveSelectedDirection(
     variationId?: string,
     opts?: {
-      marketingFocus?: MarketingFocus | null;
+      topicCategory?: TopicCategoryId | null;
       extraContextSummary?: string;
     }
   ): boolean {
     const id = variationId ?? selectedVariationId;
     if (!domain || !readyResult || !id) return false;
 
-    const focus = opts?.marketingFocus ?? lastFocusRef.current ?? null;
+    const focus = opts?.topicCategory ?? lastFocusRef.current ?? null;
     const extraSummary =
       opts?.extraContextSummary ?? lastExtraSummaryRef.current;
 
@@ -241,7 +241,7 @@ export function useContentDirections({
       result: readyResult,
       selectedVariationId: id,
       brandDomain: domain,
-      marketingFocus: focus ?? undefined,
+      topicCategory: focus ?? undefined,
       extraContextSummary: extraSummary,
     });
     if (!built.ok) {
@@ -303,35 +303,35 @@ export function useContentDirections({
     startOver,
     createFromTopic: (
       ctx: ExtraContextUiState,
-      focus: MarketingFocus | null
+      focus: TopicCategoryId | null
     ) =>
       requestDirections({
         mode: "manual",
         contextState: ctx,
-        marketingFocus: focus,
+        topicCategory: focus,
         generationReason: "manual",
         clearCards: true,
       }),
     autoGenerate: (
       ctx: ExtraContextUiState,
-      focus: MarketingFocus | null
+      focus: TopicCategoryId | null
     ) =>
       requestDirections({
         mode: "automatic",
         contextState: ctx,
-        marketingFocus: focus,
+        topicCategory: focus,
         generationReason: "automatic",
         clearCards: true,
       }),
     regenerateIdeas: (
       ctx: ExtraContextUiState,
-      focus: MarketingFocus | null
+      focus: TopicCategoryId | null
     ) => {
       if (!readyResult) return Promise.resolve();
       return requestDirections({
         mode: lastModeRef.current,
         contextState: ctx,
-        marketingFocus: focus,
+        topicCategory: focus,
         generationReason: "regenerate",
         lockedMasterTopic: readyResult.masterTopic.punchline,
         parentGenerationId: generationIdRef.current ?? generationId,

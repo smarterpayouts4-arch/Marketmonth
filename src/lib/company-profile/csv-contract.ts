@@ -183,6 +183,54 @@ export function validateDiscoveryCsvRows(
   return issues;
 }
 
+function indexedProductNamesFromRows(rows: DiscoveryCsvRow[]): Set<string> {
+  const names = new Set<string>();
+  for (const r of rows) {
+    if (
+      r.record_type === "evidence" &&
+      (r.field === "indexedProduct" || r.field === "catalogProduct")
+    ) {
+      const name = r.value.trim();
+      if (name) names.add(name.toLowerCase());
+    }
+    if (r.record_type === "brand_profile" && r.field === "indexedProducts") {
+      try {
+        const parsed = JSON.parse(r.value) as Array<{ name?: string }>;
+        for (const p of parsed) {
+          const name = p.name?.trim();
+          if (name) names.add(name.toLowerCase());
+        }
+      } catch {
+        // malformed JSON handled elsewhere
+      }
+    }
+  }
+  return names;
+}
+
+/**
+ * Published-artifact guard: offer rows must never duplicate catalog SKUs.
+ * Unit tests on extract-offers catch generation-time leaks; this catches CSV drift.
+ */
+export function assertOfferRowsDisjointFromCatalog(
+  rows: DiscoveryCsvRow[]
+): DiscoveryCsvContractIssue[] {
+  const catalog = indexedProductNamesFromRows(rows);
+  const issues: DiscoveryCsvContractIssue[] = [];
+  for (const r of rows) {
+    if (r.record_type !== "offer") continue;
+    const value = r.value.trim();
+    if (!value) continue;
+    if (catalog.has(value.toLowerCase())) {
+      issues.push({
+        code: "OFFER_EQUALS_CATALOG_PRODUCT",
+        message: `Offer row "${value}" matches an indexed catalog product for this company`,
+      });
+    }
+  }
+  return issues;
+}
+
 export function assertDiscoveryCsvContract(input: {
   headerCells: string[];
   rows: DiscoveryCsvRow[];
@@ -191,6 +239,7 @@ export function assertDiscoveryCsvContract(input: {
     ...assertDiscoveryCsvHeader(input.headerCells),
     ...validateDiscoveryCsvRows(input.rows),
     ...assertDiscoveryCsvSchemaVersion(input.rows),
+    ...assertOfferRowsDisjointFromCatalog(input.rows),
   ];
 }
 

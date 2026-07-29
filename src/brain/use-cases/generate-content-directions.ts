@@ -93,7 +93,7 @@ export async function generateAndRecordContentDirections(
       v.mode === "automatic" && v.generationMode === "automatic"
         ? recentMasterTopics
         : undefined,
-    marketingFocus: v.marketingFocus ?? v.selectedTopicContext?.objective,
+    topicCategory: v.topicCategory ?? v.selectedTopicContext?.objective,
     priorities: v.priorities,
     extraContext: v.extraContext,
     requestedVariations: v.requestedVariations,

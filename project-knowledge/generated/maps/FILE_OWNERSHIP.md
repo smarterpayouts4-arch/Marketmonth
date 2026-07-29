@@ -4,7 +4,7 @@
 
 From `ownership-rules.json` matched against `src/**`.
 
-## Unowned paths (28)
+## Unowned paths (30)
 
 - `src/app/api/dev/brain/idea-lab/generate/route.ts`
 - `src/app/api/dev/brain/idea-lab/runs/route.ts`
@@ -24,9 +24,11 @@ From `ownership-rules.json` matched against `src/**`.
 - `src/app/dev/brain/idea-lab/ili/candidates-tab.tsx`
 - `src/app/dev/brain/idea-lab/ili/compare-mini.tsx`
 - `src/app/dev/brain/idea-lab/ili/controls-tab.tsx`
+- `src/app/dev/brain/idea-lab/ili/evidence-tab.tsx`
 - `src/app/dev/brain/idea-lab/ili/history-tab.tsx`
 - `src/app/dev/brain/idea-lab/ili/inputs-tab.tsx`
 - `src/app/dev/brain/idea-lab/ili/overview-tab.tsx`
+- `src/app/dev/brain/idea-lab/ili/resolve-evidence.ts`
 - `src/app/dev/brain/idea-lab/ili/row.tsx`
 - `src/app/dev/brain/idea-lab/ili/trace-tab.tsx`
 - `src/app/dev/brain/idea-lab/layout.tsx`

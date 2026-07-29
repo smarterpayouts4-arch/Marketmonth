@@ -4,7 +4,7 @@
  * Thin orchestrator: discovery UI status machine.
  * Specialists live in ./use-discovery/*
  */
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 
 import {
   applyInvestmentsToStrategy,
@@ -13,7 +13,6 @@ import {
 import { toCardSummary } from "@/components/discovery/to-card-summary";
 import type {
   BrandProfileView,
-  DetectedLocationView,
   DiscoveryIds,
   DiscoveryStatus,
   StageView,
@@ -63,13 +62,8 @@ export function useDiscovery(options?: {
   const [strategyPreview, setStrategyPreview] =
     useState<StrategyPreviewView | null>(null);
   const [pageCount, setPageCount] = useState(0);
-  const [detectedLocations, setDetectedLocations] = useState<
-    DetectedLocationView[]
-  >([]);
   const [intentAnswers, setIntentAnswers] =
     useState<StrategyIntentAnswers | null>(null);
-  const [investments, setInvestments] =
-    useState<DiscoveryInvestments | null>(null);
   const [ids, setIds] = useState<DiscoveryIds | null>(null);
 
   const emitPreview = useCallback(
@@ -87,9 +81,7 @@ export function useDiscovery(options?: {
     setDiscoveryNarrative(null);
     setStrategyPreview(null);
     setPageCount(0);
-    setDetectedLocations([]);
     setIntentAnswers(null);
-    setInvestments(null);
     setIds(null);
     emitPreview("your brand");
   }, [emitPreview]);
@@ -110,9 +102,7 @@ export function useDiscovery(options?: {
       setDiscoveryNarrative(null);
       setStrategyPreview(null);
       setPageCount(0);
-      setDetectedLocations([]);
       setIntentAnswers(null);
-      setInvestments(null);
       setStages(initialStages());
       emitPreview(hostnameFromUrl(trimmed) ?? "your brand");
 
@@ -145,7 +135,6 @@ export function useDiscovery(options?: {
             if (typeof event.pageCount === "number") {
               setPageCount(event.pageCount);
             }
-            setDetectedLocations(event.detectedLocations ?? []);
             const summary = toCardSummary(profile);
             emitPreview(profile.businessName, summary.coreOffering);
             setStatus("result");
@@ -171,7 +160,6 @@ export function useDiscovery(options?: {
       if (!brandProfile || !ids) return;
 
       setIntentAnswers(answers);
-      if (nextInvestments) setInvestments(nextInvestments);
       setStatus("generating_strategy");
       setError(null);
 
@@ -216,11 +204,6 @@ export function useDiscovery(options?: {
   const summary = brandProfile ? toCardSummary(brandProfile) : null;
   const defaultPromoteFirst = summary?.coreOffering ?? "";
 
-  const previewBrandName = useMemo(() => {
-    if (brandProfile?.businessName) return brandProfile.businessName;
-    return hostnameFromUrl(url) ?? "your brand";
-  }, [brandProfile, url]);
-
   return {
     status,
     url,
@@ -231,16 +214,9 @@ export function useDiscovery(options?: {
     discoveryNarrative,
     strategyPreview,
     pageCount,
-    detectedLocations,
     intentAnswers,
-    investments,
     ids,
     defaultPromoteFirst,
-    foundAudience: summary?.audience ?? "",
-    foundOffer: summary?.coreOffering ?? "",
-    foundPresence: summary?.activeChannels ?? [],
-    previewBrandName,
-    coreIdeaHint: summary?.coreOffering,
     analyze,
     goToResult,
     submitIntent,

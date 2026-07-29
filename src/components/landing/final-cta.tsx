@@ -1,5 +1,13 @@
 import Link from "next/link";
 
+import {
+  finalCtaHeadline,
+  finalCtaSubhead,
+  freeAnalysisLine,
+  freeAnalysisNote,
+  primaryCta,
+  secondaryCta,
+} from "@/components/landing/landing-copy";
 import { Reveal } from "@/components/landing/reveal";
 
 export function FinalCTA() {
@@ -20,28 +28,30 @@ export function FinalCTA() {
             />
             <div className="relative mx-auto max-w-2xl">
               <h2 className="font-display text-balance text-[clamp(1.85rem,3.2vw,2.75rem)] font-bold tracking-[-0.035em] text-primary-foreground">
-                Ready to turn your website into a month of marketing?
+                {finalCtaHeadline}
               </h2>
-              <p className="mx-auto mt-4 max-w-[40ch] text-[1.05rem] leading-relaxed text-primary-foreground/78">
-                Walk Learn → Strategize → Build → Review on your own brand
-                path — starting with your website.
+              <p className="mx-auto mt-4 max-w-[44ch] text-[1.05rem] leading-relaxed text-primary-foreground/78">
+                {finalCtaSubhead}
               </p>
               <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Link
                   href="#analyze"
                   className="inline-flex h-12 items-center justify-center rounded-xl bg-accent px-7 text-[0.95rem] font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
                 >
-                  Analyze my website
+                  {primaryCta}
                 </Link>
                 <Link
                   href="#demo-theater"
                   className="inline-flex h-12 items-center justify-center rounded-xl border border-primary-foreground/25 bg-transparent px-7 text-[0.95rem] font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/10"
                 >
-                  See it work
+                  {secondaryCta}
                 </Link>
               </div>
-              <p className="mt-5 text-sm text-primary-foreground/50">
-                Prototype mode · No payment required
+              <p className="mt-5 text-sm text-primary-foreground/70">
+                {freeAnalysisLine}
+              </p>
+              <p className="mx-auto mt-2 max-w-[48ch] text-xs leading-relaxed text-primary-foreground/50">
+                {freeAnalysisNote}
               </p>
             </div>
           </div>

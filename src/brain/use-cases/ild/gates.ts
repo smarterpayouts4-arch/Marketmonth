@@ -3,9 +3,9 @@ import {
   type SelectedTopicContext,
 } from "@/brain/content/direction-writing-context";
 import {
-  parseMarketingFocus,
-  type MarketingFocus,
-} from "@/brain/content/marketing-focus";
+  parseTopicCategory,
+  type TopicCategoryId,
+} from "@/brain/content/topic-category";
 import { TOPIC_OBJECTIVE_REQUIRED } from "@/brain/evaluation/topic-candidate-types";
 
 import { finalizeFailedRun } from "./finalize-failed";
@@ -70,7 +70,7 @@ export async function gateIdeaLabDirections(args: {
     };
   }
 
-  const focusParsed = parseMarketingFocus(input.marketingFocus);
+  const focusParsed = parseTopicCategory(input.topicCategory);
   if (!focusParsed.ok || !focusParsed.value) {
     const msg =
       focusParsed.ok === false
@@ -98,7 +98,7 @@ export async function gateIdeaLabDirections(args: {
       }),
     };
   }
-  const marketingFocus: MarketingFocus = focusParsed.value;
+  const topicCategory: TopicCategoryId = focusParsed.value;
 
   let selectedTopicContext: SelectedTopicContext | undefined =
     input.selectedTopicContext;
@@ -124,13 +124,13 @@ export async function gateIdeaLabDirections(args: {
     }
     selectedTopicContext = {
       ...parsed.data,
-      objective: marketingFocus,
+      objective: topicCategory,
     };
   } else if (input.manualTopic != null && input.manualTopic.trim().length > 0) {
     selectedTopicContext = {
       topicId: input.selectedCandidateId ?? `manual_${runId}`,
       masterTitle: input.manualTopic,
-      objective: marketingFocus,
+      objective: topicCategory,
     };
   }
 
@@ -162,7 +162,7 @@ export async function gateIdeaLabDirections(args: {
     ok: true,
     value: {
       topicMode: "manual",
-      marketingFocus,
+      topicCategory,
       selectedTopicContext,
     },
   };

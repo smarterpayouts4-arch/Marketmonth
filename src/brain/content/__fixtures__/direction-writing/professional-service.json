@@ -21,11 +21,11 @@
   "selectedTopic": {
     "topicId": "tc_svc_story_1",
     "masterTitle": "How to structure a fundraising narrative",
-    "objective": "value_proposition",
+    "objective": "offers_conversion",
     "audience": "Founders preparing for Series A conversations",
     "audiencePain": "Traction details feel scattered before meetings",
     "strategicAngle": "Clarity value",
-    "relevanceReasons": ["Value proposition framing"],
+    "relevanceReasons": ["Offers & conversion framing"],
     "evidenceIds": []
   },
   "absentCapability": "guaranteed term-sheet outcomes",

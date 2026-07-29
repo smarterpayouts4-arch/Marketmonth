@@ -2,11 +2,18 @@ import type {
   DetectedChannel,
   DiscoverySection,
 } from "@/lib/discovery/discovery-narrative.schema";
+import { platformDisplayName } from "@/lib/discovery/platform-names";
 
 import type { BrandSignalGraph } from "../types";
 import { truncateForEmbed } from "../../complete-sentence";
 import { isHeadlineEligible } from "../normalize/score-evidence";
-import { bulletFrom, businessNoun, firstText, pickText } from "./helpers";
+import {
+  bulletFrom,
+  businessNoun,
+  createEvidenceLedger,
+  firstText,
+  pickText,
+} from "./helpers";
 
 export function buildWinSection(input: {
   businessName: string;
@@ -31,34 +38,39 @@ export function buildWinSection(input: {
 
   const missing = input.channels
     .filter((c) => c.status === "link-not-detected")
-    .map((c) => (c.platform === "x" ? "X" : c.platform.charAt(0).toUpperCase() + c.platform.slice(1)));
+    .map((c) => platformDisplayName(c.platform));
 
   // Boundary-safe: fall back to a generic framing rather than quote a fragment.
   const problemEmbed = truncateForEmbed(problemText, 140);
 
+  const ledger = createEvidenceLedger();
   const bullets = [
     bulletFrom(
       problemEmbed
         ? `Customers face pressure in moments like: ${problemEmbed}`
         : "Customers face pressure when the next decision is unclear.",
       problems.length ? problems : value,
-      problems.length ? "observed" : "inferred"
+      problems.length ? "observed" : "inferred",
+      ledger
     ),
     bulletFrom(
       `${name} can repeatedly answer the questions that appear during that uncertainty.`,
       [...value, ...problems],
-      "inferred"
+      "inferred",
+      ledger
     ),
     bulletFrom(
       `The brand is positioned to own recognition around “${input.ownedIdea}.”`,
       [...value, ...trust],
-      "inferred"
+      "inferred",
+      ledger
     ),
     trust.length
       ? bulletFrom(
           "Trust differentiators already on the site make that position credible when reinforced over time.",
           trust,
-          "observed"
+          "observed",
+          ledger
         )
       : null,
     missing.length
@@ -67,7 +79,8 @@ export function buildWinSection(input: {
           input.graph.socialFootprint.length
             ? input.graph.socialFootprint
             : value,
-          "recommended"
+          "recommended",
+          ledger
         )
       : null,
   ].filter(Boolean);

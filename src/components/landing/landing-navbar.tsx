@@ -1,5 +1,9 @@
 import Link from "next/link";
 
+import {
+  primaryCta,
+  secondaryCta,
+} from "@/components/landing/landing-copy";
 import { PRODUCT_IDENTITY } from "@/seo/config/product-identity";
 
 export function LandingNavbar() {
@@ -22,13 +26,13 @@ export function LandingNavbar() {
             href="#demo-theater"
             className="hidden text-[0.95rem] font-medium text-text-secondary transition-colors hover:text-foreground sm:inline"
           >
-            See it work
+            {secondaryCta}
           </Link>
           <Link
             href="#analyze"
             className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
           >
-            Analyze my website
+            {primaryCta}
           </Link>
         </nav>
       </div>

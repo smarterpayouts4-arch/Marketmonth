@@ -523,7 +523,7 @@ async function main() {
       const kinds = (result.candidates ?? []).map((c) => c.subjectKind);
       const trust = generateTopicCandidates({
         context: ctx,
-        objective: "trust_authority",
+        objective: "trust_proof",
       });
       const trustKinds = (trust.candidates ?? []).map((c) => c.subjectKind);
       return {

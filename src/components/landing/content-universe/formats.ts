@@ -10,9 +10,9 @@ import {
 
 /**
  * Illustrative Content Flow formats for the landing diagram only.
- * Not real customer analytics — keep honesty labels at the section level.
+ * Not real customer analytics - keep honesty labels at the section level.
  *
- * `accent` is a semantic brand key, not a raw color — `ACCENT_TONES` below
+ * `accent` is a semantic brand key, not a raw color - `ACCENT_TONES` below
  * is the single place that resolves it to concrete classes, so a future
  * palette change never requires touching this data.
  */
@@ -76,7 +76,7 @@ export const FORMATS: ContentFormat[] = [
   },
 ];
 
-/** Icon-circle and trend-line colors per accent key — the only place a
+/** Icon-circle and trend-line colors per accent key - the only place a
  * platform hex value is allowed to live. Structural card chrome (border,
  * background, text) stays on MarketMonth brand tokens everywhere else. */
 export const ACCENT_TONES: Record<
@@ -118,7 +118,7 @@ export const SEQUENCE_LOOP_S = 8;
 /**
  * Column gap for the 5-up output grid, expressed as a fraction of the row's
  * total width (used as the Tailwind arbitrary value `gap-[1.8%]` on the
- * grid itself). A percentage — rather than a fixed `16px` gap — keeps this
+ * grid itself). A percentage - rather than a fixed `16px` gap - keeps this
  * ratio constant at every viewport width, so `gridColumnCenterFraction`
  * below can derive the SVG connector's branch positions from pure fractions
  * and still land exactly on each card's true center, with no separate

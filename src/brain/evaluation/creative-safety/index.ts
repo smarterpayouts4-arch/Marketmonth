@@ -3,8 +3,13 @@
  * Framing may change; subjects/facts/medical claims must not be invented.
  */
 
+/**
+ * Bare `prevent` is included deliberately. Requiring `prevents disease` let
+ * "prevents deficiency" and "prevent hair loss" through, which are disease-claim
+ * shaped for a supplement seller. This is the unified rule for every caller.
+ */
 export const MEDICAL_CLAIM_RE =
-  /\b(treats?|cures?|heals?|diagnoses?|prevents?\s+disease|clinically\s+proven|FDA\s+approved)\b/i;
+  /\b(treats?|cures?|heals?|diagnoses?|prevents?|preventing|prevention|clinically\s+proven|FDA\s+approved)\b/i;
 
 export const STUDY_CERT_RE =
   /\b(study|studies|clinical\s+trial|peer[- ]reviewed|certified|certification|ISO\s*\d+)\b/i;
@@ -36,6 +41,29 @@ export function subjectTokensPresent(
   const titleTokens = tokenizeEntities(title);
   const required = subjectTokens.slice(0, 3);
   return required.every((t) => titleTokens.has(t) || title.toLowerCase().includes(t));
+}
+
+export const THERAPEUTIC_OUTCOME_CLAIM_RE =
+  /\b(for better|to treat|cures?|heals?|prevents?)\b/i;
+
+/** Attribution / label-deconstruction framing that makes outcome language safe. */
+export const OUTCOME_ATTRIBUTION_RE =
+  /["'""]|(?:is|are)\s+(?:label(?:led|ed)|described|called|nicknamed)\s+(?:as\s+)?|(?:label(?:led|ed)|described)\s+as|research\s+(?:support(?:s|ed)?|suggests?|indicates?|shows?)|according\s+to|what\s+(?:the\s+)?research\s+(?:says|shows|indicates)|what\s+that\s+wording\s+means|on labels|label language|will and will not/i;
+
+export function hasOutcomeClaimWithoutAttribution(text: string): boolean {
+  if (OUTCOME_ATTRIBUTION_RE.test(text)) return false;
+  if (THERAPEUTIC_OUTCOME_CLAIM_RE.test(text)) return true;
+  if (MEDICAL_CLAIM_RE.test(text)) return true;
+  return false;
+}
+
+export function outcomeClaimSafety(
+  text: string
+): { ok: true } | { ok: false; reason: string } {
+  if (hasOutcomeClaimWithoutAttribution(text)) {
+    return { ok: false, reason: "outcome claim without attribution" };
+  }
+  return { ok: true };
 }
 
 export function hasMedicalOrStudyClaim(text: string): boolean {

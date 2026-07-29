@@ -24,7 +24,7 @@ function read(name: string): string {
 
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
-describe("Month Plan — information architecture", () => {
+describe("Month Plan - information architecture", () => {
   it("has exactly four strategic weeks", () => {
     assert.equal(augustMonthPlan.length, 4);
   });
@@ -60,7 +60,7 @@ describe("Month Plan — information architecture", () => {
   });
 });
 
-describe("Month Plan — hierarchy: idea → channel executions", () => {
+describe("Month Plan - hierarchy: idea → channel executions", () => {
   it("every idea has between 1 and 3 channel executions (never all five)", () => {
     for (const week of augustMonthPlan) {
       for (const post of week.posts) {
@@ -161,7 +161,7 @@ describe("Month Plan — hierarchy: idea → channel executions", () => {
   });
 });
 
-describe("Month Plan — no duplicate imagery within a week", () => {
+describe("Month Plan - no duplicate imagery within a week", () => {
   it("every daily idea within a week has its own unique image, distinct from every other idea and from the week's hero", () => {
     for (const week of augustMonthPlan) {
       const images = [week.heroImageSrc, ...week.posts.map((p) => p.imageSrc)];
@@ -188,7 +188,7 @@ describe("Month Plan — no duplicate imagery within a week", () => {
   });
 });
 
-describe("Month Plan — progress derived from data", () => {
+describe("Month Plan - progress derived from data", () => {
   it("computes plannedCount from posts, matching the approved demo numbers", () => {
     assert.equal(weekPlannedCount(augustMonthPlan[0]!), 3);
     assert.equal(weekPlannedCount(augustMonthPlan[1]!), 2);
@@ -216,7 +216,7 @@ describe("Month Plan — progress derived from data", () => {
   });
 });
 
-describe("Month Plan — image alt text", () => {
+describe("Month Plan - image alt text", () => {
   it("every week hero and every daily idea has non-empty alt text", () => {
     for (const week of augustMonthPlan) {
       assert.ok(week.heroImageAlt.trim().length > 0, `${week.id} missing heroImageAlt`);
@@ -233,7 +233,7 @@ describe("Month Plan — image alt text", () => {
   });
 });
 
-describe("Month Plan — week selection", () => {
+describe("Month Plan - week selection", () => {
   it("defaults to week 1 selected before the timer has revealed any weeks", () => {
     assert.equal(weekAutoIndexFromVisibleWeeks(0, 4), 0);
   });
@@ -257,7 +257,7 @@ describe("Month Plan — week selection", () => {
   });
 });
 
-describe("Month Plan — status legend uses the real status model", () => {
+describe("Month Plan - status legend uses the real status model", () => {
   it("legend lists all five ContentStatus values from STATUS_METADATA, not a hardcoded caption", () => {
     const source = read("status-legend.tsx");
     assert.match(source, /STATUS_METADATA/);
@@ -269,13 +269,13 @@ describe("Month Plan — status legend uses the real status model", () => {
   });
 });
 
-describe("Month Plan — intro header is merged into the same outer card as the roadmap", () => {
+describe("Month Plan - intro header is merged into the same outer card as the roadmap", () => {
   it("month-plan.tsx renders the intro header as the first child inside its outer rounded shell, not a separate standalone block", () => {
     const source = read("month-plan.tsx");
     assert.match(source, /<MonthPlanIntroHeader/);
     const outerOpenIndex = source.indexOf('rounded-[1.2rem]');
     const introIndex = source.indexOf("<MonthPlanIntroHeader");
-    const roadmapHeadingIndex = source.indexOf("Your August Marketing Month");
+    const roadmapHeadingIndex = source.indexOf("Example August Marketing Month");
     assert.ok(outerOpenIndex > -1 && introIndex > -1 && roadmapHeadingIndex > -1);
     assert.ok(
       outerOpenIndex < introIndex && introIndex < roadmapHeadingIndex,
@@ -283,15 +283,12 @@ describe("Month Plan — intro header is merged into the same outer card as the 
     );
   });
 
-  it("intro header carries the approved eyebrow, heading, and supporting copy", () => {
+  it("intro header carries the approved illustrative eyebrow and shared copy fields", () => {
     const source = read("intro-header.tsx");
-    assert.match(source, /What you actually get/);
-    assert.match(source, /One strategy\./);
-    assert.match(source, /A full month of content\./);
-    assert.match(
-      source,
-      /No more starting from scratch\. Your discovery scan becomes a/
-    );
+    assert.match(source, /monthPlanEyebrow/);
+    assert.match(source, /monthPlanHeadline/);
+    assert.match(source, /monthPlanBody/);
+    assert.equal(/What you actually get|ready to publish/i.test(source), false);
   });
 
   it("intro header uses existing brand tokens, not a parallel design system", () => {
@@ -325,7 +322,7 @@ describe("Month Plan — intro header is merged into the same outer card as the 
   });
 });
 
-describe("Month Plan — connecting sentence and week summary are data-derived", () => {
+describe("Month Plan - connecting sentence and week summary are data-derived", () => {
   it("source: daily grid computes idea/execution counts from the week, not hardcoded numbers", () => {
     const source = read("daily-content-grid.tsx");
     assert.match(source, /weekExecutionCount/);

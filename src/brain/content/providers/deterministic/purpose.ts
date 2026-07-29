@@ -11,8 +11,6 @@ export function purposeFor(
       "Teach process, terminology, and common mistakes for this subject.",
     value_differentiation:
       "Show the benefit, difference, and clearer outcome this solution enables.",
-    awareness_positioning:
-      "Introduce the category and position the brand for recognition.",
     decision_criteria:
       "Give evaluation criteria, trade-offs, and risks for a buying decision.",
     trust_credibility:

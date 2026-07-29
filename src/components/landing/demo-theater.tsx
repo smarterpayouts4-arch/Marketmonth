@@ -8,7 +8,7 @@ import { useWeekTimer } from "./demo-theater/week-timer";
 
 /**
  * The monthly-plan intro copy now lives inside `MonthPlanIntroHeader`, as
- * the top band of the same card as the roadmap (see `month-plan.tsx`) —
+ * the top band of the same card as the roadmap (see `month-plan.tsx`) -
  * intro and roadmap read as one unified module instead of a floating
  * heading above a separate panel.
  */

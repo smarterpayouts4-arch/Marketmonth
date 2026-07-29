@@ -1,7 +1,7 @@
 import {
-  MARKETING_FOCUS_LABELS,
-  type MarketingFocus,
-} from "@/brain/content/marketing-focus";
+  TOPIC_CATEGORY_LABELS,
+  type TopicCategoryId,
+} from "@/brain/content/topic-category";
 import type { ContentBrainContext } from "@/brain/content/types";
 
 import type { TopicSeed } from "../objective-topic-strategies";
@@ -17,13 +17,13 @@ export type FramedCandidate = {
   strategicAngle: string;
   relevanceReasons: string[];
   seed: TopicSeed;
-  objective: MarketingFocus;
+  objective: TopicCategoryId;
 };
 
 export function frameTitle(
   seed: TopicSeed,
   context: ContentBrainContext,
-  objective: MarketingFocus
+  objective: TopicCategoryId
 ): Omit<FramedCandidate, "seed" | "objective"> | null {
   const brand = context.brandName;
   const subject = clamp(seed.subject, 56);
@@ -47,7 +47,7 @@ export function frameTitle(
         title,
         strategicAngle: "Audience / comparison clarity",
         relevanceReasons: [
-          `${MARKETING_FOCUS_LABELS[objective]} framing`,
+          `${TOPIC_CATEGORY_LABELS[objective]} framing`,
           `Subject kind: ${seed.subjectType}`,
           "Help-imperative subject rewritten to educational frame",
         ].slice(0, 3),
@@ -139,6 +139,46 @@ export function frameTitle(
       title = `Understanding ${shortSub} before you compare options`;
       angle = "Category education";
       break;
+    case "outcome_education": {
+      const parts = seed.subject.split(/\s[—→]\s/);
+      const ingredient = parts[0]?.trim() ?? shortSub;
+      const descriptor = parts[1]?.trim();
+      title = descriptor
+        ? clamp(
+            `${ingredient} is labelled "${descriptor}" — what that wording means`,
+            90
+          )
+        : clamp(`What label language means for ${ingredient}`, 90);
+      angle = "Outcome / label education";
+      break;
+    }
+    case "label_deconstruction":
+      title = clamp(
+        (() => {
+          const ingredient =
+            seed.subject.split(/\s[—→]\s/)[0]?.trim() ?? shortSub;
+          return `What ${brand} will and will not claim about ${ingredient} labels`;
+        })(),
+        90
+      );
+      angle = "Label deconstruction";
+      break;
+    case "faq_education": {
+      // P2.3: FAQ seeds previously fell through to the generic
+      // "{Category}: {subject}" default. Keep the customer's own question
+      // when the label is one; otherwise frame it as an answered question.
+      const q = seed.subject.trim().replace(/\s+/g, " ");
+      const isQuestionForm =
+        /\?$/.test(q) ||
+        /^(how|what|why|when|where|who|which|can|do|does|is|are|should|will)\b/i.test(
+          q
+        );
+      title = isQuestionForm
+        ? clamp(/\?$/.test(q) ? q : `${q}?`, 90)
+        : clamp(`What customers ask about ${shortSub}, answered`, 90);
+      angle = "FAQ education";
+      break;
+    }
     case "decision_checklist":
       title = clamp(
         subject.match(/^(How|What|Questions)/i)
@@ -177,7 +217,7 @@ export function frameTitle(
       angle = "Credibility";
       break;
     default:
-      title = clamp(`${MARKETING_FOCUS_LABELS[objective]}: ${shortSub}`, 90);
+      title = clamp(`${TOPIC_CATEGORY_LABELS[objective]}: ${shortSub}`, 90);
       angle = "Framed topic";
   }
 
@@ -196,7 +236,7 @@ export function frameTitle(
     title,
     strategicAngle: angle,
     relevanceReasons: [
-      `${MARKETING_FOCUS_LABELS[objective]} framing`,
+      `${TOPIC_CATEGORY_LABELS[objective]} framing`,
       `Subject kind: ${seed.subjectType}`,
       seed.classificationReason,
     ].slice(0, 3),
@@ -206,7 +246,7 @@ export function frameTitle(
 export function frameCandidates(
   seeds: TopicSeed[],
   context: ContentBrainContext,
-  objective: MarketingFocus
+  objective: TopicCategoryId
 ): FramedCandidate[] {
   const out: FramedCandidate[] = [];
   for (const seed of seeds) {

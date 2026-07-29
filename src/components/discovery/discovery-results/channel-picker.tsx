@@ -1,10 +1,8 @@
 import type { DetectedChannel, PlatformAdaptation } from "@/lib/discovery/discovery-narrative.schema";
+import { platformDisplayName } from "@/lib/discovery/platform-names";
 import { cn } from "@/lib/utils";
 
-function labelPlatform(platform: string): string {
-  if (platform === "x") return "X";
-  return platform.charAt(0).toUpperCase() + platform.slice(1);
-}
+const labelPlatform = platformDisplayName;
 
 export function PlatformAdaptationsList({
   adaptations,

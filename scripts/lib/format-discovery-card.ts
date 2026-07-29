@@ -21,7 +21,7 @@ export type CardEvidenceRow = {
   title: string;
   summary: string;
   tag?: string;
-  detail: string;
+  detail?: string;
   supportingPoints: string[];
   sourceLabel: string;
   kind: string;

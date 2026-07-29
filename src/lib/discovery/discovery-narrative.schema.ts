@@ -25,10 +25,23 @@ export const discoveryEvidenceRefSchema = z.object({
 });
 export type DiscoveryEvidenceRef = z.infer<typeof discoveryEvidenceRefSchema>;
 
+/**
+ * Optional display-only wording for a bullet's card row. Produced by the copy
+ * polish step and preferred by the UI when present; absent means the UI derives
+ * the row copy deterministically. Never affects `text`, `classification`, or
+ * `evidence`.
+ */
+export const discoveryDisplayCopySchema = z.object({
+  title: z.string().min(1).max(80),
+  summary: z.string().min(1).max(260),
+});
+export type DiscoveryDisplayCopy = z.infer<typeof discoveryDisplayCopySchema>;
+
 export const discoveryBulletSchema = z.object({
   text: z.string().min(1),
   classification: discoveryClassificationSchema,
   evidence: z.array(discoveryEvidenceRefSchema).min(1),
+  display: discoveryDisplayCopySchema.optional(),
 });
 export type DiscoveryBullet = z.infer<typeof discoveryBulletSchema>;
 

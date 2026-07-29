@@ -63,8 +63,8 @@ export async function POST(request: Request) {
   try {
     if (parsed.stage === "research_prompt") {
       const outcome = buildIdeaLabResearchPrompt({
-        companyId: "zynava.com",
-        marketingFocus: parsed.marketingFocus,
+        companyId: parsed.companyId,
+        topicCategory: parsed.topicCategory,
       });
       if (!outcome.ok) {
         return NextResponse.json(
@@ -102,8 +102,8 @@ export async function POST(request: Request) {
 
     if (parsed.stage === "candidates") {
       const outcome = await runIdeaLabTopicCandidates({
-        companyId: "zynava.com",
-        marketingFocus: parsed.marketingFocus,
+        companyId: parsed.companyId,
+        topicCategory: parsed.topicCategory,
         researchImport: parsed.researchImport,
       });
       if (!outcome.ok) {
@@ -124,9 +124,9 @@ export async function POST(request: Request) {
     }
 
     const run = await runIdeaLabDirections({
-      companyId: "zynava.com",
+      companyId: parsed.companyId,
       topicMode: "manual",
-      marketingFocus: parsed.marketingFocus,
+      topicCategory: parsed.topicCategory,
       selectedCandidateId: parsed.selectedCandidateId,
       selectedTopicContext: parsed.selectedTopicContext,
       manualTopic: parsed.manualTopic,

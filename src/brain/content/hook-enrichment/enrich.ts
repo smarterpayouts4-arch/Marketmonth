@@ -1,4 +1,4 @@
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 import type {
   ContentBrainContext,
   ContentVariation,
@@ -25,7 +25,7 @@ export type EnrichSixDirectionsInput = {
     ContentVariation,
   ];
   masterTitle: string;
-  objective: MarketingFocus;
+  objective: TopicCategoryId;
   context: ContentBrainContext;
   selectedTopicContext?: SelectedTopicContext;
   /**

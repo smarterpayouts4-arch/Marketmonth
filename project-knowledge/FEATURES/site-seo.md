@@ -3,9 +3,11 @@ title: Site SEO Subsystem
 status: active
 authority: supporting
 owner: engineering
-last_verified: 2026-07-24
+last_verified: 2026-07-29
 related_paths:
   - src/seo/**
+  - src/seo/config/public-positioning.ts
+  - src/components/landing/landing-copy.ts
   - src/app/robots.ts
   - src/app/sitemap.ts
   - src/app/llms.txt/**
@@ -23,17 +25,19 @@ Distinct from Discovery **customer** SEO analysis (`src/engine/discovery/analyze
 
 | Layer | Role |
 |-------|------|
-| `config/` | `PRODUCT_IDENTITY`, origin, crawler policy, earn-to-index routes |
-| `foundation/` | Deterministic metadata, robots, sitemap, JSON-LD, llms.txt, OG |
+| `config/` | `PRODUCT_IDENTITY`, `PUBLIC_POSITIONING` / claim ledger, `APPROVED_CAPABILITIES`, origin, crawler policy, earn-to-index routes |
+| `foundation/` | Deterministic metadata, robots, sitemap, JSON-LD, llms.txt, OG - consume identity + public positioning |
 | `intelligence/` | Research → Change Brief → approval (no silent doctrine writes) |
 | `jobs/` | Weekly / on-demand / site-change reviews |
-| `verification/` | Brand consistency + crawl/metadata checks |
+| `verification/` | Brand consistency + crawl/metadata + claim-parity checks |
+
+Public visitor-facing product claims for the landing page and SEO surfaces must come from `src/seo/config/public-positioning.ts` (plus identity/capabilities). Do not hardcode competing promises in landing components or schema.
 
 ## Index policy
 
-- `/` — allow + index + sitemap
-- App HTML (`/dashboard`, …) — allow crawl + **noindex** + not in sitemap
-- `/api/` — disallow
+- `/` - allow + index + sitemap
+- App HTML (`/dashboard`, …) - allow crawl + **noindex** + not in sitemap
+- `/api/` - disallow
 
 ## Commands
 

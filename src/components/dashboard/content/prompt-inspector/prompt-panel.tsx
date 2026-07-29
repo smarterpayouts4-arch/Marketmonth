@@ -30,7 +30,7 @@ export function buildStudioPrompt(args: {
       handoff.variations.find((v) => v.id === handoff.selectedVariationId)
         ?.punchline ?? handoff.selectedVariationId
     }`,
-    handoff.marketingFocus ? `Focus: ${handoff.marketingFocus}` : null,
+    handoff.topicCategory ? `Focus: ${handoff.topicCategory}` : null,
     "",
     "## Content Atom",
     atom

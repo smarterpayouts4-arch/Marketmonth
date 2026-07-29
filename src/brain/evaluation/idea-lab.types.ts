@@ -7,7 +7,7 @@ import {
   DIRECTIONS_GENERATOR_VERSION,
   WRITING_CONTEXT_VERSION,
 } from "@/brain/content/direction-writing-context";
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 import { IDEA_LAB_DIRECTIONS_PROVIDER } from "@/brain/policy/provider-policy";
 
 import type { IdeaLabRunEvaluation } from "./idea-quality.schema";
@@ -25,7 +25,7 @@ export const IDEA_LAB_HISTORY_RELATIVE =
 export type IdeaLabDirectionLineage = {
   selectedTopicId: string;
   selectedMasterTitle: string;
-  objective: MarketingFocus;
+  objective: TopicCategoryId;
   framingStrategy: ObjectiveFramingStrategy;
   fixtureHash: string;
   brandCoreId: string;
@@ -50,6 +50,36 @@ export type BrainTraceStep = {
   inputSummary?: Record<string, unknown>;
   outputSummary?: Record<string, unknown>;
   warnings?: string[];
+};
+
+/** Resolved evidence claim for Idea Lab Inspector (UI-safe; no gtc imports). */
+export type IdeaLabEvidenceClaimView = {
+  id: string;
+  field: string;
+  claim: string;
+};
+
+/** Lightweight candidate-generation trace surfaced in Test Inspector. */
+export type IdeaLabCandidatesGenerationTrace = {
+  evidenceIndexCount: number;
+  evidenceSelectedCount: number;
+  llmUsed: boolean;
+  deterministicFallbackUsed: boolean;
+  /** Runtime provenance: prompt-registry version consulted for this run. */
+  promptVersion?: string;
+  /** Model actually resolved for the LLM candidate stage. */
+  model?: string;
+  /** Wall-clock duration of the LLM candidate stage. */
+  llmDurationMs?: number;
+  /** Brand Core hash the run was grounded on. */
+  artifactHash?: string;
+  /** Correlates trace, result, and logs for one run (sessionId). */
+  correlationId?: string;
+  /** P3.1 prompt A/B arm this run was assigned ("control" | "b"). */
+  promptVariant?: string;
+  /** P3.1 LLM-as-judge sample (advisory; absent when not sampled). */
+  judgeVersion?: string;
+  judgeOverall?: number;
 };
 
 export type IdeaCandidateView = {

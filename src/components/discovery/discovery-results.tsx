@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Discovery narrative Hook — three strategic rewards, then investment.
+ * Discovery narrative Hook - three strategic rewards, then investment.
  * Formats grounded narrative only; does not invent options.
  */
 import { useMemo, useState } from "react";

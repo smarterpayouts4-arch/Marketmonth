@@ -4,12 +4,27 @@ import type { BrandSignalGraph, EvidenceItem } from "../types";
 import { truncateForEmbed } from "../../complete-sentence";
 import { isHeadlineEligible } from "../normalize/score-evidence";
 import type { DetectedChannel } from "@/lib/discovery/discovery-narrative.schema";
-import { bulletFrom, businessNoun, firstText, pickText } from "./helpers";
+import { platformDisplayName } from "@/lib/discovery/platform-names";
+import {
+  bulletFrom,
+  businessNoun,
+  createEvidenceLedger,
+  firstText,
+  pickText,
+} from "./helpers";
+
+/**
+ * Fits a catalog name into mid-sentence prose without destroying product codes.
+ * Lowercasing the whole string turned "Vitamin B12" into "vitamin b12".
+ */
+function lowercaseLeadingChar(text: string): string {
+  return text.charAt(0).toLowerCase() + text.slice(1);
+}
 
 function detectedPlatformNames(channels: DetectedChannel[]): string[] {
   return channels
     .filter((c) => c.status === "link-detected")
-    .map((c) => (c.platform === "x" ? "X" : c.platform.charAt(0).toUpperCase() + c.platform.slice(1)));
+    .map((c) => platformDisplayName(c.platform));
 }
 
 export function buildDoingWellSection(input: {
@@ -37,6 +52,7 @@ export function buildDoingWellSection(input: {
   // Boundary-safe: omit the quote entirely rather than embed a clipped fragment.
   const vpEmbed = vp ? truncateForEmbed(vp, 140) : null;
 
+  const ledger = createEvidenceLedger();
   const bullets = [
     bulletFrom(
       vpEmbed
@@ -45,7 +61,8 @@ export function buildDoingWellSection(input: {
       vp
         ? input.graph.valueMechanism.filter((i) => i.field === "valueProposition").concat(identity)
         : identity,
-      "observed"
+      "observed",
+      ledger
     ),
     bulletFrom(
       offers.length || value.length
@@ -57,18 +74,20 @@ export function buildDoingWellSection(input: {
           ]
             .filter(Boolean)
             .slice(0, 3)
-            .join(", ")
-            .toLowerCase()}.`
+            .map(lowercaseLeadingChar)
+            .join(", ")}.`
         : `${name} lists concrete products or services worth turning into content.`,
       [...offers, ...value],
-      "observed"
+      "observed",
+      ledger
     ),
     bulletFrom(
       trust.length
         ? "Trust signals on the site — independence, transparency, or evidence-minded guidance — give social content a credible base."
         : "Clear website language gives social content a credible place to start.",
       trust.length ? trust : identity,
-      trust.length ? "observed" : "inferred"
+      trust.length ? "observed" : "inferred",
+      ledger
     ),
   ].filter(Boolean);
 
@@ -79,7 +98,8 @@ export function buildDoingWellSection(input: {
       input.graph.socialFootprint.length
         ? input.graph.socialFootprint
         : identity,
-      "observed"
+      "observed",
+      ledger
     );
     if (socialBullet) bullets.push(socialBullet);
   }
@@ -88,7 +108,8 @@ export function buildDoingWellSection(input: {
     const extra = bulletFrom(
       `${name} already communicates a distinct point of view customers can recognize.`,
       identity,
-      "inferred"
+      "inferred",
+      ledger
     );
     if (extra) bullets.push(extra);
     else break;

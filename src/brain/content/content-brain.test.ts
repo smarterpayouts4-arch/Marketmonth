@@ -274,18 +274,18 @@ describe("extraContext owner-confirmed", () => {
     assert.notEqual(result.status, "blocked");
   });
 
-  it("applies marketingFocus without inventing evidence ids", async () => {
+  it("applies topicCategory without inventing evidence ids", async () => {
     const context = loadFixtureContext();
     const beforeIds = Object.keys(context.evidenceById);
     const result = await generateContentDirections({
       context,
       mode: "automatic",
-      marketingFocus: "value_proposition",
+      topicCategory: "offers_conversion",
     });
     assert.notEqual(result.status, "blocked");
     if (result.status === "blocked") return;
     assert.deepEqual(Object.keys(context.evidenceById), beforeIds);
-    // value_proposition → value_differentiation framing (see direction-writing-context)
+    // offers_conversion → value_differentiation framing (see direction-writing-context)
     assert.ok(
       result.variations.every((v) =>
         v.strategicPurpose.includes("benefit, difference")

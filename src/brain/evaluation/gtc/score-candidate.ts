@@ -1,6 +1,7 @@
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 import type { ContentBrainContext } from "@/brain/content/types";
 
+import { buildTopicEvidenceIndex } from "../evidence";
 import type { TopicSeed } from "../objective-topic-strategies";
 import type { TopicCandidateScore } from "../topic-candidate-types";
 import type { FramedCandidate } from "./frame-title";
@@ -13,13 +14,46 @@ export type ScoredCandidate = FramedCandidate & {
   titleHook?: import("./topic-title-hook/types").TopicTitleHookResult;
 };
 
+/** Score-component weights (topic-candidate-score-v2). Must sum to 1. */
+export const SCORE_WEIGHTS = {
+  objectiveAlignment: 0.18,
+  subjectKindFit: 0.16,
+  contextGrounding: 0.14,
+  audienceRelevance: 0.1,
+  evidenceGrounding: 0.12,
+  specificity: 0.12,
+  novelty: 0.1,
+  clarity: 0.08,
+} as const;
+
+/**
+ * Human-readable component breakdown: which components carried the score
+ * and which dragged it — for the Inspector and for eval debugging.
+ */
+export function explainScore(score: TopicCandidateScore): string[] {
+  const parts = (
+    Object.keys(SCORE_WEIGHTS) as (keyof typeof SCORE_WEIGHTS)[]
+  ).map((key) => ({
+    key,
+    value: score[key],
+    weighted: Math.round(score[key] * SCORE_WEIGHTS[key] * 1000) / 1000,
+  }));
+  parts.sort((a, b) => b.weighted - a.weighted);
+  return parts.map(
+    (p) =>
+      `${p.key}: ${p.value.toFixed(2)} × ${SCORE_WEIGHTS[p.key]} = ${p.weighted.toFixed(3)}`
+  );
+}
+
 export function scoreCandidate(args: {
   title: string;
   seed: TopicSeed;
-  objective: MarketingFocus;
+  objective: TopicCategoryId;
   context: ContentBrainContext;
   recentKeys: Set<string>;
   audience: string;
+  /** Average evidence qualityScore (0–1) for the seed's evidenceIds. */
+  evidenceQuality?: number;
 }): TopicCandidateScore {
   const { title, seed, objective, recentKeys, audience } = args;
   const titleKey = title.trim().toLowerCase();
@@ -48,9 +82,15 @@ export function scoreCandidate(args: {
       (seed.audienceNeed ? 0.35 : 0.1) +
       (audience.length > 20 ? 0.15 : 0)
   );
+  // Evidence count sets the base; evidence quality scales it so three weak
+  // rows no longer outrank one strong one.
+  const qualityFactor =
+    args.evidenceQuality !== undefined
+      ? 0.6 + 0.4 * Math.max(0, Math.min(1, args.evidenceQuality))
+      : 1;
   let evidenceGrounding = Math.min(
     1,
-    0.2 + Math.min(seed.evidenceIds.length, 3) * 0.25
+    (0.2 + Math.min(seed.evidenceIds.length, 3) * 0.25) * qualityFactor
   );
 
   // Industry research scores lower when connection is thinner / confidence low
@@ -85,14 +125,14 @@ export function scoreCandidate(args: {
 
   const overall =
     Math.round(
-      (objectiveAlignment * 0.18 +
-        subjectKindFit * 0.16 +
-        contextGrounding * 0.14 +
-        audienceRelevance * 0.1 +
-        evidenceGrounding * 0.12 +
-        specificity * 0.12 +
-        novelty * 0.1 +
-        clarity * 0.08) *
+      (objectiveAlignment * SCORE_WEIGHTS.objectiveAlignment +
+        subjectKindFit * SCORE_WEIGHTS.subjectKindFit +
+        contextGrounding * SCORE_WEIGHTS.contextGrounding +
+        audienceRelevance * SCORE_WEIGHTS.audienceRelevance +
+        evidenceGrounding * SCORE_WEIGHTS.evidenceGrounding +
+        specificity * SCORE_WEIGHTS.specificity +
+        novelty * SCORE_WEIGHTS.novelty +
+        clarity * SCORE_WEIGHTS.clarity) *
         100
     ) / 100;
 
@@ -111,15 +151,32 @@ export function scoreCandidate(args: {
   };
 }
 
+function averageEvidenceQuality(
+  seed: TopicSeed,
+  qualityById: Map<string, number>
+): number | undefined {
+  const scores = seed.evidenceIds
+    .map((id) => qualityById.get(id))
+    .filter((q): q is number => typeof q === "number");
+  if (scores.length === 0) return undefined;
+  return scores.reduce((a, b) => a + b, 0) / scores.length;
+}
+
 export function scoreCandidates(
   drafts: FramedCandidate[],
   args: {
-    objective: MarketingFocus;
+    objective: TopicCategoryId;
     context: ContentBrainContext;
     recentKeys: Set<string>;
     audience: string;
   }
 ): ScoredCandidate[] {
+  const evidenceIndex = buildTopicEvidenceIndex(args.context);
+  const qualityById = new Map<string, number>(
+    evidenceIndex.items
+      .filter((i) => typeof i.qualityScore === "number")
+      .map((i) => [i.id, i.qualityScore as number])
+  );
   return drafts.map((d) => ({
     ...d,
     score: scoreCandidate({
@@ -129,6 +186,7 @@ export function scoreCandidates(
       context: args.context,
       recentKeys: args.recentKeys,
       audience: args.audience,
+      evidenceQuality: averageEvidenceQuality(d.seed, qualityById),
     }),
   }));
 }

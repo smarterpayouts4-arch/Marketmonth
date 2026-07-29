@@ -12,7 +12,9 @@ export {
   toBrandCoreSlice,
 } from "./compile-brand-core";
 export {
+  clearBrandCoreCacheForTests,
   getBrandCore,
+  getBrandCoreAsync,
   getBrandCoreFromCsvText,
   type GetBrandCoreResult,
 } from "./get-brand-core";

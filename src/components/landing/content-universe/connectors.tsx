@@ -22,7 +22,7 @@ function getReducedMotionSnapshot() {
 
 /** SSR-safe: reports "motion allowed" on the server and syncs to the real
  * preference on the client via `useSyncExternalStore`, so the traveling
- * signal particles (SMIL — not reachable by the CSS
+ * signal particles (SMIL - not reachable by the CSS
  * `prefers-reduced-motion` media query used for the rail/node pulses) never
  * render for a user who has asked for reduced motion. */
 function usePrefersReducedMotion(): boolean {
@@ -48,7 +48,7 @@ type ContentFlowConnectorsProps = {
  * grid: one central junction, one horizontal rail, and one branch per
  * output card. Branch X positions are derived from `count` as the same
  * `(i + 0.5) / count` fraction the CSS grid uses for equal-width columns,
- * so a connector always meets its card's true horizontal center — never a
+ * so a connector always meets its card's true horizontal center - never a
  * hand-guessed pixel position.
  */
 export function ContentFlowConnectors({ count }: ContentFlowConnectorsProps) {
@@ -69,7 +69,7 @@ export function ContentFlowConnectors({ count }: ContentFlowConnectorsProps) {
       fill="none"
       preserveAspectRatio="none"
     >
-      {/* Hidden motion guides — one continuous path per branch (center out
+      {/* Hidden motion guides - one continuous path per branch (center out
           along the rail, then down to the card) for the traveling signal
           particles to follow. Not stroked; visual lines are drawn below. */}
       {!reducedMotion &&
@@ -105,7 +105,7 @@ export function ContentFlowConnectors({ count }: ContentFlowConnectorsProps) {
         className="content-flow-dash"
       />
 
-      {/* Branch drops — one per card. */}
+      {/* Branch drops - one per card. */}
       {xs.map((x, i) => (
         <path
           key={`drop-${i}`}
@@ -132,7 +132,7 @@ export function ContentFlowConnectors({ count }: ContentFlowConnectorsProps) {
       />
       <circle cx={centerX} cy={JUNCTION_Y} r="4.5" fill="var(--primary)" />
 
-      {/* Active nodes above each card — brighten in a repeating sequence. */}
+      {/* Active nodes above each card - brighten in a repeating sequence. */}
       {xs.map((x, i) => (
         <circle
           key={`node-${i}`}
@@ -148,7 +148,7 @@ export function ContentFlowConnectors({ count }: ContentFlowConnectorsProps) {
         />
       ))}
 
-      {/* Traveling signal particles — one per branch, following the hidden
+      {/* Traveling signal particles - one per branch, following the hidden
           motion guides. SMIL doesn't honor `prefers-reduced-motion`, so
           these are only rendered client-side once we know motion is OK. */}
       {!reducedMotion &&

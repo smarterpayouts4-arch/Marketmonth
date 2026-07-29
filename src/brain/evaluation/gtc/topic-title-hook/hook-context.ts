@@ -11,6 +11,13 @@ const ATTR_PHRASES: Array<{ re: RegExp; label: string }> = [
   { re: /\blabel\s+detail/i, label: "label detail" },
   { re: /\blabel\b/i, label: "label" },
   { re: /\bform(?:ulation)?s?\b/i, label: "form" },
+  // P2.3 typed commerce attributes — industry-agnostic families surfaced
+  // from typed commercial/catalog fields (extract-comparison).
+  { re: /\bpric(?:e|es|ing)\b|\bcosts?\b/i, label: "price" },
+  { re: /\b(?:shipping|delivery)\b/i, label: "shipping" },
+  { re: /\b(?:returns?|refunds?)\b/i, label: "returns" },
+  { re: /\b(?:warrant(?:y|ies)|guarantees?d?)\b/i, label: "warranty" },
+  { re: /\bsubscriptions?\b/i, label: "subscription" },
 ];
 
 function matchAttrPhrase(text: string): string | undefined {

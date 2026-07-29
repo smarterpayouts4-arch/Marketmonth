@@ -33,7 +33,7 @@ export function buildRootMetadata(): Metadata {
           url: identity.socialImagePath,
           width: 1200,
           height: 630,
-          alt: `${identity.displayName} — ${identity.tagline}`,
+          alt: `${identity.displayName} - ${identity.tagline}`,
         },
       ],
     },
@@ -58,21 +58,21 @@ export function buildLandingMetadata(): Metadata {
   const description = namedShortDescription(identity);
   return {
     title: {
-      absolute: `${identity.displayName} — ${identity.tagline}`,
+      absolute: `${identity.displayName} - ${identity.tagline}`,
     },
     description,
     alternates: {
       canonical: canonicalForPath("/"),
     },
     openGraph: {
-      title: `${identity.displayName} — ${identity.tagline}`,
+      title: `${identity.displayName} - ${identity.tagline}`,
       description,
       url: canonicalForPath("/"),
     },
   };
 }
 
-/** Inherited by all /(app) HTML shells — crawlable, not indexed. */
+/** Inherited by all /(app) HTML shells - crawlable, not indexed. */
 export function buildAppShellMetadata(): Metadata {
   return {
     robots: {
@@ -92,5 +92,6 @@ export function publicBrandChrome() {
     displayName: PRODUCT_IDENTITY.displayName,
     compactName: PRODUCT_IDENTITY.compactName,
     tagline: PRODUCT_IDENTITY.tagline,
+    shortDescription: PRODUCT_IDENTITY.shortDescription,
   };
 }

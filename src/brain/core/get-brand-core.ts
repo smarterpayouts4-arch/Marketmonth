@@ -5,7 +5,11 @@ import type { ContentBrainContext } from "@/brain/content/types";
 import { loadFixtureBrandCore } from "@/brain/content/repository/load-fixture-brand-core";
 import { parseFixtureCsv } from "@/brain/content/repository/parse-fixture-csv";
 import { artifactRelativePath } from "@/lib/company-profile/artifact-store";
-import { readCompanyProfileAsBrainContext } from "@/lib/company-profile/read-company-profile";
+import {
+  readCompanyProfileAsBrainContext,
+  readCompanyProfileAsync,
+} from "@/lib/company-profile/read-company-profile";
+import { projectionToBrainContext } from "@/lib/company-profile/to-brain-context";
 
 import type { BrandCore } from "./brand-core.schema";
 import { compileBrandCore } from "./compile-brand-core";
@@ -24,7 +28,7 @@ export type GetBrandCoreResult = {
   context: ContentBrainContext;
   brandCore: BrandCore;
   identity: BrandCoreIdentity;
-  source: "fixture" | "context";
+  source: "fixture" | "context" | "artifact";
   fixturePath?: string;
 };
 
@@ -147,6 +151,93 @@ export function getBrandCore(
     identity,
     source: "fixture",
     fixturePath: fixtureRelative,
+  };
+}
+
+/**
+ * Compiled Brand Core cache keyed by artifactHash — the same approved CSV
+ * always compiles to the same Brand Core, so recompiling per request is waste.
+ */
+const compiledByArtifactHash = new Map<
+  string,
+  { brandCore: BrandCore; identity: BrandCoreIdentity }
+>();
+const COMPILED_CACHE_MAX = 64;
+
+function compileCached(
+  artifactHash: string | undefined,
+  context: ContentBrainContext
+): { brandCore: BrandCore; identity: BrandCoreIdentity } {
+  if (artifactHash) {
+    const hit = compiledByArtifactHash.get(artifactHash);
+    if (hit) return hit;
+  }
+  const brandCore = compileBrandCore(context);
+  const identity = resolveBrandCoreIdentity(brandCore);
+  const entry = { brandCore, identity };
+  if (artifactHash) {
+    if (compiledByArtifactHash.size >= COMPILED_CACHE_MAX) {
+      const oldest = compiledByArtifactHash.keys().next().value;
+      if (oldest !== undefined) compiledByArtifactHash.delete(oldest);
+    }
+    compiledByArtifactHash.set(artifactHash, entry);
+  }
+  return entry;
+}
+
+/** Test seam: clear the hash-keyed compile cache. */
+export function clearBrandCoreCacheForTests(): void {
+  compiledByArtifactHash.clear();
+}
+
+/**
+ * Async Brand Core load: disk first, then the DB artifact mirror
+ * (company_profile_artifacts) — use this from anything that runs deployed,
+ * where the filesystem may be read-only or empty.
+ */
+export async function getBrandCoreAsync(
+  companyId: string,
+  options?: { context?: ContentBrainContext }
+): Promise<GetBrandCoreResult> {
+  if (options?.context) {
+    return getBrandCore(companyId, { context: options.context });
+  }
+
+  const normalized = resolveCompanyId(companyId);
+  if (!normalized) {
+    throw new Error(
+      "getBrandCoreAsync: companyId is required (no silent default brand)"
+    );
+  }
+
+  const readOptions = {
+    state: "approved" as const,
+    branch: "branch-b" as const,
+    step: "getBrandCoreAsync",
+  };
+
+  let projection;
+  try {
+    projection = await readCompanyProfileAsync(normalized, readOptions);
+  } catch (err) {
+    // Slug variant (dots → hyphens) mirrors the sync path's folder fallback.
+    const slug = normalized.replace(/\./g, "-");
+    if (slug === normalized) throw err;
+    projection = await readCompanyProfileAsync(slug, readOptions);
+  }
+
+  const context = projectionToBrainContext(projection);
+  const { brandCore, identity } = compileCached(
+    projection.artifactHash,
+    context
+  );
+
+  return {
+    companyId: identity.company_id || normalized,
+    context,
+    brandCore,
+    identity,
+    source: "artifact",
   };
 }
 

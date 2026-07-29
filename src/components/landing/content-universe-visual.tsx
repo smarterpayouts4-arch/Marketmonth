@@ -5,7 +5,7 @@ import { Target } from "lucide-react";
 import { ContentFormatCard } from "@/components/landing/content-format-card";
 import { ContentFlowConnectors } from "@/components/landing/content-universe/connectors";
 import { FORMATS } from "@/components/landing/content-universe/formats";
-import { LiveDot } from "@/components/landing/content-universe/live-dot";
+import { contentUniverseDisclaimer } from "@/components/landing/landing-copy";
 
 const COUNT = FORMATS.length;
 
@@ -13,7 +13,7 @@ const COUNT = FORMATS.length;
  * Full Content Flow diagram: one core strategy topic distributing through
  * an animated network into five equal, illustrative output formats.
  *
- * Desktop/tablet (`md:` and up) render the true distribution network — a
+ * Desktop/tablet (`md:` and up) render the true distribution network - a
  * shared relative container drives both the CSS Grid columns and the SVG
  * connector positions, so branches always land on a card's true center.
  * Below `md`, a simplified single connector line sits above a horizontal
@@ -37,14 +37,13 @@ export function ContentUniverseVisual() {
           <p className="mt-0.5 text-[13px] leading-snug text-text-secondary">
             One idea, expanded across formats.
           </p>
-          <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
-            <LiveDot />
-            LIVE: Distributing now
+          <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
+            Illustrative concept
           </p>
         </div>
       </div>
 
-      {/* Distribution network + five equal outputs — md and up. */}
+      {/* Distribution network + five equal outputs - md and up. */}
       <div className="relative mx-auto mt-2 hidden w-full max-w-5xl md:block">
         <div className="relative h-16">
           <ContentFlowConnectors count={COUNT} />
@@ -56,7 +55,7 @@ export function ContentUniverseVisual() {
         </ul>
       </div>
 
-      {/* Simplified connector + horizontal snap row — below md. */}
+      {/* Simplified connector + horizontal snap row - below md. */}
       <div className="mt-5 md:hidden">
         <div
           className="mx-auto flex flex-col items-center gap-1"
@@ -76,15 +75,8 @@ export function ContentUniverseVisual() {
         </ul>
       </div>
 
-      <p className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[12px] font-medium text-text-secondary">
-        <span className="inline-flex items-center gap-1.5">
-          <LiveDot />
-          Live distribution across all channels
-        </span>
-        <span className="text-text-muted" aria-hidden="true">
-          |
-        </span>
-        Updates in real time
+      <p className="mt-6 text-center text-[12px] font-medium text-text-muted">
+        {contentUniverseDisclaimer}
       </p>
     </div>
   );

@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 
 import type { ContentDirectionsHandoffV1 } from "@/brain/content/types";
 import { buildContentAtomFromHandoff } from "@/brain/use-cases/build-content-atom-from-handoff";
+import { requireCompanyAccess } from "@/lib/auth/company-access";
+import { requireApiSession } from "@/lib/auth/require-api-session";
+import { enforceRateLimit } from "@/lib/http/durable-rate-limit";
+import { rateLimitKeyFromRequest } from "@/lib/http/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -16,6 +20,28 @@ type Body = {
  * Atom path is deterministic (preferLlm: false), matching Studio production.
  */
 export async function POST(request: Request) {
+  const session = await requireApiSession();
+  if (!session.ok) {
+    return NextResponse.json(
+      { ok: false, error: session.error },
+      { status: session.status }
+    );
+  }
+
+  const rate = await enforceRateLimit(
+    "brain.content-atom",
+    rateLimitKeyFromRequest(request)
+  );
+  if (!rate.ok) {
+    return NextResponse.json(
+      { ok: false, error: "Rate limit exceeded" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rate.retryAfterSec) },
+      }
+    );
+  }
+
   let body: Body;
   try {
     body = (await request.json()) as Body;
@@ -37,8 +63,19 @@ export async function POST(request: Request) {
     );
   }
 
+  const atomDomain = body.domain?.trim() || body.handoff.brand.domain || "";
+  if (atomDomain) {
+    const access = await requireCompanyAccess(session.userId, atomDomain);
+    if (!access.ok) {
+      return NextResponse.json(
+        { ok: false, error: access.error },
+        { status: access.status }
+      );
+    }
+  }
+
   const outcome = await buildContentAtomFromHandoff({
-    domain: body.domain?.trim() || body.handoff.brand.domain || "",
+    domain: atomDomain,
     handoff: body.handoff,
     selectedVariationId: body.selectedVariationId,
   });

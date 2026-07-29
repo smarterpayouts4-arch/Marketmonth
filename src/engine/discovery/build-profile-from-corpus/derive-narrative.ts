@@ -104,20 +104,10 @@ export function deriveNarrative(input: {
     notes.push("valueProposition from description");
   }
 
-  // Services: only observed headings that look like offer names — never invented labels.
+  // Services are curated platform capabilities — not page headings (those are
+  // educationalTopics / trust copy). Leave empty when unsupported.
   const services: string[] = [];
-  const seen = new Set<string>();
-  for (const h of input.signals.headings) {
-    const label = h.replace(/\s+/g, " ").trim();
-    if (label.length < 4 || label.length > 60) continue;
-    if (/^(home|about|contact|blog|faq|menu|login)$/i.test(label)) continue;
-    const key = label.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    services.push(label);
-    if (services.length >= 6) break;
-  }
-  if (services.length > 0) notes.push("services from observed headings");
+  notes.push("services unsupported — left empty (headings are not services)");
 
   const brandVoice =
     /clear|helpful|evidence|transparent|trust/i.test(

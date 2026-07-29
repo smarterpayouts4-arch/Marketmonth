@@ -12,12 +12,8 @@ export type {
 
 export {
   toDiscoveryActivation,
-  wordCount,
   type DiscoveryActivationView,
 } from "./to-discovery-reveals";
-export {
-  normalizeInsightCompare,
-  shouldSuppressInsight,
-} from "./insight-display";
+export { shouldSuppressInsight } from "./insight-display";
 export { toStrategyIntentAnswers } from "./to-strategy-intent";
 export { applyInvestmentsToStrategy } from "./strategy-influence";

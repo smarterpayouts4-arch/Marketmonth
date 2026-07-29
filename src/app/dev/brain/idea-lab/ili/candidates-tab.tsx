@@ -1,5 +1,6 @@
 import type { IdeaLabCandidatesResult } from "@/brain/evaluation/topic-candidate-types";
 
+import { resolveEvidenceClaims } from "./resolve-evidence";
 import { Row } from "./row";
 
 export function CandidatesTab({
@@ -31,16 +32,6 @@ export function CandidatesTab({
           value={result.historyWritten ? "Yes" : "No (expected)"}
         />
         <Row label="Candidate count" value={String(result.candidates.length)} />
-        {result.titlePolishFailureReason ? (
-          <Row
-            label="Title polish failure"
-            value={`${result.titlePolishFailureReason}${
-              result.titlePolishFailureDetail
-                ? `: ${result.titlePolishFailureDetail}`
-                : ""
-            }`}
-          />
-        ) : null}
       </dl>
       {gen.status === "insufficient_context" ? (
         <div className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs">
@@ -58,61 +49,72 @@ export function CandidatesTab({
         </ul>
       ) : null}
       <ol className="space-y-3">
-        {result.candidates.map((c) => (
-          <li
-            key={c.topicId}
-            className="rounded-lg border border-border px-3 py-2"
-            data-testid={`inspector-candidate-${c.rank}`}
-          >
-            <p className="text-xs font-semibold text-foreground">
-              #{c.rank} · {c.title}
-            </p>
-            <p className="mt-1 text-[11px] text-text-muted">
-              subject={c.subject?.label ?? c.title} · kind={c.subject?.kind ?? c.subjectKind}{" "}
-              · provenance=
-              {c.subject?.sourceType ?? "brand_observed"} · confidence=
-              {c.subject?.classificationConfidence ?? c.classificationConfidence} ·
-              sources={c.sourceFields.join(", ")}
-              {c.titleItchType
-                ? ` · titleHook=${c.titleHookVersion ?? "topic-title-hook-v2"} · itch=${c.titleItchType}`
-                : ""}
-              {c.titleSource ? ` · titleSource=${c.titleSource}` : ""}
-              {c.titlePolishFailureReason
-                ? ` · polishFail=${c.titlePolishFailureReason}`
-                : ""}
-            </p>
-            {c.titlePolishFailureDetail ? (
-              <p className="mt-0.5 text-[11px] text-text-muted">
-                polishFailDetail: {c.titlePolishFailureDetail}
+        {result.candidates.map((c) => {
+          const claims = resolveEvidenceClaims(
+            c.evidenceIds,
+            result.evidenceClaimsById
+          );
+          return (
+            <li
+              key={c.topicId}
+              className="rounded-lg border border-border px-3 py-2"
+              data-testid={`inspector-candidate-${c.rank}`}
+            >
+              <p className="text-xs font-semibold text-foreground">
+                #{c.rank} · {c.title}
               </p>
-            ) : null}
-            {c.originalTitle && c.originalTitle !== c.title ? (
-              <p className="mt-0.5 text-[11px] text-text-muted">
-                originalTitle: {c.originalTitle}
-                {c.titlePolishReason
-                  ? ` · polishReason=${c.titlePolishReason}`
+              {c.whyItFits ? (
+                <p className="mt-1 text-[11px] text-text-secondary">
+                  whyItFits: {c.whyItFits}
+                </p>
+              ) : null}
+              {c.hook ? (
+                <p className="mt-0.5 text-[11px] text-text-muted">
+                  hook: {c.hook}
+                </p>
+              ) : null}
+              <p className="mt-1 text-[11px] text-text-muted">
+                subject={c.subject?.label ?? c.title} · kind=
+                {c.subject?.kind ?? c.subjectKind} · provenance=
+                {c.subject?.sourceType ?? "brand_observed"} · confidence=
+                {c.subject?.classificationConfidence ??
+                  c.classificationConfidence}{" "}
+                · sources={c.sourceFields.join(", ")}
+                {c.titleItchType
+                  ? ` · titleHook=${c.titleHookVersion ?? "topic-title-hook-v2"} · itch=${c.titleItchType}`
                   : ""}
-                {c.titlePolishModel ? ` · model=${c.titlePolishModel}` : ""}
+                {c.titleSource ? ` · titleSource=${c.titleSource}` : ""}
               </p>
-            ) : null}
-            <p className="mt-0.5 text-[11px] text-text-secondary">
-              {c.classificationReason}
-            </p>
-            <p className="mt-0.5 text-[11px] text-text-muted">
-              evidence: {c.evidenceIds.join(", ") || "(none)"}
-            </p>
-            <pre className="mt-2 overflow-x-auto rounded bg-muted/50 p-2 text-[10px] leading-relaxed text-text-secondary">
-              {JSON.stringify(
-                {
-                  scoreVersion: c.scoreVersion,
-                  ...c.score,
-                },
-                null,
-                2
+              <p className="mt-0.5 text-[11px] text-text-secondary">
+                {c.classificationReason}
+              </p>
+              {claims.length > 0 ? (
+                <ul className="mt-1 space-y-1 text-[11px] text-text-muted">
+                  {claims.map((claim) => (
+                    <li key={claim.id}>
+                      <span className="font-mono text-[10px]">{claim.id}</span>
+                      {claim.field ? ` · ${claim.field}` : ""}: {claim.claim}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-0.5 text-[11px] text-text-muted">
+                  evidence: (none)
+                </p>
               )}
-            </pre>
-          </li>
-        ))}
+              <pre className="mt-2 overflow-x-auto rounded bg-muted/50 p-2 text-[10px] leading-relaxed text-text-secondary">
+                {JSON.stringify(
+                  {
+                    scoreVersion: c.scoreVersion,
+                    ...c.score,
+                  },
+                  null,
+                  2
+                )}
+              </pre>
+            </li>
+          );
+        })}
       </ol>
     </div>
   );

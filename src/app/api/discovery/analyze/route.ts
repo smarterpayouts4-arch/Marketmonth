@@ -3,6 +3,7 @@ import { z } from "zod";
 import { analyzeWebsite, DISCOVERY_STAGES } from "@/engine/discovery";
 import type { DiscoveryStreamEvent } from "@/engine/discovery";
 import { buildDiscoveryNarrative } from "@/engine/discovery/discovery-narrative";
+import { polishDiscoveryDisplayCopy } from "@/engine/discovery/discovery-narrative/polish/polish-display-copy";
 import { readCompanyProfileAsync } from "@/lib/company-profile/read-company-profile";
 import { recordProvenance } from "@/lib/provenance";
 
@@ -86,12 +87,34 @@ export async function POST(request: Request) {
           },
         });
 
-        const discoveryNarrative =
+        const deterministicNarrative =
           (await discoveryNarrativeFromArtifact(result.companyId)) ??
           result.discoveryNarrative ??
           buildDiscoveryNarrative({
             brandProfile: result.brandProfile,
           });
+
+        // Display-only wording pass, applied after the deterministic build so
+        // the engine stays pure. Falls through untouched when disabled or on any
+        // validation failure.
+        const polish = await polishDiscoveryDisplayCopy(deterministicNarrative);
+        const discoveryNarrative = polish.profile;
+        if (polish.report.enabled || polish.report.error) {
+          recordProvenance({
+            branch: "branch-a",
+            step: "analyze-route:copy-polish",
+            companyId: result.companyId ?? "unknown",
+            source: "derived",
+            detail: {
+              enabled: polish.report.enabled,
+              model: polish.report.model,
+              polished: polish.report.polishedCount,
+              candidates: polish.report.candidateCount,
+              rejections: polish.report.rejections.map((r) => r.reason),
+              ...(polish.report.error ? { error: polish.report.error } : {}),
+            },
+          });
+        }
 
         send({
           type: "result",

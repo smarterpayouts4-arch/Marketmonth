@@ -1,6 +1,6 @@
 /**
  * High-level crawler stance. foundation/robots.ts turns this into robots.txt rules.
- * Training vs retrieval differs by provider — do not invent universal "AI-approved" claims.
+ * Training vs retrieval differs by provider - do not invent universal "AI-approved" claims.
  */
 export const CRAWLER_POLICY = {
   searchIndexing: "allow",
@@ -18,7 +18,7 @@ export const ROBOTS_DISALLOW_PATHS = ["/api/"] as const;
 
 /**
  * Provider-specific AI crawler hints when aiSearchRetrieval is allow.
- * modelTraining remains review-by-provider — we do not blanket-allow training bots.
+ * modelTraining remains review-by-provider - we do not blanket-allow training bots.
  */
 export const AI_SEARCH_CRAWLER_ALLOW = [
   "PerplexityBot",

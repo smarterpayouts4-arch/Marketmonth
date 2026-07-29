@@ -1,7 +1,10 @@
 import {
-  whatYouGet,
-  whyDifferent,
-} from "@/components/landing/data/mock-landing-demo";
+  landingCopy,
+  whatYouGetEyebrow,
+  whatYouGetHeading,
+  whyDifferentEyebrow,
+  whyDifferentHeading,
+} from "@/components/landing/landing-copy";
 import { Reveal } from "@/components/landing/reveal";
 
 export function FeatureSection() {
@@ -11,14 +14,14 @@ export function FeatureSection() {
         <div>
           <Reveal>
             <p className="font-display text-sm font-semibold text-primary">
-              Why it&apos;s different
+              {whyDifferentEyebrow}
             </p>
-            <h2 className="text-section mt-3 max-w-[16ch] text-foreground">
-              Clarity before content production
+            <h2 className="text-section mt-3 max-w-[18ch] text-foreground">
+              {whyDifferentHeading}
             </h2>
           </Reveal>
           <div className="mt-10 grid gap-x-12 gap-y-8 sm:grid-cols-2">
-            {whyDifferent.map((item, index) => (
+            {landingCopy.differentiators.map((item, index) => (
               <Reveal key={item.title}>
                 <div className="border-t border-border pt-5">
                   <p className="font-display text-xs font-semibold text-text-muted">
@@ -39,15 +42,15 @@ export function FeatureSection() {
         <div>
           <Reveal>
             <p className="font-display text-sm font-semibold text-primary">
-              What you get
+              {whatYouGetEyebrow}
             </p>
             <h2 className="text-section mt-3 text-foreground">
-              From website to a monthly plan
+              {whatYouGetHeading}
             </h2>
           </Reveal>
           <Reveal className="mt-8">
             <ul className="divide-y divide-border border-y border-border">
-              {whatYouGet.map((item) => (
+              {landingCopy.whatYouGet.map((item) => (
                 <li
                   key={item}
                   className="flex items-center gap-4 py-4 text-[1.02rem] font-medium text-foreground"

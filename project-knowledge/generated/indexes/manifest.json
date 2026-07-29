@@ -148,6 +148,24 @@
       "classification": "server-only"
     },
     {
+      "variable": "BRAIN_HISTORY_STORE",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
+      "variable": "BRAIN_JUDGE_SAMPLE_RATE",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
+      "variable": "BRAIN_TENANT_DAILY_TOKEN_CAP",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
       "variable": "DATABASE_URL",
       "inEnvExample": true,
       "referencedInSrc": true,
@@ -158,6 +176,12 @@
       "inEnvExample": true,
       "referencedInSrc": false,
       "classification": "documented-unused"
+    },
+    {
+      "variable": "DISCOVERY_COPY_POLISH_PROVIDER",
+      "inEnvExample": true,
+      "referencedInSrc": true,
+      "classification": "server-only"
     },
     {
       "variable": "DISCOVERY_PLAYWRIGHT",
@@ -274,6 +298,18 @@
       "classification": "server-only"
     },
     {
+      "variable": "OPENAI_DISCOVERY_POLISH_MODEL",
+      "inEnvExample": true,
+      "referencedInSrc": false,
+      "classification": "documented-unused"
+    },
+    {
+      "variable": "OPENAI_MAX_CONCURRENCY",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
       "variable": "PERPLEXITY_API_KEY",
       "inEnvExample": true,
       "referencedInSrc": true,
@@ -292,6 +328,12 @@
       "classification": "server-only"
     },
     {
+      "variable": "RATE_LIMIT_STORE",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
       "variable": "SITE_ORIGIN",
       "inEnvExample": true,
       "referencedInSrc": true,
@@ -302,17 +344,11 @@
       "inEnvExample": false,
       "referencedInSrc": true,
       "classification": "undocumented"
-    },
-    {
-      "variable": "TOPIC_TITLE_POLISH_PROVIDER",
-      "inEnvExample": false,
-      "referencedInSrc": true,
-      "classification": "undocumented"
     }
   ],
   "duplicateRoutes": [],
   "ownership": {
-    "unownedCount": 28,
+    "unownedCount": 30,
     "qualifyingFeatureRoots": [
       "src/engine/discovery",
       "src/components/discovery",
@@ -326,6 +362,6 @@
   "contentFingerprints": {
     "routes": "cfd0f9170564bd51",
     "apis": "883b0df2f7a62ee0",
-    "env": "771d9e8c017dfd9b"
+    "env": "8cfb0995681a0efa"
   }
 }

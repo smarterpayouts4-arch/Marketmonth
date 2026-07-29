@@ -1,27 +1,44 @@
 import {
-  parseMarketingFocus,
-  type MarketingFocus,
-} from "@/brain/content/marketing-focus";
+  parseTopicCategory,
+  type TopicCategoryId,
+} from "@/brain/content/topic-category";
 import { getBrandCoreRepository } from "@/brain/core";
 import {
   mergeResearchImportIntoContext,
   parseCompanyResearchImport,
   type CompanyResearchImportV1,
 } from "@/brain/evaluation/company-research-assist";
+import { buildTrace } from "@/brain/evaluation/build-idea-lab-trace";
 import { generateTopicCandidates } from "@/brain/evaluation/generate-topic-candidates";
-import { polishTopicCandidateTitles } from "@/brain/evaluation/gtc/topic-title-polish";
+import {
+  buildTopicEvidenceIndex,
+  selectEvidenceForCategory,
+} from "@/brain/evaluation/evidence";
+import { fetchLlmTopicCandidates } from "@/brain/evaluation/gtc/llm-candidates";
 import { preferBrandCoreForTopics } from "@/brain/evaluation/prefer-brand-core-context";
 import {
   expandIndustryResearchWithPerplexity,
   mergeIndustryResearchIntoContext,
 } from "@/brain/evaluation/industry-research";
 import { getIdeaLabHistoryPath } from "@/brain/evaluation/idea-lab-store";
-import { IDEA_LAB_FIXTURE_NAME } from "@/brain/evaluation/idea-lab.types";
+import {
+  IDEA_LAB_FIXTURE_NAME,
+  type IdeaLabEvidenceClaimView,
+} from "@/brain/evaluation/idea-lab.types";
 import {
   TOPIC_CANDIDATE_SCORE_VERSION,
   TOPIC_OBJECTIVE_REQUIRED,
   type IdeaLabCandidatesResult,
 } from "@/brain/evaluation/topic-candidate-types";
+import {
+  judgeTopicCandidates,
+  shouldSampleJudge,
+} from "@/brain/evaluation/judge/llm-judge";
+import {
+  emitQualityAlerts,
+  evaluateTopicGenerationQuality,
+} from "@/brain/observability/quality-alert";
+import { assignPromptVariant } from "@/brain/policy/prompt-experiments";
 import { createTopicGenerationRepository } from "@/brain/store/create-topic-generation-repository";
 
 const RECENT_LIMIT = 12;
@@ -33,7 +50,7 @@ function assertDev(): void {
 }
 
 export type RunIdeaLabCandidatesInput = {
-  marketingFocus?: unknown;
+  topicCategory?: unknown;
   /** Company whose approved artifact feeds Brand Core (required unless fixturePath). */
   companyId?: string;
   /**
@@ -62,7 +79,7 @@ export async function runIdeaLabTopicCandidates(
 ): Promise<RunIdeaLabCandidatesOutcome> {
   assertDev();
 
-  const focusParsed = parseMarketingFocus(input.marketingFocus);
+  const focusParsed = parseTopicCategory(input.topicCategory);
   if (!focusParsed.ok) {
     return {
       ok: false,
@@ -79,7 +96,7 @@ export async function runIdeaLabTopicCandidates(
       status: 400,
     };
   }
-  const objective: MarketingFocus = focusParsed.value;
+  const objective: TopicCategoryId = focusParsed.value;
   const historyRepositoryPath = getIdeaLabHistoryPath();
 
   const companyId = input.companyId?.trim();
@@ -140,6 +157,26 @@ export async function runIdeaLabTopicCandidates(
 
   const topicContext = preferBrandCoreForTopics(context, brandCore);
 
+  const sessionId = `ilcand_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+  // Prompt A/B (P3.1): stable per-company assignment; the assigned version
+  // is stamped everywhere the control version used to be.
+  const promptAssignment = assignPromptVariant(
+    "topic.llm-candidates",
+    identity.company_id
+  );
+  const promptVersion = promptAssignment.version;
+
+  const evidenceIndex = buildTopicEvidenceIndex(topicContext);
+  const evidenceItems = selectEvidenceForCategory(evidenceIndex, objective);
+  const llmStarted = Date.now();
+  const llmFetch = await fetchLlmTopicCandidates({
+    context: topicContext,
+    categoryId: objective,
+    evidenceItems,
+    promptVariant: promptAssignment.variant,
+  });
+  const llmDurationMs = Date.now() - llmStarted;
+
   let recentTitles: string[] = [];
   try {
     const labRepo = createTopicGenerationRepository({
@@ -159,24 +196,115 @@ export async function runIdeaLabTopicCandidates(
     recentTitles = [];
   }
 
-  const deterministic = generateTopicCandidates({
+  const generation = generateTopicCandidates({
     context: topicContext,
     objective,
     recentTitles,
     industryOpportunities,
+    ...(llmFetch.ok && llmFetch.candidates.length > 0
+      ? { llmCandidates: llmFetch.candidates }
+      : {}),
   });
-
-  const polished = await polishTopicCandidateTitles({
-    generation: deterministic,
-    context: topicContext,
-    objective,
-  });
-  const generation = polished.generation;
-
-  const sessionId = `ilcand_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 
   const candidates =
     generation.status === "success" ? [...generation.candidates] : [];
+
+  const llmUsed = llmFetch.ok && llmFetch.candidates.length > 0;
+  const deterministicFallbackUsed = !llmUsed;
+
+  // LLM-as-judge on sampled runs (P3.1) — advisory, never blocks the result.
+  let judge: Awaited<ReturnType<typeof judgeTopicCandidates>> = null;
+  if (candidates.length > 0 && shouldSampleJudge()) {
+    try {
+      judge = await judgeTopicCandidates({
+        brandName: context.brandName,
+        categoryId: objective,
+        candidates: candidates.map((c) => ({
+          title: c.title,
+          strategicAngle: c.strategicAngle,
+        })),
+        companyId: identity.company_id,
+      });
+    } catch {
+      judge = null;
+    }
+  }
+
+  // Quality-drop alerting (P3.1): structured warnings for ops visibility.
+  emitQualityAlerts(
+    `idea-lab:${identity.company_id}:${objective}`,
+    evaluateTopicGenerationQuality({
+      status: generation.status,
+      candidateCount: candidates.length,
+      llmFailureReason: llmFetch.ok ? undefined : llmFetch.reason,
+      judgeOverall: judge?.overall,
+    })
+  );
+
+  const evidenceClaimsById: Record<string, IdeaLabEvidenceClaimView> = {};
+  for (const item of evidenceIndex.items) {
+    evidenceClaimsById[item.id] = {
+      id: item.id,
+      field: item.field,
+      claim: item.normalizedText || item.value,
+    };
+  }
+
+  const candidateTrace = buildTrace([
+    {
+      stage: "Evidence indexed",
+      modulePath: "@/brain/evaluation/evidence",
+      symbol: "buildTopicEvidenceIndex",
+      status: "success",
+      outputSummary: { evidenceIndexCount: evidenceIndex.items.length },
+    },
+    {
+      stage: "Evidence selected for category",
+      modulePath: "@/brain/evaluation/evidence",
+      symbol: "selectEvidenceForCategory",
+      status: "success",
+      inputSummary: { categoryId: objective },
+      outputSummary: { evidenceSelectedCount: evidenceItems.length },
+    },
+    {
+      stage: "LLM topic candidates",
+      modulePath: "@/brain/evaluation/gtc/llm-candidates",
+      symbol: "fetchLlmTopicCandidates",
+      status: llmFetch.ok ? "success" : "warning",
+      durationMs: llmDurationMs,
+      outputSummary: llmFetch.ok
+        ? {
+            candidateCount: llmFetch.candidates.length,
+            model: llmFetch.model,
+            promptVersion,
+            validatorVersion: llmFetch.validatorVersion,
+            repairUsed: llmFetch.repairUsed ?? false,
+            rejectedCount: llmFetch.rejections?.length ?? 0,
+            tokenUsage: llmFetch.tokenUsage,
+          }
+        : {
+            reason: llmFetch.reason,
+            detail: llmFetch.detail,
+            model: llmFetch.model,
+            promptVersion,
+            validatorVersion: llmFetch.validatorVersion,
+            repairUsed: llmFetch.repairUsed ?? false,
+            rejections: llmFetch.rejections?.slice(0, 6),
+          },
+    },
+    {
+      stage: "Candidate assembly",
+      modulePath: "@/brain/evaluation/generate-topic-candidates",
+      symbol: "generateTopicCandidates",
+      status:
+        generation.status === "insufficient_context" ? "warning" : "success",
+      outputSummary: {
+        status: generation.status,
+        candidateCount: candidates.length,
+        deterministicFallbackUsed,
+      },
+    },
+  ]);
 
   return {
     ok: true,
@@ -199,8 +327,29 @@ export async function runIdeaLabTopicCandidates(
       historyRepositoryPath,
       historyWritten: false,
       scoreVersion: TOPIC_CANDIDATE_SCORE_VERSION,
-      titlePolishFailureReason: polished.titlePolishFailureReason,
-      titlePolishFailureDetail: polished.titlePolishFailureDetail,
+      generationTrace: {
+        evidenceIndexCount: evidenceIndex.items.length,
+        evidenceSelectedCount: evidenceItems.length,
+        llmUsed,
+        deterministicFallbackUsed,
+        promptVersion,
+        model: llmFetch.model,
+        llmDurationMs,
+        artifactHash: hash,
+        correlationId: sessionId,
+        promptVariant: promptAssignment.variant,
+        ...(judge
+          ? { judgeVersion: judge.judgeVersion, judgeOverall: judge.overall }
+          : {}),
+      },
+      evidenceClaimsById,
+      candidateTrace,
+      ...(llmFetch.ok
+        ? { llmTokenUsage: llmFetch.tokenUsage }
+        : {
+            llmFailureReason: llmFetch.reason,
+            llmFailureDetail: llmFetch.detail,
+          }),
     },
   };
 }

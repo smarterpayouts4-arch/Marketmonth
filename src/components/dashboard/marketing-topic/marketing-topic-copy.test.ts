@@ -5,9 +5,9 @@ import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import {
-  DEFAULT_MARKETING_FOCUS_OPTIONS,
-  MARKETING_FOCUS_LABELS,
-} from "@/brain/content/marketing-focus";
+  DEFAULT_TOPIC_CATEGORY_OPTIONS,
+  TOPIC_CATEGORY_LABELS,
+} from "@/brain/content/topic-category";
 
 import { buildContentDirectionsRequest } from "./build-content-directions-request";
 import {
@@ -17,7 +17,7 @@ import {
   GENERATE_BUTTON_LABEL,
   LEGACY_MARKETING_TOPIC_HEADING,
   LEGACY_PICK_HEADING,
-  MARKETING_FOCUS_LEGEND,
+  TOPIC_CATEGORY_LEGEND,
   MARKETING_TOPIC_HEADING,
   MARKETING_TOPIC_NAV_LABEL,
 } from "./copy";
@@ -60,33 +60,33 @@ describe("marketing topic copy + request", () => {
     assert.doesNotMatch(header, /proprietary AI|auto-generate one for you/i);
   });
 
-  it("exposes four default marketing-focus options as single-select values", () => {
-    assert.deepEqual(DEFAULT_MARKETING_FOCUS_OPTIONS, [
-      "brand_awareness",
-      "value_proposition",
+  it("exposes four default topic-category options as single-select values", () => {
+    assert.deepEqual(DEFAULT_TOPIC_CATEGORY_OPTIONS, [
+      "customer_questions",
       "product_education",
-      "decision_support",
+      "trust_proof",
+      "offers_conversion",
     ]);
-    assert.equal(MARKETING_FOCUS_LABELS.brand_awareness, "Brand awareness");
-    assert.equal(MARKETING_FOCUS_LABELS.value_proposition, "Value proposition");
-    assert.equal(MARKETING_FOCUS_LABELS.product_education, "Product education");
+    assert.equal(TOPIC_CATEGORY_LABELS.customer_questions, "Customer Questions");
+    assert.equal(TOPIC_CATEGORY_LABELS.product_education, "Product Education");
+    assert.equal(TOPIC_CATEGORY_LABELS.trust_proof, "Trust & Proof");
     assert.equal(
-      MARKETING_FOCUS_LABELS.decision_support,
-      "Customer decision support"
+      TOPIC_CATEGORY_LABELS.offers_conversion,
+      "Offers & Conversion"
     );
-    assert.match(MARKETING_FOCUS_LEGEND, /accomplish/i);
+    assert.match(TOPIC_CATEGORY_LEGEND, /accomplish/i);
   });
 
-  it("sends marketingFocus as a dedicated field (not priorities)", () => {
+  it("sends topicCategory as a dedicated field (not priorities)", () => {
     const built = buildContentDirectionsRequest({
       domain: "zynava.com",
       mode: "automatic",
-      marketingFocus: "value_proposition",
+      topicCategory: "offers_conversion",
       contextState: emptyExtraContextUi(),
     });
     assert.equal(built.ok, true);
     if (!built.ok) return;
-    assert.equal(built.body.marketingFocus, "value_proposition");
+    assert.equal(built.body.topicCategory, "offers_conversion");
     assert.equal(built.body.requestedVariations, 6);
     assert.equal(
       Object.prototype.hasOwnProperty.call(built.body, "priorities"),
@@ -99,7 +99,7 @@ describe("marketing topic copy + request", () => {
       domain: "zynava.com",
       mode: "manual",
       topic: "Clearer homepage offer",
-      marketingFocus: "product_education",
+      topicCategory: "product_education",
       contextState: {
         ...emptyExtraContextUi(),
         pastedText: "Feature the starter plan this month",
@@ -109,7 +109,7 @@ describe("marketing topic copy + request", () => {
     if (!built.ok) return;
     assert.equal(built.body.mode, "manual");
     assert.equal(built.body.topic, "Clearer homepage offer");
-    assert.equal(built.body.marketingFocus, "product_education");
+    assert.equal(built.body.topicCategory, "product_education");
     assert.equal(built.body.extraContext?.source, "pasted");
     assert.match(built.body.extraContext?.text ?? "", /starter plan/);
   });

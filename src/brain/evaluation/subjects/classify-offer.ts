@@ -5,6 +5,7 @@ import {
   REJECT_AS_INGREDIENT_LABEL_RE,
   looksLikeIngredientLabel,
 } from "./ingredient-patterns";
+import { buildContextTokenIndex, sharesCatalogToken } from "./context-tokens";
 import { clampLabel, evidenceForField } from "./helpers";
 import type { TopicSubject } from "./types";
 
@@ -46,6 +47,21 @@ export function classifyOfferNoun(
       classificationReason:
         "Explicit offer/catalog field with positive ingredient or form evidence",
       classificationConfidence: "high",
+    };
+  }
+
+  // P2.3 CSV-token grounding: an offer noun that shares a significant token
+  // with a typed catalog record is catalog-grounded for any industry —
+  // no supplement lexicon required.
+  if (sharesCatalogToken(clipped, buildContextTokenIndex(context))) {
+    return {
+      label: clipped,
+      kind: "catalog_product",
+      sourceField,
+      evidenceIds: evidenceForField(context, clipped),
+      classificationReason:
+        "Offer noun corroborated by typed catalog record token (CSV-grounded)",
+      classificationConfidence: "medium",
     };
   }
 

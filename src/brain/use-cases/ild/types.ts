@@ -3,7 +3,7 @@ import {
   startTimer,
 } from "@/brain/evaluation/build-idea-lab-trace";
 import type { SelectedTopicContext } from "@/brain/content/direction-writing-context";
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 
 export type TraceDraft = Parameters<typeof buildTrace>[0][number];
 export type TraceDrafts = Parameters<typeof buildTrace>[0];
@@ -17,7 +17,7 @@ export type RunIdeaLabInput = {
   topicMode?: "auto" | "manual";
   /** @deprecated Prefer selectedTopicContext.masterTitle (exact). */
   manualTopic?: string;
-  marketingFocus?: unknown;
+  topicCategory?: unknown;
   selectedCandidateId?: string;
   selectedTopicContext?: SelectedTopicContext;
   /** Required unless fixturePath is set — never silently defaults to another brand. */
@@ -27,6 +27,6 @@ export type RunIdeaLabInput = {
 
 export type GatedDirectionsInput = {
   topicMode: "manual";
-  marketingFocus: MarketingFocus;
+  topicCategory: TopicCategoryId;
   selectedTopicContext: SelectedTopicContext;
 };

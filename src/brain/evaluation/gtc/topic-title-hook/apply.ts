@@ -9,10 +9,9 @@ export type FramedCandidateWithTitleHook = FramedCandidate & {
   titleHook: TopicTitleHookResult;
 };
 
-function resolveProvider(): "off" | "deterministic-v1" | "openai" {
+function resolveProvider(): "off" | "deterministic-v1" {
   const flag = process.env.TOPIC_TITLE_HOOK_PROVIDER?.trim().toLowerCase();
   if (flag === "off" || flag === "none") return "off";
-  if (flag === "openai") return "deterministic-v1";
   return "deterministic-v1";
 }
 

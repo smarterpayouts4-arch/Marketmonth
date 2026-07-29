@@ -1,6 +1,6 @@
 import { selectedTopicContextSchema } from "@/brain/content/direction-writing-context";
 import { validateExtraContext } from "@/brain/content/extra-context";
-import { parseMarketingFocus } from "@/brain/content/marketing-focus";
+import { parseTopicCategory } from "@/brain/content/topic-category";
 import { DIRECTIONS_PROVIDER_ID } from "@/brain/content/topic-generation-record";
 
 import type {
@@ -108,7 +108,7 @@ export function validateGenerateInput(
     }
   }
 
-  const focusParsed = parseMarketingFocus(input.marketingFocus);
+  const focusParsed = parseTopicCategory(input.topicCategory);
   if (!focusParsed.ok) {
     return {
       ok: false,
@@ -139,7 +139,7 @@ export function validateGenerateInput(
       topic: input.topic,
       lockedMasterTopic: input.lockedMasterTopic,
       priorities: input.priorities,
-      marketingFocus: focusParsed.value ?? selectedTopicContext?.objective,
+      topicCategory: focusParsed.value ?? selectedTopicContext?.objective,
       extraContext,
       requestedVariations: input.requestedVariations ?? 6,
       parentGenerationId: input.parentGenerationId,

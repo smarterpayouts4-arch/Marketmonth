@@ -74,8 +74,16 @@ export const contentDirectionsHandoffV1Schema = z
       .length(REQUIRED_VARIATION_COUNT),
     selectedVariationId: z.string().min(1),
     selectedAt: z.string().min(1),
+    topicCategory: z.string().optional(),
     marketingFocus: z.string().optional(),
     extraContextSummary: z.string().optional(),
+  })
+  .transform((data) => {
+    const { marketingFocus, ...rest } = data;
+    return {
+      ...rest,
+      topicCategory: rest.topicCategory ?? marketingFocus,
+    };
   })
   .superRefine((data, ctx) => {
     if (!data.variations.some((v) => v.id === data.selectedVariationId)) {

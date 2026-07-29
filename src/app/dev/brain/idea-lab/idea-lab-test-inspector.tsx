@@ -11,6 +11,7 @@ import type { IdeaLabCandidatesResult } from "@/brain/evaluation/topic-candidate
 
 import { CandidatesTab } from "./ili/candidates-tab";
 import { ControlsTab } from "./ili/controls-tab";
+import { EvidenceTab } from "./ili/evidence-tab";
 import { HistoryTab } from "./ili/history-tab";
 import { InputsTab } from "./ili/inputs-tab";
 import { OverviewTab } from "./ili/overview-tab";
@@ -19,6 +20,7 @@ import { TraceTab } from "./ili/trace-tab";
 type TabId =
   | "overview"
   | "candidates"
+  | "evidence"
   | "inputs"
   | "trace"
   | "history"
@@ -42,6 +44,7 @@ type Props = {
 const TABS: { id: TabId; label: string }[] = [
   { id: "overview", label: "Overview" },
   { id: "candidates", label: "Candidates" },
+  { id: "evidence", label: "Evidence" },
   { id: "inputs", label: "Inputs" },
   { id: "trace", label: "Brain Trace" },
   { id: "history", label: "Run History" },
@@ -131,6 +134,9 @@ export function IdeaLabTestInspector({
           ) : null}
           {tab === "candidates" ? (
             <CandidatesTab result={candidatesResult} />
+          ) : null}
+          {tab === "evidence" ? (
+            <EvidenceTab result={candidatesResult} />
           ) : null}
           {tab === "inputs" ? <InputsTab run={run} inspect={inspect} /> : null}
           {tab === "trace" ? <TraceTab run={run} /> : null}

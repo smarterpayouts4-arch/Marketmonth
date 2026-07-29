@@ -1,4 +1,4 @@
-/** UI-facing discovery narrative models — presentation only; no engine imports. */
+/** UI-facing discovery narrative models - presentation only; no engine imports. */
 
 import type {
   CadenceLevel,
@@ -6,6 +6,7 @@ import type {
   DiscoveryConfidence,
   SocialDiscoveryProfile,
 } from "@/lib/discovery/discovery-narrative.schema";
+import type { CardRowCopy } from "@/lib/discovery/card-copy";
 
 export type DiscoveryEvidenceKind = DiscoveryClassification;
 export type DiscoveryEvidence = {
@@ -16,17 +17,7 @@ export type DiscoveryEvidence = {
 };
 
 /** Compact accordion row shaped from a grounded section bullet. */
-export type DiscoveryEvidenceItem = {
-  id: string;
-  title: string;
-  summary: string;
-  detail: string;
-  supportingPoints: string[];
-  sourceLabel: string;
-  sourceUrl?: string;
-  tag?: string;
-  kind: DiscoveryClassification;
-};
+export type DiscoveryEvidenceItem = CardRowCopy;
 
 export type DiscoveryRevealId = "doing-well" | "win" | "content-play";
 
@@ -35,14 +26,10 @@ export type DiscoveryReveal = {
   label: string;
   question: string;
   insight: string;
-  insightEligible: boolean;
   evidence: DiscoveryEvidence[];
   /** Compact accordion rows (preferred UI). */
   evidenceItems: DiscoveryEvidenceItem[];
-  evidenceLevel: "strong" | "moderate" | "low";
   clarification?: string;
-  socialMeaning?: string;
-  reveal: string;
   transition?: string;
   /** Concise takeaway for the pale strip (interpretation, not raw evidence). */
   takeaway?: string;

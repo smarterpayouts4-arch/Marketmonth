@@ -38,10 +38,13 @@ export function OverviewTab({
         label="Lab-history records"
         value={String(inspect?.labHistoryRecordCount ?? "—")}
       />
-      <Row label="Active provider" value="deterministic-v1" />
+      <Row
+        label="Active provider"
+        value={run?.input.providerUsed ?? "— (no run yet)"}
+      />
       <Row
         label="Generator version"
-        value={run?.input.generatorVersion ?? "deterministic-directions-v1"}
+        value={run?.input.generatorVersion ?? "— (no run yet)"}
       />
       <Row
         label="Last run duration"

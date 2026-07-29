@@ -354,7 +354,7 @@ D Brand Core→slices: further trim; Directions claims ≈ positioning only
 |---------|---------|------|--------------|-------|
 | No `getBrandCore` facade; ad-hoc loaders | new `get-brand-core.ts`; wire ILD/GCU | unit load Zynava | Single SoT entry | A |
 | Doctrine layers undocumented | `CONTENT_BRAIN.md` | knowledge:check | Clear Layer1–3 | A |
-| catalogProducts/FAQ not in Core | `compile-brand-core.ts` | compile fixture asserts catalog in offers/proof | Topics can lean on Core | B |
+| catalogProducts/FAQ not in Core | `compile-brand-core.ts` | compile fixture asserts indexed products on Core and catalog **disjoint from** offer rows | Topics can lean on Core | B |
 | Sticky analyze cache / overwrite | `analyze-website.ts`, API `forceRefresh` | API contract test | Rescan-safe | B |
 | No acceptance gate | refresh script + analyze | gate unit | No deceptive CSV | B |
 | No page hashes / corpus | refresh + `data/runtime/discovery-pages/` | snapshot write test | Frozen audit | C |

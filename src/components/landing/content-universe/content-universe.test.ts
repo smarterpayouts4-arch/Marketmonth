@@ -10,7 +10,7 @@ function read(relativeToLanding: string): string {
   return readFileSync(path.join(landingRoot, relativeToLanding), "utf8");
 }
 
-describe("Content Flow — data model", () => {
+describe("Content Flow - data model", () => {
   it("has exactly five formats", () => {
     assert.equal(FORMATS.length, 5);
   });
@@ -48,25 +48,25 @@ describe("Content Flow — data model", () => {
   });
 });
 
-describe("Content Flow — section renders the approved copy", () => {
+describe("Content Flow - section renders the approved copy", () => {
   const source = read("content-universe/index.tsx");
 
-  it("renders the section with the headline", () => {
+  it("renders the section with the headline from approved copy", () => {
     assert.match(source, /<section/);
-    assert.match(source, /One Strategy Topic\. Multiple Content Formats\./);
+    assert.match(source, /contentUniverseHeadline/);
   });
 
   it("renders the illustrative-example disclaimer", () => {
-    assert.match(source, /Illustrative example/);
+    assert.match(source, /contentUniverseDisclaimer/);
   });
 
-  it("renders a live-status badge", () => {
-    assert.match(source, /Live content flow/i);
-    assert.match(source, /LiveDot/);
+  it("renders an illustrative badge instead of a live-status claim", () => {
+    assert.match(source, /contentUniverseBadge/);
+    assert.equal(/Live content flow|LiveDot/i.test(source), false);
   });
 });
 
-describe("Content Flow — cards are data-driven, never hardcoded", () => {
+describe("Content Flow - cards are data-driven, never hardcoded", () => {
   const visual = read("content-universe-visual.tsx");
   const card = read("content-format-card.tsx");
 
@@ -85,14 +85,19 @@ describe("Content Flow — cards are data-driven, never hardcoded", () => {
     assert.equal(/Instagram Post|TikTok Video|128K/.test(card), false);
   });
 
-  it("renders the strategy card's live-distribution status", () => {
-    assert.match(visual, /LIVE: Distributing now/);
-    assert.match(visual, /Live distribution across all channels/);
-    assert.match(visual, /Updates in real time/);
+  it("labels the strategy card as an illustrative concept, not live distribution", () => {
+    assert.match(visual, /Illustrative concept/);
+    assert.match(visual, /contentUniverseDisclaimer/);
+    assert.equal(
+      /LIVE: Distributing now|Live distribution across all channels|Updates in real time/i.test(
+        visual
+      ),
+      false
+    );
   });
 });
 
-describe("Content Flow — connectors are decorative and reduced-motion aware", () => {
+describe("Content Flow - connectors are decorative and reduced-motion aware", () => {
   const connectors = read("content-universe/connectors.tsx");
   const visual = read("content-universe-visual.tsx");
   const css = readFileSync(
@@ -136,7 +141,7 @@ describe("Content Flow — connectors are decorative and reduced-motion aware", 
   });
 });
 
-describe("Content Flow — superseded implementation was removed, not duplicated", () => {
+describe("Content Flow - superseded implementation was removed, not duplicated", () => {
   it("the count-up hook no longer exists (static illustrative metrics replaced it)", () => {
     assert.equal(
       existsSync(path.join(landingRoot, "content-universe/use-count-up.ts")),
@@ -168,7 +173,7 @@ describe("Content Flow — superseded implementation was removed, not duplicated
   });
 });
 
-describe("Content Flow — still wired into the landing page", () => {
+describe("Content Flow - still wired into the landing page", () => {
   it("ContentUniverseSection is still imported by the landing composition", () => {
     const landingIndex = read("index.tsx");
     assert.match(landingIndex, /ContentUniverseSection/);

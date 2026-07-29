@@ -2,6 +2,7 @@ import type { ContentBrainContext } from "@/brain/content/types";
 
 import {
   getBrandCore,
+  getBrandCoreAsync,
   type GetBrandCoreResult,
 } from "./get-brand-core";
 
@@ -10,6 +11,7 @@ import {
  * or Neon drafts directly — only this interface.
  */
 export interface BrandCoreRepository {
+  /** Sync, disk-only. Safe for scripts, tests, and dev-only routes. */
   getBrandCore(
     companyId: string,
     options?: {
@@ -18,6 +20,11 @@ export interface BrandCoreRepository {
       absolutePath?: string;
     }
   ): GetBrandCoreResult;
+  /** Disk, then DB artifact mirror. Use from anything that runs deployed. */
+  getBrandCoreAsync(
+    companyId: string,
+    options?: { context?: ContentBrainContext }
+  ): Promise<GetBrandCoreResult>;
 }
 
 class DefaultBrandCoreRepository implements BrandCoreRepository {
@@ -30,6 +37,13 @@ class DefaultBrandCoreRepository implements BrandCoreRepository {
     }
   ): GetBrandCoreResult {
     return getBrandCore(companyId, options);
+  }
+
+  getBrandCoreAsync(
+    companyId: string,
+    options?: { context?: ContentBrainContext }
+  ): Promise<GetBrandCoreResult> {
+    return getBrandCoreAsync(companyId, options);
   }
 }
 

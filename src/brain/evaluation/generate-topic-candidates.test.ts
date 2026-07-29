@@ -13,7 +13,7 @@ import {
   extractProductSubjects,
   generateTopicCandidates,
   isMetaInstructionalPhrase,
-  objectiveTopicStrategies,
+  categoryTopicStrategies,
 } from "./generate-topic-candidates";
 import { TOPIC_CANDIDATE_SCORE_VERSION } from "./topic-candidate-types";
 
@@ -209,8 +209,8 @@ describe("generate-topic-candidates helpers", () => {
     assert.ok(result.candidates.length <= 5);
   });
 
-  it("exactly one objective strategy registry", () => {
-    assert.equal(Object.keys(objectiveTopicStrategies).length, 5);
+  it("exactly one category strategy registry", () => {
+    assert.equal(Object.keys(categoryTopicStrategies).length, 4);
   });
 });
 
@@ -255,33 +255,49 @@ describe("generateTopicCandidates (objective strategy)", () => {
     }
   });
 
-  it("value_proposition may use platform capabilities; honesty over padding to six", () => {
+  it("offers_conversion may seed from platform capabilities but bans PE shells and does not pad from capability alone", () => {
+    const PE_BAN_RE =
+      /\b(before you buy|check the label|label check|price per serving|serving size|buying\s+.+\?\s*check this|comparison trap before you buy)\b/i;
+
     const context = loadZynavaContext();
     const result = generateTopicCandidates({
       context,
-      objective: "value_proposition",
+      objective: "offers_conversion",
     });
     assert.equal(result.status, "success");
     if (result.status !== "success") return;
-    // Observed-only evidence (no brand_profile promotion) may yield limited.
+    assert.ok(result.candidates.length >= 1);
     assert.ok(
       result.completeness === "complete" || result.completeness === "limited"
     );
-    assert.ok(result.candidates.length >= 1);
-    if (result.completeness === "complete") {
-      assert.equal(result.candidates.length, 6);
+    for (const c of result.candidates) {
+      if (
+        c.subjectKind === "platform_capability" ||
+        c.subjectKind === "brand_position"
+      ) {
+        assert.equal(
+          PE_BAN_RE.test(c.title),
+          false,
+          `offers_conversion must not emit PE shells: ${c.title}`
+        );
+      }
     }
+
+    const platformOnly = baseContext({
+      products: ["Widget search"],
+      services: ["Price comparison"],
+      contentOpportunities: [],
+    });
+    const limited = generateTopicCandidates({
+      context: platformOnly,
+      objective: "offers_conversion",
+    });
+    assert.equal(limited.status, "success");
+    if (limited.status !== "success") return;
+    assert.equal(limited.completeness, "limited");
+    assert.ok(limited.candidates.length < 6);
     assert.ok(
-      result.candidates.some((c) => c.subjectKind === "platform_capability") ||
-        result.candidates.length >= 1
-    );
-    const scores = result.candidates.map((c) => c.score.overall);
-    const unique = new Set(scores);
-    assert.ok(
-      unique.size >= 2 ||
-        Math.max(...scores) - Math.min(...scores) > 0.01 ||
-        result.candidates.length === 1,
-      "scores should not all be identical when multiple candidates exist"
+      limited.candidates.every((c) => c.subjectKind === "platform_capability")
     );
   });
 
@@ -369,29 +385,31 @@ describe("generateTopicCandidates (objective strategy)", () => {
     }
   });
 
-  it("decision_support and trust_authority use preferred kinds", () => {
+  it("customer_questions and trust_proof use preferred kinds", () => {
     const context = loadZynavaContext();
     const decision = generateTopicCandidates({
       context,
-      objective: "decision_support",
+      objective: "customer_questions",
     });
     const trust = generateTopicCandidates({
       context,
-      objective: "trust_authority",
+      objective: "trust_proof",
     });
-    // decision_support may be insufficient when the fixture lacks
-    // decision_criterion / comparison_attribute subjects with evidence.
+    // customer_questions may be insufficient when the fixture lacks
+    // faq / decision / comparison subjects with evidence.
     assert.ok(
       decision.status === "success" || decision.status === "insufficient_context",
-      `decision status: ${decision.status}`
+      `customer_questions status: ${decision.status}`
     );
     assert.equal(trust.status, "success");
     if (decision.status === "success") {
       assert.ok(
         decision.candidates.some(
           (c) =>
+            c.subjectKind === "faq_topic" ||
             c.subjectKind === "decision_criterion" ||
-            c.subjectKind === "comparison_attribute"
+            c.subjectKind === "comparison_attribute" ||
+            c.subjectKind === "audience_problem"
         )
       );
     }
@@ -419,8 +437,8 @@ describe("generateTopicCandidates (objective strategy)", () => {
     });
     for (const objective of [
       "product_education",
-      "value_proposition",
-      "brand_awareness",
+      "offers_conversion",
+      "customer_questions",
     ] as const) {
       const result = generateTopicCandidates({ context, objective });
       if (result.status !== "success") continue;

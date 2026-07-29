@@ -1,4 +1,5 @@
 import {
+  index,
   integer,
   jsonb,
   pgTable,
@@ -185,5 +186,71 @@ export const companyProfileArtifacts = pgTable(
       table.companyId,
       table.state
     ),
+  ]
+);
+
+/**
+ * Topic generation history (P2.1) — serverless-safe replacement for the
+ * dev-only data/runtime CSV store. Query columns are mirrored from the
+ * canonical `record` payload (full TopicGenerationRecord, schema-validated
+ * by the repository adapter — the DB stores it opaquely).
+ */
+export const topicGenerations = pgTable(
+  "topic_generations",
+  {
+    generationId: text("generation_id").primaryKey(),
+    companyId: text("company_id").notNull(),
+    domain: text("domain").notNull(),
+    normalizedInputTopic: text("normalized_input_topic"),
+    comparisonGroupId: text("comparison_group_id"),
+    status: text("status").notNull(),
+    recordRevision: integer("record_revision").notNull(),
+    record: jsonb("record").$type<Record<string, unknown>>().notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("topic_generations_company_idx").on(table.companyId, table.createdAt),
+    index("topic_generations_comparison_idx").on(table.comparisonGroupId),
+  ]
+);
+
+/**
+ * Durable fixed-window rate-limit counters (P2.2) — replaces the in-memory
+ * limiter for multi-instance / serverless production enforcement.
+ */
+export const rateLimitWindows = pgTable("rate_limit_windows", {
+  bucketKey: text("bucket_key").primaryKey(),
+  windowStart: timestamp("window_start", { mode: "date" }).notNull(),
+  count: integer("count").notNull(),
+});
+
+/** Per-tenant daily LLM token usage (P2.2 cost caps). */
+export const llmUsageDaily = pgTable(
+  "llm_usage_daily",
+  {
+    companyId: text("company_id").notNull(),
+    /** UTC day bucket, e.g. "2026-07-29". */
+    day: text("day").notNull(),
+    totalTokens: integer("total_tokens").notNull().default(0),
+    requestCount: integer("request_count").notNull().default(0),
+    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.companyId, table.day] })]
+);
+
+/** Content run traces (P2.1) — durable ContentRunTrace payloads per run. */
+export const contentRunTraces = pgTable(
+  "content_run_traces",
+  {
+    runId: text("run_id").primaryKey(),
+    companyId: text("company_id"),
+    workflowVersion: text("workflow_version").notNull(),
+    finalStatus: text("final_status").notNull(),
+    trace: jsonb("trace").$type<Record<string, unknown>>().notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("content_run_traces_company_idx").on(table.companyId, table.createdAt),
   ]
 );

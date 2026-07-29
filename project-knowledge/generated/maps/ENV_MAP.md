@@ -8,8 +8,12 @@ Names only from `.env.example` + static `process.env.*` in `src/`. Never reads `
 | --- | --- | --- | --- |
 | AUTH_SECRET | Yes | Yes | server-only |
 | AUTH_URL | Yes | Yes | server-only |
+| BRAIN_HISTORY_STORE | No | Yes | undocumented |
+| BRAIN_JUDGE_SAMPLE_RATE | No | Yes | undocumented |
+| BRAIN_TENANT_DAILY_TOKEN_CAP | No | Yes | undocumented |
 | DATABASE_URL | Yes | Yes | server-only |
 | DEV_AUTH_BYPASS | Yes | No | documented-unused |
+| DISCOVERY_COPY_POLISH_PROVIDER | Yes | Yes | server-only |
 | DISCOVERY_PLAYWRIGHT | No | Yes | undocumented |
 | GOOGLE_CLIENT_ID | Yes | Yes | server-only |
 | GOOGLE_CLIENT_SECRET | Yes | Yes | server-only |
@@ -29,9 +33,11 @@ Names only from `.env.example` + static `process.env.*` in `src/`. Never reads `
 | NODE_ENV | Yes | Yes | server-only |
 | OPENAI_API_KEY | Yes | Yes | server-only |
 | OPENAI_DISCOVERY_MODEL | Yes | Yes | server-only |
+| OPENAI_DISCOVERY_POLISH_MODEL | Yes | No | documented-unused |
+| OPENAI_MAX_CONCURRENCY | No | Yes | undocumented |
 | PERPLEXITY_API_KEY | Yes | Yes | server-only |
 | PERPLEXITY_SEO_MODEL | Yes | Yes | server-only |
 | PERPLEXITY_SEO_TIMEOUT_MS | Yes | Yes | server-only |
+| RATE_LIMIT_STORE | No | Yes | undocumented |
 | SITE_ORIGIN | Yes | Yes | server-only |
 | TOPIC_TITLE_HOOK_PROVIDER | No | Yes | undocumented |
-| TOPIC_TITLE_POLISH_PROVIDER | No | Yes | undocumented |

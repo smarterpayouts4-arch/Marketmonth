@@ -29,14 +29,14 @@ export const deterministicProvider: DirectionProvider = {
         selected: input.selectedTopicContext ?? null,
         context: input.context,
         fallbackMasterTitle: input.masterTopic.punchline,
-        fallbackObjective: input.marketingFocus,
+        fallbackObjective: input.topicCategory,
       });
 
     const variations = buildSixVariations({
       context: input.context,
       masterTopic: input.masterTopic,
       writing,
-      marketingFocus: input.marketingFocus ?? writing.objective,
+      topicCategory: input.topicCategory ?? writing.objective,
     });
 
     const masterTopic =

@@ -77,12 +77,12 @@ export function describeOriginAlignment(): {
 
   if (siteOrigin && nextPublicSiteUrl && siteOrigin !== nextPublicSiteUrl) {
     notes.push(
-      "NEXT_PUBLIC_SITE_URL differs from SITE_ORIGIN — document why or align them."
+      "NEXT_PUBLIC_SITE_URL differs from SITE_ORIGIN - document why or align them."
     );
   }
   if (siteOrigin && authUrl && siteOrigin !== authUrl) {
     notes.push(
-      "AUTH_URL differs from SITE_ORIGIN — document why (rare) or align them."
+      "AUTH_URL differs from SITE_ORIGIN - document why (rare) or align them."
     );
   }
 

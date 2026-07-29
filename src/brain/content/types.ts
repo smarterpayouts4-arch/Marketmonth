@@ -3,9 +3,9 @@
  * Dashboard and API consume these types; they must not redefine Brain logic.
  */
 
-import type { MarketingFocus } from "./marketing-focus";
+import type { TopicCategoryId } from "./topic-category";
 
-export type { MarketingFocus } from "./marketing-focus";
+export type { TopicCategoryId } from "./topic-category";
 
 export type Confidence = "high" | "medium" | "low";
 
@@ -115,6 +115,35 @@ export type ContentIndexedProduct = {
   sourceUrl?: string;
 };
 
+/** FAQ pair from approved profile — primary fuel for customer_questions. */
+export type ContentFaq = {
+  question: string;
+  answer: string;
+  sourceUrl?: string;
+};
+
+/**
+ * Commercial term of sale (offer-as-relation), never a product/catalog name.
+ * Populated from projection.offers after the extract-offers precision fix.
+ */
+export type ContentCommercialTerm = {
+  label: string;
+  sourceUrl?: string;
+};
+
+/**
+ * Curated crawl signals minus PII-bearing fields.
+ * Contact arrays, location, colors, logo, and organization are dropped upstream.
+ */
+export type ContentBrandSignals = {
+  headings: string[];
+  ctaTexts: string[];
+  productText: string;
+  aboutText: string;
+  bodySample: string;
+  testimonialText: string;
+};
+
 export type ContentBrainContext = {
   brandName: string;
   domain: string;
@@ -133,6 +162,12 @@ export type ContentBrainContext = {
   brandVoice?: string;
   marketingOpportunity?: string;
   contentOpportunities: string[];
+  /** FAQ pairs (question/answer split) for customer_questions grounding. */
+  faqs?: ContentFaq[];
+  /** Commercial terms of sale — empty is a valid outcome when none are published. */
+  commercialTerms?: ContentCommercialTerm[];
+  /** PII-scrubbed crawl signals for category evidence selection. */
+  signals?: ContentBrandSignals;
   /** Deterministic evidence ids keyed for citation */
   evidenceById: Record<string, ContentEvidence>;
   contextVersion: string;
@@ -171,7 +206,7 @@ export type GenerateContentDirectionsInput = {
    * User-confirmed strategic purpose for this topic set.
    * Not observed website evidence — never invents evidence IDs.
    */
-  marketingFocus?: MarketingFocus;
+  topicCategory?: TopicCategoryId;
   /** Structured owner goals only — not paste/upload body text */
   priorities?: string[];
   /** Supplemental paste/upload context (owner-confirmed) */
@@ -219,7 +254,7 @@ export type ContentDirectionsHandoffV1 = {
   selectedVariationId: string;
   selectedAt: string;
   /** User-confirmed strategic purpose from Marketing Topic (optional). */
-  marketingFocus?: string;
+  topicCategory?: string;
   /** Short summary of owner supplemental context — not full paste body. */
   extraContextSummary?: string;
 };

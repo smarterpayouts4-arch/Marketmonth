@@ -1,4 +1,5 @@
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
+import { audienceLineForContext } from "@/brain/content/audience-label";
 import type { ContentBrainContext } from "@/brain/content/types";
 
 import {
@@ -7,6 +8,8 @@ import {
   frameCandidates,
   scoreCandidates,
 } from "./gtc";
+import type { ValidatedLlmTopicCandidate } from "./gtc/llm-candidates";
+import { mapLlmCandidatesToFramed } from "./gtc/llm-candidates";
 import {
   collectIndustryOpportunities,
   industryOpportunitiesToSubjects,
@@ -25,15 +28,15 @@ export {
   extractAudienceProblems,
 } from "./topic-subject";
 export {
-  objectiveTopicStrategies,
+  categoryTopicStrategies,
   buildObjectiveTopicSeeds,
 } from "./objective-topic-strategies";
 
 function audienceLine(context: ContentBrainContext): string {
-  return (
-    context.audience?.trim() ||
-    `people researching what ${context.brandName} offers`
-  );
+  return audienceLineForContext({
+    audience: context.audience,
+    brandName: context.brandName,
+  });
 }
 
 function industryResearchDisabled(): boolean {
@@ -52,12 +55,17 @@ function industryResearchDisabled(): boolean {
  */
 export function generateTopicCandidates(args: {
   context: ContentBrainContext;
-  objective: MarketingFocus;
+  objective: TopicCategoryId;
   recentTitles?: string[];
   /** Live Perplexity opportunities (already validated). Optional. */
   industryOpportunities?: IndustryResearchOpportunity[];
   /** When false, skip industry subjects even if present on context. */
   includeIndustryResearch?: boolean;
+  /**
+   * Pre-validated LLM candidates. When non-empty they lead the slate;
+   * deterministic drafts top up remaining distinct-support slots.
+   */
+  llmCandidates?: ValidatedLlmTopicCandidate[];
 }): TopicCandidateGenerationResult {
   const { context, objective } = args;
   const recentKeys = new Set(
@@ -76,6 +84,41 @@ export function generateTopicCandidates(args: {
         context
       )
     : [];
+
+  if (args.llmCandidates?.length) {
+    const llmFramed = mapLlmCandidatesToFramed({
+      candidates: args.llmCandidates,
+      context,
+      objective,
+    });
+    // Partial-accept + deterministic top-up: a short LLM slate no longer
+    // caps completeness — deterministic drafts fill the remaining
+    // support-key slots (support/display dedupe prevents overlap; ties go
+    // to the LLM slate via stable sort order).
+    const detSeeds = buildObjectiveTopicSeeds(
+      context,
+      objective,
+      industrySubjects
+    );
+    const detFramed = applyTopicTitleHooks(
+      frameCandidates(detSeeds, context, objective)
+    );
+    const framed = [...llmFramed, ...detFramed];
+    const scored = scoreCandidates(framed, {
+      objective,
+      context,
+      recentKeys,
+      audience,
+    });
+    const seeds = [...llmFramed.map((f) => f.seed), ...detSeeds];
+    return assembleCandidateResult({
+      scored,
+      seeds,
+      context,
+      objective,
+      audience,
+    });
+  }
 
   const seeds = buildObjectiveTopicSeeds(context, objective, industrySubjects);
   const framed = frameCandidates(seeds, context, objective);

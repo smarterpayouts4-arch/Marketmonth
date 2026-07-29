@@ -1,6 +1,6 @@
 /**
  * Presentation formatter: SocialDiscoveryProfile → reveal view.
- * Formats only — never invents options or facts.
+ * Formats only - never invents options or facts.
  */
 import type { SocialDiscoveryProfile } from "@/lib/discovery/discovery-narrative.schema";
 
@@ -55,27 +55,17 @@ export function toDiscoveryActivation(
   const byId = new Map(profile.sections.map((s) => [s.id, s]));
   const reveals: DiscoveryReveal[] = REVEAL_ORDER.map((id) => {
     const section = byId.get(id)!;
-    const socialMeaning = section.socialMeaning?.trim();
     return {
       id,
       label: REVEAL_LABELS[id],
       question: sectionQuestion(id),
       insight: section.headline,
-      insightEligible: profile.evidenceQuality !== "low",
       evidence: bulletsToEvidence(section),
       evidenceItems: toEvidenceItems(section),
-      evidenceLevel:
-        profile.evidenceQuality === "strong"
-          ? "strong"
-          : profile.evidenceQuality === "moderate"
-            ? "moderate"
-            : "low",
       clarification:
         profile.evidenceQuality === "low"
-          ? "Low-evidence read — continue if this still matches the business, or try another website."
+          ? "Low-evidence read - continue if this still matches the business, or try another website."
           : undefined,
-      socialMeaning,
-      reveal: section.reveal,
       transition: section.transition,
       // Keep the strip short so the card fits the first viewport.
       takeaway:

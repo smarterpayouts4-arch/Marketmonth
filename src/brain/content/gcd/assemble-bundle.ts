@@ -13,7 +13,7 @@ export async function assembleSuccessBundle(input: {
   masterTopic: MasterTopic;
   writingContext: DirectionWritingContext;
   selectedTopicContext?: SelectedTopicContext;
-  marketingFocus?: GenerateContentDirectionsInput["marketingFocus"];
+  topicCategory?: GenerateContentDirectionsInput["topicCategory"];
   hookEnrichmentProvider?: GenerateContentDirectionsInput["hookEnrichmentProvider"];
   requestSalt?: string;
   readiness: ReadinessAssessment;
@@ -25,7 +25,7 @@ export async function assembleSuccessBundle(input: {
     providerResult,
     writingContext,
     selectedTopicContext,
-    marketingFocus,
+    topicCategory,
     hookEnrichmentProvider,
     requestSalt,
     readiness,
@@ -48,7 +48,7 @@ export async function assembleSuccessBundle(input: {
     variations: six,
     lockedMasterTitle,
     objective:
-      marketingFocus ??
+      topicCategory ??
       selectedTopicContext?.objective ??
       writingContext.objective,
     context,

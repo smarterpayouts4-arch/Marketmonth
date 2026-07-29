@@ -20,7 +20,7 @@ export function buildContentDirectionsHandoff(args: {
   selectedVariationId: string;
   brandDomain: string;
   selectedAt?: string;
-  marketingFocus?: string;
+  topicCategory?: string;
   extraContextSummary?: string;
 }): HandoffValidation {
   const { result, selectedVariationId, brandDomain } = args;
@@ -65,8 +65,8 @@ export function buildContentDirectionsHandoff(args: {
     selectedAt: args.selectedAt ?? new Date().toISOString(),
   };
 
-  if (args.marketingFocus?.trim()) {
-    handoff.marketingFocus = args.marketingFocus.trim();
+  if (args.topicCategory?.trim()) {
+    handoff.topicCategory = args.topicCategory.trim();
   }
   if (args.extraContextSummary?.trim()) {
     handoff.extraContextSummary = summarizeExtraContext(

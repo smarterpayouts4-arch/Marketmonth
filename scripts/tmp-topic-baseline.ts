@@ -13,9 +13,9 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 
 import {
-  MARKETING_FOCUS_VALUES,
-  type MarketingFocus,
-} from "../src/brain/content/marketing-focus";
+  TOPIC_CATEGORY_IDS,
+  type TopicCategoryId,
+} from "../src/brain/content/topic-category";
 import { parseFixtureCsv } from "../src/brain/content/repository/parse-fixture-csv";
 import { compileBrandCore } from "../src/brain/core/compile-brand-core";
 import { generateTopicCandidates } from "../src/brain/evaluation/generate-topic-candidates";
@@ -95,7 +95,7 @@ for (const row of offerRows) {
 // What comes out today, per objective
 // ---------------------------------------------------------------------------
 
-for (const objective of MARKETING_FOCUS_VALUES as readonly MarketingFocus[]) {
+for (const objective of TOPIC_CATEGORY_IDS as readonly TopicCategoryId[]) {
   console.log("");
   console.log("-".repeat(78));
   console.log(`OBJECTIVE — ${objective}`);

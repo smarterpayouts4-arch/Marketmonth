@@ -19,7 +19,7 @@ import path from "node:path";
 config({ path: ".env.local" });
 config({ path: ".env" });
 
-import type { MarketingFocus } from "../src/brain/content/marketing-focus";
+import type { TopicCategoryId } from "../src/brain/content/topic-category";
 import { parseFixtureCsv } from "../src/brain/content/repository/parse-fixture-csv";
 import type { ContentBrainContext } from "../src/brain/content/types";
 import { compileBrandCore } from "../src/brain/core/compile-brand-core";
@@ -32,17 +32,16 @@ import { normalizeWebsiteUrl } from "../src/engine/discovery/normalize-url";
 import { buildDiscoveryCsvDocument } from "../src/lib/company-profile/csv-contract";
 import type { DiscoveryEvidence } from "../src/lib/discovery/evidence.schema";
 
-const OBJECTIVES: MarketingFocus[] = [
-  "brand_awareness",
-  "value_proposition",
+const OBJECTIVES: TopicCategoryId[] = [
+  "customer_questions",
   "product_education",
-  "decision_support",
-  "trust_authority",
+  "trust_proof",
+  "offers_conversion",
 ];
 
 type Args = {
   url: string;
-  objectives: MarketingFocus[];
+  objectives: TopicCategoryId[];
   persist: boolean;
   /** Force the deterministic rules path so no field comes from an LLM. */
   noLlm: boolean;
@@ -57,7 +56,7 @@ function parseArgs(argv: string[]): Args {
   return {
     url: get("--url") ?? "zynava.com",
     objectives: objective
-      ? [objective as MarketingFocus]
+      ? [objective as TopicCategoryId]
       : OBJECTIVES,
     persist: argv.includes("--persist"),
     noLlm: argv.includes("--no-llm"),

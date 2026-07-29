@@ -1,0 +1,18 @@
+{
+  "note": "Golden-set CI gate (P3.1). Minimum deterministic candidate counts per company x category. A drop below baseline fails npm test — prompt/classifier promotions must not regress the golden set. Raise these numbers deliberately when a change improves coverage; never lower them to make CI pass.",
+  "baselinedAt": "2026-07-29",
+  "minCandidateCounts": {
+    "zynava.com": {
+      "customer_questions": 5,
+      "product_education": 5,
+      "trust_proof": 4,
+      "offers_conversion": 6
+    },
+    "clearflow-plumbing": {
+      "customer_questions": 4,
+      "product_education": 5,
+      "trust_proof": 4,
+      "offers_conversion": 3
+    }
+  }
+}

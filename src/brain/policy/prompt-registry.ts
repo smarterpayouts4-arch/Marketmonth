@@ -54,17 +54,6 @@ export const PROMPT_REGISTRY: readonly PromptRegistryEntry[] = [
     fallback: "none",
   },
   {
-    id: "topic.title-polish",
-    version: "topic-title-polish-v1",
-    workflowStage: "topic_title_hook",
-    promptModule:
-      "src/brain/evaluation/gtc/topic-title-polish/playbook.ts",
-    providerPolicy: "n/a",
-    modelPolicy: "topicTitlePolish",
-    outputSchema: "topic-title-polish result",
-    fallback: "deterministic remap (product policy)",
-  },
-  {
     id: "atom.core-llm",
     version: "core-content-brain-v1",
     workflowStage: "content_atom",
@@ -105,6 +94,16 @@ export const PROMPT_REGISTRY: readonly PromptRegistryEntry[] = [
     modelPolicy: "none",
     outputSchema: "evaluationResultSchema",
     fallback: "human_review on FAIL",
+  },
+  {
+    id: "topic.llm-candidates",
+    version: "topic-llm-candidates-v1",
+    workflowStage: "idea_lab_topic_candidates",
+    promptModule: "src/brain/evaluation/gtc/llm-candidates/build-prompt.ts",
+    providerPolicy: "n/a",
+    modelPolicy: "topicLlmCandidates",
+    outputSchema: "llmTopicCandidatesResponseSchema",
+    fallback: "deterministic generateTopicCandidates",
   },
 ] as const;
 

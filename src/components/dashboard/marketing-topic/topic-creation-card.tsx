@@ -2,7 +2,7 @@
 
 import { Sparkles } from "lucide-react";
 
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 
 import {
   AUTO_GENERATE_BUTTON_LABEL,
@@ -13,7 +13,7 @@ import {
   TOPIC_INPUT_PLACEHOLDER,
 } from "./copy";
 import type { ExtraContextUiState } from "./extra-context-client";
-import { MarketingFocusSelector } from "./marketing-focus-selector";
+import { TopicCategorySelector } from "./topic-category-selector";
 import { SupplementalContext } from "./supplemental-context";
 
 type TopicCreationCardProps = {
@@ -30,8 +30,8 @@ type TopicCreationCardProps = {
   loading: boolean;
   generateDisabled?: boolean;
   compact?: boolean;
-  marketingFocus: MarketingFocus | null;
-  onMarketingFocusChange: (value: MarketingFocus | null) => void;
+  topicCategory: TopicCategoryId | null;
+  onTopicCategoryIdChange: (value: TopicCategoryId | null) => void;
   /** Inline chip-area error (Idea Lab objective gate). */
   focusError?: string | null;
   contextExpanded: boolean;
@@ -52,8 +52,8 @@ export function TopicCreationCard({
   loading,
   generateDisabled,
   compact = false,
-  marketingFocus,
-  onMarketingFocusChange,
+  topicCategory,
+  onTopicCategoryIdChange,
   focusError = null,
   contextExpanded,
   onContextExpandedChange,
@@ -148,9 +148,9 @@ export function TopicCreationCard({
       </div>
 
       <div className={compact ? "mt-2" : "mt-3"}>
-        <MarketingFocusSelector
-          value={marketingFocus}
-          onChange={onMarketingFocusChange}
+        <TopicCategorySelector
+          value={topicCategory}
+          onChange={onTopicCategoryIdChange}
           disabled={loading}
           compact={compact}
           error={focusError}

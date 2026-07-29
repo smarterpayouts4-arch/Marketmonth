@@ -3,11 +3,11 @@ import type { MarketingWeek } from "./types";
 const IMG = "/landing/month-plan";
 
 /**
- * Illustrative August demo month — not real customer data or a persisted
+ * Illustrative August demo month - not real customer data or a persisted
  * plan. Four strategic weeks, five daily ideas each. Each daily idea is one
  * core concept; its `executions` are the platform-specific versions made
  * from that idea (1–3 per idea, never all five channels on one card). Every
- * idea has its own unique photo — no week reuses one image across its daily
+ * idea has its own unique photo - no week reuses one image across its daily
  * cards.
  */
 export const augustMonthPlan: MarketingWeek[] = [
@@ -60,7 +60,7 @@ export const augustMonthPlan: MarketingWeek[] = [
         day: "Wednesday",
         date: "Aug 3",
         title: "Why Grind Size Changes Everything",
-        description: "Coarse vs. fine — how grind size reshapes the cup.",
+        description: "Coarse vs. fine: how grind size reshapes the cup.",
         imageSrc: `${IMG}/week1-grind-size.png`,
         imageAlt: "Two piles of coffee grounds, coarse and fine, side by side",
         contentType: "educational",
@@ -293,7 +293,7 @@ export const augustMonthPlan: MarketingWeek[] = [
     dateRange: "August 22 – August 31",
     theme: "Café Stories & Local Love",
     description:
-      "Close out the month by celebrating the community. Regulars, local stories, and a look ahead to what's brewing next month.",
+      "Close out the month by celebrating the community. Regulars, local stories, and a look ahead to what's brewing next week.",
     strategyTitle: "Strategy: Community & Reflection",
     strategyDescription:
       "Recap the month's wins and spotlight the people who make the café feel like home.",
@@ -366,8 +366,8 @@ export const augustMonthPlan: MarketingWeek[] = [
         id: "week-4-fri",
         day: "Friday",
         date: "Aug 26",
-        title: "Sneak Peek: Next Month's Theme",
-        description: "A first look at what's brewing for next month.",
+        title: "Sneak Peek: Next Week's Theme",
+        description: "A first look at what's brewing for next week.",
         imageSrc: `${IMG}/week4-next-month-teaser.png`,
         imageAlt: "Cold brew coffee with ice and mint on a sunlit outdoor table",
         contentType: "product-spotlight",

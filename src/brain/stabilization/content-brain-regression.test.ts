@@ -5,7 +5,7 @@ import { describe, it } from "node:test";
 
 import { generateContentDirections } from "@/brain/content/generate-content-directions";
 import { parseFixtureCsv } from "@/brain/content/repository/parse-fixture-csv";
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 import { selectDirectionsProvider } from "@/brain/policy/provider-policy";
 import { resolveModel } from "@/brain/policy/model-registry";
 import {
@@ -41,7 +41,7 @@ function loadScenario(id: string) {
   ) as {
     topic: string;
     mode: "manual" | "automatic";
-    marketingFocus?: MarketingFocus;
+    topicCategory?: TopicCategoryId;
     recentMasterTopics?: string[];
   };
 }
@@ -64,7 +64,7 @@ describe("Content Brain stabilization regressions (invariants)", () => {
       mode: "manual",
       topic: scenario.topic,
       directionsProvider: "deterministic-v1",
-      marketingFocus: scenario.marketingFocus,
+      topicCategory: scenario.topicCategory,
     });
     assert.equal(result.status, "ready");
     if (result.status !== "ready" && result.status !== "partially_ready") {
@@ -86,7 +86,7 @@ describe("Content Brain stabilization regressions (invariants)", () => {
       mode: "manual",
       topic: scenario.topic,
       directionsProvider: "deterministic-v1",
-      marketingFocus: scenario.marketingFocus,
+      topicCategory: scenario.topicCategory,
     });
     assert.equal(result.status, "blocked");
   });

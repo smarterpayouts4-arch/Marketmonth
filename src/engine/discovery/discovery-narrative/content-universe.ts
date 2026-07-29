@@ -4,7 +4,8 @@ import type {
 } from "@/lib/discovery/discovery-narrative.schema";
 
 import type { BrandSignalGraph, EvidenceItem } from "./types";
-import { truncateForEmbed, truncatePhrase } from "../complete-sentence";
+import { truncateForEmbed } from "../complete-sentence";
+import { pickProductTopic } from "./topic-selection";
 import { firstText } from "./sections/helpers";
 
 function pickCoreTopic(
@@ -12,26 +13,24 @@ function pickCoreTopic(
   graph: BrandSignalGraph,
   ownedIdea: string
 ): { coreTopic: string; audienceProblem: string; refs: string[] } {
-  const product =
-    firstText(graph.offerInventory) ||
-    firstText(graph.valueMechanism.filter((i) => i.field === "indexedProduct")) ||
-    firstText(graph.valueMechanism);
-  const problem =
-    firstText(graph.customerProblem) ||
+  const GENERIC_PROBLEM =
     "customers face too many choices without a clear way to decide";
+  const problem = firstText(graph.customerProblem) || GENERIC_PROBLEM;
 
-  const topicFocus =
-    (product ? truncatePhrase(product.replace(/^Q:\s*/i, ""), 60) : null) ??
-    truncatePhrase(ownedIdea, 60) ??
-    ownedIdea;
+  const topic = pickProductTopic(graph, ownedIdea, 60);
 
   return {
-    coreTopic: `How to approach ${topicFocus} with more confidence`,
-    audienceProblem: truncateForEmbed(problem, 160) ?? problem,
-    refs: [
-      ...graph.customerProblem.slice(0, 2),
-      ...graph.valueMechanism.slice(0, 2),
-    ].map((i) => i.id),
+    coreTopic: `How to approach ${topic.phrase} with more confidence`,
+    audienceProblem: truncateForEmbed(problem, 160) ?? GENERIC_PROBLEM,
+    refs: Array.from(
+      new Set(
+        [
+          ...(topic.source ? [topic.source] : []),
+          ...graph.customerProblem.slice(0, 2),
+          ...graph.valueMechanism.slice(0, 2),
+        ].map((i) => i.id)
+      )
+    ),
   };
 }
 

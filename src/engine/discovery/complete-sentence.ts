@@ -3,10 +3,15 @@
  * Prefer existing complete sentences; rewrite short complete lines; never hard-clip mid-phrase.
  */
 
+import { stripLeadingHeadingRun } from "@/lib/discovery/text-display";
+
 const MAX_WORDS_DISPLAY = 28;
 
 /** Below this a trimmed embed carries no useful meaning — omit it instead. */
 const MIN_EMBED_CHARS = 24;
+
+/** How far a complete sentence may exceed the budget before we drop it. */
+const SENTENCE_GRACE = 1.35;
 
 /** Words that must not end an embed — they signal a cut mid-clause. */
 const DANGLING_RE =
@@ -36,12 +41,14 @@ export function truncateForEmbed(
   text: string,
   maxChars = 160
 ): string | null {
-  const t = text.replace(/\s+/g, " ").trim();
-  if (!t) return null;
-  if (/[{}[\]]|schema\.org|application\/ld/i.test(t)) return null;
+  const normalized = text.replace(/\s+/g, " ").trim();
+  if (!normalized) return null;
+  if (/[{}[\]]|schema\.org|application\/ld/i.test(normalized)) return null;
+  const t = stripLeadingHeadingRun(normalized);
 
+  // A whole sentence slightly over budget still beats a fragment.
   const sentence = extractCompleteSentence(t);
-  if (sentence && sentence.length <= maxChars) {
+  if (sentence && sentence.length <= Math.round(maxChars * SENTENCE_GRACE)) {
     return /[.!?]$/.test(sentence) ? sentence : `${sentence}.`;
   }
 
@@ -54,6 +61,10 @@ export function truncateForEmbed(
   if (lastStop >= MIN_EMBED_CHARS) {
     return window.slice(0, lastStop + 1).trim();
   }
+
+  // Needs cutting and the window holds no sentence boundary: any cut here lands
+  // mid-clause (typically glued heading text). Omit rather than fake a sentence.
+  if (t.length > maxChars) return null;
 
   let clipped = window;
   if (t.length > maxChars) {

@@ -1,5 +1,6 @@
 import { APPROVED_CAPABILITIES } from "../config/approved-capabilities";
 import { getProductIdentity } from "../config/product-identity";
+import { PUBLIC_POSITIONING } from "../config/public-positioning";
 import { organizationId } from "./canonical";
 
 export type JsonLdGraph = Record<string, unknown>;
@@ -42,7 +43,7 @@ export function buildSoftwareApplicationJsonLd(): JsonLdGraph {
       "@type": "Offer",
       price: "0",
       priceCurrency: "USD",
-      description: "Prototype / early access — pricing not finalized",
+      description: PUBLIC_POSITIONING.offerDescription,
     },
     featureList: [...APPROVED_CAPABILITIES.live],
     publisher: { "@id": organizationId() },

@@ -4,11 +4,15 @@ import {
   getProductIdentity,
   namedShortDescription,
 } from "../config/product-identity";
+import {
+  PUBLIC_POSITIONING,
+  PUBLIC_PROCESS,
+} from "../config/public-positioning";
 import { PUBLIC_ROUTES } from "../config/public-routes";
 
 /**
  * Experimental interoperability document for systems that choose to consume llms.txt.
- * Not a proven Google ranking mechanism — Google Search does not treat llms.txt as
+ * Not a proven Google ranking mechanism - Google Search does not treat llms.txt as
  * special markup for generative search features.
  */
 export function buildLlmsTxt(): string {
@@ -19,7 +23,7 @@ export function buildLlmsTxt(): string {
     `> ${namedShortDescription(identity)}`,
     "",
     "Status: working product name (see namingStatus in site SEO config).",
-    "Document type: experimental interoperability summary — not a ranking certification.",
+    "Document type: experimental interoperability summary - not a ranking certification.",
     "",
     "## Identity",
     "",
@@ -27,6 +31,8 @@ export function buildLlmsTxt(): string {
     `- Compact name: ${identity.compactName}`,
     `- Tagline: ${identity.tagline}`,
     `- Short description: ${identity.shortDescription}`,
+    `- Positioning: ${PUBLIC_POSITIONING.positioningStatement}`,
+    `- Differentiator: ${PUBLIC_POSITIONING.differentiator}`,
     `- Canonical origin: ${identity.canonicalOrigin}`,
     "",
     "## Public pages",
@@ -51,9 +57,14 @@ export function buildLlmsTxt(): string {
     "",
     ...APPROVED_CAPABILITIES.doesNotClaim.map((c) => `- ${c}`),
     "",
-    "## Product loop",
+    "## Product process (customer-facing)",
     "",
-    "LEARN → STRATEGIZE → Content Universe → PRODUCE → REVIEW + SCHEDULE → PUBLISH + LEARN",
+    PUBLIC_PROCESS.label,
+    "",
+    "## Free analysis terms (current)",
+    "",
+    `- ${PUBLIC_POSITIONING.freeAnalysisLine}`,
+    `- ${PUBLIC_POSITIONING.freeAnalysisNote}`,
     "",
     "## Contact / further reading",
     "",

@@ -12,7 +12,7 @@ export type MonthSchedule = {
   monthSlug: string;
   year: number;
   weeks: ScheduleWeek[];
-  /** e.g. "Mon, Aug 3" — UI prefixes "Kicks off". */
+  /** e.g. "Mon, Aug 3" - UI prefixes "Kicks off". */
   kickoffLabel: string;
 };
 

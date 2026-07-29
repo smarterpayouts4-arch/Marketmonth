@@ -1,6 +1,6 @@
 /**
  * Final production-readiness checks for the SEO subsystem (local).
- * Does not start Next — pair with a production build smoke separately.
+ * Does not start Next - pair with a production build smoke separately.
  *
  *   npx tsx src/seo/verification/production-readiness.ts
  */

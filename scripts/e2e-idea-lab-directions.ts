@@ -22,7 +22,7 @@ async function main() {
   );
 
   const topics = await runIdeaLabTopicCandidates({
-    marketingFocus: "product_education",
+    topicCategory: "product_education",
   });
   if (!topics.ok) {
     throw new Error(`topics failed: ${topics.code} ${topics.error}`);
@@ -37,7 +37,7 @@ async function main() {
     domain: "zynava.com",
     mode: "manual",
     topic: first.title,
-    marketingFocus: "product_education",
+    topicCategory: "product_education",
     requestedVariations: 6,
     directionsProvider: "deterministic-v1",
     preloaded: {

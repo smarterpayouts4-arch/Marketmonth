@@ -40,7 +40,13 @@ export function displayNoun(
 }
 
 /**
- * Prefer typed comparisonAttribute → actionObject → safe generic fallback.
+ * Neutral ungrounded fallback. Never an industry-specific noun like
+ * "label check" — retail framing must be earned by a grounded attribute.
+ */
+export const NEUTRAL_ACTION_FALLBACK = "key details";
+
+/**
+ * Prefer typed comparisonAttribute → actionObject → neutral fallback.
  * Never invent attributes; avoid vague "label detail".
  */
 export function concreteAction(ctx: TopicTitleHookContext): string {
@@ -56,14 +62,16 @@ export function concreteAction(ctx: TopicTitleHookContext): string {
   ) {
     return action;
   }
-  return "label check";
+  return NEUTRAL_ACTION_FALLBACK;
 }
 
 export function hasConcreteGroundedAttribute(
   ctx: TopicTitleHookContext
 ): boolean {
   const a = concreteAction(ctx);
-  return a !== "label check" && a !== "label";
+  return (
+    a !== NEUTRAL_ACTION_FALLBACK && a !== "label" && a !== "label check"
+  );
 }
 
 /** Attribute payoff when educational Why/The passthrough would stay flat. */

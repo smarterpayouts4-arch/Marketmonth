@@ -12,12 +12,13 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { PUBLIC_POSITIONING } from "@/seo/config/public-positioning";
 
 const lookFors = [
   {
     icon: Users,
-    title: "Customer base",
-    body: "Who you serve, what they care about, and the language they use.",
+    title: "Offers & customer base",
+    body: "Who you serve, what you sell, and the language they already use.",
   },
   {
     icon: Share2,
@@ -31,13 +32,13 @@ const lookFors = [
   },
   {
     icon: MessageSquareText,
-    title: "Questions & trust copy",
+    title: "Questions & trust signals",
     body: "FAQ pages, objections, and trust language we can read on your site.",
   },
   {
     icon: FileText,
     title: "Conversion path",
-    body: "The next step you ask for — join, book, buy, or learn more.",
+    body: "The next step you ask for - join, book, buy, or learn more.",
   },
 ] as const;
 
@@ -64,10 +65,10 @@ export function DiscoveryForm({
         </span>
         <div className="min-w-0 pt-0.5">
           <p className="font-serif text-[1.35rem] font-semibold tracking-[-0.02em] text-foreground sm:text-[1.5rem]">
-            Discover Your Content Universe
+            {PUBLIC_POSITIONING.discoveryTitle}
           </p>
           <p className="mt-1 text-sm leading-snug text-text-secondary sm:text-[15px]">
-            Start with your website. We&apos;ll uncover what matters.
+            {PUBLIC_POSITIONING.discoverySubhead}
           </p>
         </div>
       </div>
@@ -99,9 +100,13 @@ export function DiscoveryForm({
             pulseAnalyze && !disabled && "animate-soft-pulse"
           )}
         >
-          Analyze my website
+          {PUBLIC_POSITIONING.primaryCta}
         </button>
       </div>
+
+      <p className="mt-3 text-[12px] leading-snug text-text-muted">
+        {PUBLIC_POSITIONING.freeAnalysisLine}
+      </p>
 
       <div className="mt-5 min-h-0 flex-1 overflow-y-auto">
         <p className="text-[12px] font-semibold tracking-wide text-text-muted uppercase">

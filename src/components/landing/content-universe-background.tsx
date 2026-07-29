@@ -1,6 +1,6 @@
 /**
  * Decorative DNA / content-network motif for the landing hero + content-universe band.
- * Purely visual — aria-hidden, pointer-events-none, no animation.
+ * Purely visual - aria-hidden, pointer-events-none, no animation.
  */
 export function ContentUniverseBackground() {
   return (

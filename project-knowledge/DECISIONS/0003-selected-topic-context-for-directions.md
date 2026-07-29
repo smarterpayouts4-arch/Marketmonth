@@ -3,12 +3,14 @@ title: ADR 0003 — SelectedTopicContext for Directions
 status: accepted
 authority: supporting
 owner: engineering
-last_verified: 2026-07-27
+last_verified: 2026-07-29
 related_paths:
   - src/brain/content/direction-writing-context.ts
+  - src/brain/content/topic-category.ts
   - src/brain/content/providers/deterministic-provider.ts
   - src/brain/use-cases/run-idea-lab-directions.ts
   - project-knowledge/IDEA_LAB_DIRECTION_HARDENING.md
+  - project-knowledge/DECISIONS/0004-topic-category-model.md
 ---
 
 # ADR 0003 — SelectedTopicContext for Directions
@@ -24,8 +26,10 @@ ADR 0002 froze the **provider id** `deterministic-v1`. This ADR freezes the **st
 1. **Selected topic is structured data.** Callers that have a chosen candidate (or equivalent) MUST supply `SelectedTopicContext` with:
    - `topicId`
    - `masterTitle` (exact original string — never trim-assigned)
-   - `objective` as canonical `MarketingFocus` only (`decision_support`, never `customer_decision_support`)
+   - `objective` as canonical **`TopicCategoryId`** (four values per ADR 0004); legacy `MarketingFocus` values migrate via `parseTopicCategory`
    - optional audience / pain / strategic angle / relevance / evidence ids
+
+> **Succession (ADR 0004):** This ADR’s directions handoff is unchanged. Topic **generation** upstream now uses four `TopicCategoryId` values instead of five `MarketingFocus` values. See [`0004-topic-category-model.md`](./0004-topic-category-model.md).
 
 2. **Writing context is derived once.** `buildDirectionWritingContext` produces immutable `DirectionWritingContext` with `DerivedLabel` provenance and `framingStrategy` from `framingStrategyForObjective`. Priority: selected topic → brand context → title-parse fallback (fallback must not rewrite `masterTitle`).
 

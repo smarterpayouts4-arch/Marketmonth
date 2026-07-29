@@ -24,7 +24,7 @@ export async function runProviderStage(input: {
   context: ContentBrainContext;
   mode: GenerateContentDirectionsInput["mode"];
   masterTopic: MasterTopic;
-  marketingFocus?: GenerateContentDirectionsInput["marketingFocus"];
+  topicCategory?: GenerateContentDirectionsInput["topicCategory"];
   priorities?: string[];
   selectedTopicContext?: SelectedTopicContext;
   providerId: DirectionProviderId;
@@ -36,7 +36,7 @@ export async function runProviderStage(input: {
     context,
     mode,
     masterTopic,
-    marketingFocus,
+    topicCategory,
     priorities,
     selectedTopicContext,
     providerId,
@@ -48,7 +48,7 @@ export async function runProviderStage(input: {
     selected: selectedTopicContext ?? null,
     context,
     fallbackMasterTitle: masterTopic.punchline,
-    fallbackObjective: marketingFocus ?? selectedTopicContext?.objective,
+    fallbackObjective: topicCategory ?? selectedTopicContext?.objective,
   });
 
   const provider = selectDirectionsProvider(providerId);
@@ -57,8 +57,8 @@ export async function runProviderStage(input: {
     context,
     mode,
     masterTopic,
-    marketingFocus:
-      marketingFocus ?? selectedTopicContext?.objective ?? writingContext.objective,
+    topicCategory:
+      topicCategory ?? selectedTopicContext?.objective ?? writingContext.objective,
     priorities,
     selectedTopicContext: selectedTopicContext ?? undefined,
     writingContext,

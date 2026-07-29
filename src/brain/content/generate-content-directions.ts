@@ -68,7 +68,7 @@ export async function generateContentDirectionsBundle(
     lockedMasterTopic: input.lockedMasterTopic,
     topic: input.topic,
     recentMasterTopics: input.recentMasterTopics,
-    marketingFocus: input.marketingFocus ?? selectedTopicContext?.objective,
+    topicCategory: input.topicCategory ?? selectedTopicContext?.objective,
     warnings,
   });
   if (!masterStage.ok) {
@@ -81,7 +81,7 @@ export async function generateContentDirectionsBundle(
     context,
     mode,
     masterTopic: masterStage.masterTopic,
-    marketingFocus: input.marketingFocus ?? selectedTopicContext?.objective,
+    topicCategory: input.topicCategory ?? selectedTopicContext?.objective,
     priorities: input.priorities,
     selectedTopicContext,
     providerId,
@@ -99,7 +99,7 @@ export async function generateContentDirectionsBundle(
     masterTopic: providerStage.masterTopic,
     writingContext: providerStage.writingContext,
     selectedTopicContext,
-    marketingFocus: input.marketingFocus,
+    topicCategory: input.topicCategory,
     hookEnrichmentProvider: input.hookEnrichmentProvider,
     requestSalt: input.requestSalt,
     readiness,

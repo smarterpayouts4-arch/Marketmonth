@@ -1,23 +1,25 @@
 import { shortHash } from "@/brain/content/evidence";
 import {
-  MARKETING_FOCUS_LABELS,
-  type MarketingFocus,
-} from "@/brain/content/marketing-focus";
+  TOPIC_CATEGORY_LABELS,
+  type TopicCategoryId,
+} from "@/brain/content/topic-category";
 import type { ContentBrainContext } from "@/brain/content/types";
 
 import type { TopicSeed } from "../objective-topic-strategies";
 import {
   INSUFFICIENT_PRODUCT_EDUCATION_SUBJECTS,
+  NO_PUBLISHED_COMMERCIAL_TERMS,
   TOPIC_CANDIDATE_SCORE_VERSION,
   type TopicCandidate,
   type TopicCandidateGenerationResult,
   type TopicGenerationWarning,
 } from "../topic-candidate-types";
 import type { TopicSubjectKind } from "../topic-subject";
-import type { ScoredCandidate } from "./score-candidate";
+import { explainScore, type ScoredCandidate } from "./score-candidate";
 import { selectDistinctSupportKeys } from "./support-key";
 import { clamp } from "./text";
 import type { TopicTitleHookResult } from "./topic-title-hook/types";
+import type { LlmFramedCandidate } from "./llm-candidates/map-llm-candidates";
 
 function titleHookOf(
   s: ScoredCandidate
@@ -26,24 +28,34 @@ function titleHookOf(
   return maybe.titleHook;
 }
 
+function llmMetaOf(s: ScoredCandidate): LlmFramedCandidate["llmMeta"] | undefined {
+  const maybe = s as ScoredCandidate & { llmMeta?: LlmFramedCandidate["llmMeta"] };
+  return maybe.llmMeta;
+}
+
+function titleSourceOf(
+  s: ScoredCandidate
+): "llm-generated" | "deterministic-v2" {
+  const maybe = s as ScoredCandidate & { titleSource?: "llm-generated" };
+  return maybe.titleSource === "llm-generated" ? "llm-generated" : "deterministic-v2";
+}
+
 export const COMPLETE_COUNT = 6;
 
 function audiencePainFromSeed(
   context: ContentBrainContext,
-  objective: MarketingFocus,
+  objective: TopicCategoryId,
   seed: TopicSeed | undefined
 ): string {
   const subject = seed?.subject || "the category";
   switch (objective) {
-    case "brand_awareness":
-      return `Prospects do not yet recognize what ${context.brandName} stands for around ${clamp(subject, 40)}.`;
-    case "value_proposition":
-      return `Buyers struggle to see why ${context.brandName} makes decisions clearer.`;
+    case "offers_conversion":
+      return `Buyers struggle to see why ${context.brandName} makes decisions clearer — what it costs, what is included, and how to proceed.`;
     case "product_education":
       return `People need clearer education about ${clamp(subject, 50)} — not platform tutorials.`;
-    case "decision_support":
+    case "customer_questions":
       return `Decision-makers lack a practical frame for: ${clamp(seed?.audienceNeed || subject, 80)}.`;
-    case "trust_authority":
+    case "trust_proof":
       return `The audience needs credible proof before trusting ${context.brandName}.`;
   }
 }
@@ -51,27 +63,39 @@ function audiencePainFromSeed(
 function toCandidates(
   ranked: ScoredCandidate[],
   context: ContentBrainContext,
-  objective: MarketingFocus,
+  objective: TopicCategoryId,
   audience: string
 ): TopicCandidate[] {
   return ranked.map((s, i) => {
     const rank = i + 1;
     const sourceField = s.seed.sourceFields[0] ?? "context";
+    const llm = llmMetaOf(s);
+    const titleSource = titleSourceOf(s);
     return {
       topicId: `tc_${shortHash(`${objective}|${s.title}|${rank}`)}`,
       rank,
       title: s.title,
-      originalTitle: s.title,
-      titleSource: "deterministic-v2" as const,
+      titleSource,
+      categoryId: objective,
       objective,
       audience,
       audiencePain: audiencePainFromSeed(context, objective, s.seed),
       strategicAngle: s.strategicAngle,
+      hook: llm?.hook,
+      audienceQuestion: llm?.audienceQuestion ?? s.seed.audienceNeed,
+      whyItFits: llm?.whyItFits,
+      suggestedFormats: llm?.suggestedFormats,
+      platformFit: llm?.platformFit,
+      funnelRole: llm?.funnelRole,
+      evidenceRefs: llm ? [...s.seed.evidenceIds] : undefined,
+      confidence: llm?.confidence,
       relevanceReasons: [
         ...s.relevanceReasons,
         s.seed.sourceType === "industry_research"
           ? "Provenance: industry_research (not brand catalog)"
-          : "Provenance: brand_observed",
+          : titleSource === "llm-generated"
+            ? "Provenance: llm-generated from selected evidence"
+            : "Provenance: brand_observed",
       ],
       evidenceIds: s.seed.evidenceIds,
       subject: {
@@ -88,9 +112,10 @@ function toCandidates(
       classificationConfidence: s.seed.classificationConfidence,
       score: s.score,
       scoreVersion: TOPIC_CANDIDATE_SCORE_VERSION,
+      scoreExplanation: explainScore(s.score),
       recommended: rank === 1,
       titleHookVersion: titleHookOf(s)?.titleHookVersion,
-      titleItchType: titleHookOf(s)?.itchType,
+      titleItchType: llm?.itchType ?? titleHookOf(s)?.itchType,
     };
   });
 }
@@ -107,6 +132,39 @@ function rankScored(scored: ScoredCandidate[]): ScoredCandidate[] {
   );
 }
 
+function itchTypeOf(s: ScoredCandidate): string {
+  return llmMetaOf(s)?.itchType ?? titleHookOf(s)?.itchType ?? "unknown";
+}
+
+/**
+ * Itch-type diversity: when two candidates score within epsilon, prefer the
+ * one with an itch type not already used — a slate of six near-identical
+ * curiosity shapes reads templated even when subjects differ.
+ */
+function diversifyByItchType(
+  ranked: ScoredCandidate[],
+  epsilon = 0.05
+): ScoredCandidate[] {
+  const remaining = [...ranked];
+  const out: ScoredCandidate[] = [];
+  const seen = new Set<string>();
+  while (remaining.length > 0) {
+    let pick = 0;
+    if (seen.has(itchTypeOf(remaining[0]!))) {
+      const bestScore = remaining[0]!.score.overall;
+      const alt = remaining.findIndex(
+        (c) =>
+          bestScore - c.score.overall <= epsilon && !seen.has(itchTypeOf(c))
+      );
+      if (alt > 0) pick = alt;
+    }
+    const [chosen] = remaining.splice(pick, 1);
+    seen.add(itchTypeOf(chosen!));
+    out.push(chosen!);
+  }
+  return out;
+}
+
 /**
  * Assemble complete | limited | insufficient from scored drafts.
  * Grounded support-key uniqueness remains mandatory.
@@ -118,14 +176,15 @@ export function assembleCandidateResult(args: {
   scored: ScoredCandidate[];
   seeds: TopicSeed[];
   context: ContentBrainContext;
-  objective: MarketingFocus;
+  objective: TopicCategoryId;
   audience: string;
 }): TopicCandidateGenerationResult {
   const { scored, seeds, context, objective, audience } = args;
-  const ranked = rankScored(scored);
+  const ranked = diversifyByItchType(rankScored(scored));
 
   if (objective === "product_education") {
     const educationKinds = new Set<TopicSubjectKind>([
+      "health_outcome",
       "catalog_product",
       "ingredient_or_component",
       "product_category",
@@ -205,12 +264,24 @@ export function assembleCandidateResult(args: {
 
   if (distinct.length < COMPLETE_COUNT) {
     if (distinct.length === 0) {
+      const hasCommercialTerms = (context.commercialTerms?.length ?? 0) > 0;
+      if (objective === "offers_conversion" && !hasCommercialTerms) {
+        return {
+          status: "insufficient_context",
+          candidates: [],
+          diagnostic: {
+            code: NO_PUBLISHED_COMMERCIAL_TERMS,
+            message:
+              "No published commercial terms (pricing, guarantees, or purchase mechanics) were found in the approved artifact.",
+          },
+        };
+      }
       return {
         status: "insufficient_context",
         candidates: [],
         diagnostic: {
           code: "INSUFFICIENT_TOPIC_SUBJECTS",
-          message: `Not enough grounded subjects to build ${MARKETING_FOCUS_LABELS[objective]} topics.`,
+          message: `Not enough grounded subjects to build ${TOPIC_CATEGORY_LABELS[objective]} topics.`,
         },
       };
     }
@@ -226,7 +297,7 @@ export function assembleCandidateResult(args: {
       warnings: [
         {
           code: "LIMITED_TOPIC_SUBJECTS",
-          message: `We found ${Math.min(5, distinct.length)} grounded ${MARKETING_FOCUS_LABELS[objective]} topic(s). Enrich brand context to reach six.`,
+          message: `We found ${Math.min(5, distinct.length)} grounded ${TOPIC_CATEGORY_LABELS[objective]} topic(s). Enrich brand context to reach six.`,
         },
       ],
     };

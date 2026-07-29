@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { createTopicGenerationRepository } from "@/brain/store";
+import { requireCompanyAccess } from "@/lib/auth/company-access";
+import { requireApiSession } from "@/lib/auth/require-api-session";
+import { enforceRateLimit } from "@/lib/http/durable-rate-limit";
+import { rateLimitKeyFromRequest } from "@/lib/http/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -14,12 +18,31 @@ type Body = {
 /**
  * Update TopicGenerationRecord status after Marketing Topic actions.
  * Does not mutate Brand Core or Brand source CSV.
+ *
+ * P2.1: production uses the DB-backed repository (the old hard 403 existed
+ * because the CSV store was production-impossible); access is gated by
+ * session + tenant ownership of the record's company.
  */
 export async function POST(request: Request) {
-  if (process.env.NODE_ENV === "production") {
+  const session = await requireApiSession();
+  if (!session.ok) {
     return NextResponse.json(
-      { ok: false, error: "Topic generation store is production-impossible" },
-      { status: 403 }
+      { ok: false, error: session.error },
+      { status: session.status }
+    );
+  }
+
+  const rate = await enforceRateLimit(
+    "brain.topic-generation",
+    rateLimitKeyFromRequest(request)
+  );
+  if (!rate.ok) {
+    return NextResponse.json(
+      { ok: false, error: "Rate limit exceeded" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rate.retryAfterSec) },
+      }
     );
   }
 
@@ -55,6 +78,17 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { ok: false, error: "generation not found" },
       { status: 404 }
+    );
+  }
+
+  const access = await requireCompanyAccess(
+    session.userId,
+    existing.company_id
+  );
+  if (!access.ok) {
+    return NextResponse.json(
+      { ok: false, error: access.error },
+      { status: access.status }
     );
   }
 

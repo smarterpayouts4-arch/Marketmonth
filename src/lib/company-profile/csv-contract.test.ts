@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, it } from "node:test";
 
 import type { BrandProfile } from "@/engine/discovery/brand-profile";
@@ -194,5 +196,18 @@ describe("parseCompanyCsv", () => {
         `unexpected citable record type: ${ev.recordType}`
       );
     }
+  });
+
+  it("rejects offer rows that duplicate indexed catalog product names", () => {
+    const csv = readFileSync(
+      path.join(process.cwd(), "data/companies/zynava.com/approved.csv"),
+      "utf8"
+    );
+    const { header, rows } = rowsFromCsv(csv);
+    const issues = assertDiscoveryCsvContract({ headerCells: header, rows });
+    const catalogCollisions = issues.filter(
+      (i) => i.code === "OFFER_EQUALS_CATALOG_PRODUCT"
+    );
+    assert.deepEqual(catalogCollisions, []);
   });
 });

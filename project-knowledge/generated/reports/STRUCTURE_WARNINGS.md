@@ -8,9 +8,13 @@ Stable codes: use `PK-WARN-NNN: acknowledged — <reason>` in task closeout.
 
 None.
 
-## Soft warnings (0)
+## Soft warnings (5)
 
-None.
+- `PK-WARN-008`: Freshness pilot: project-knowledge/CURRENT_STATE.md related path changed after 4a2dc0a: project-knowledge/CURRENT_STATE.md
+- `PK-WARN-008`: Freshness pilot: project-knowledge/CURRENT_STATE.md related path changed after 4a2dc0a: project-knowledge/CONTENT_BRAIN.md
+- `PK-WARN-008`: Freshness pilot: project-knowledge/CURRENT_STATE.md related path changed after 4a2dc0a: project-knowledge/FEATURES/website-best-practice-auditor.md
+- `PK-WARN-008`: Freshness pilot: project-knowledge/PRODUCT.md related path changed after 4a2dc0a: project-knowledge/PRODUCT.md
+- `PK-WARN-008`: Freshness pilot: project-knowledge/PRODUCT.md related path changed after 4a2dc0a: project-knowledge/CURRENT_STATE.md
 
 ## Acknowledgement format
 

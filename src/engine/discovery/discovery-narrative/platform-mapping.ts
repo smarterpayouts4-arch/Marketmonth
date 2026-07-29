@@ -3,6 +3,7 @@ import type {
   PlatformAdaptation,
 } from "@/lib/discovery/discovery-narrative.schema";
 import type { CompanyProfileProjection } from "@/lib/company-profile/projection.schema";
+import { platformDisplayName } from "@/lib/discovery/platform-names";
 
 import type { BrandSignalGraph } from "./types";
 
@@ -52,10 +53,7 @@ const ALL_PLATFORMS = [
   "x",
 ] as const;
 
-function platformLabel(platform: string): string {
-  if (platform === "x") return "X";
-  return platform.charAt(0).toUpperCase() + platform.slice(1);
-}
+const platformLabel = platformDisplayName;
 
 export function detectChannels(
   projection: CompanyProfileProjection

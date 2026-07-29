@@ -23,9 +23,13 @@ export async function loadBrandContext(input: {
   | { ok: true; value: LoadedBrandContext }
 > {
   try {
-    const loaded = getBrandCoreRepository().getBrandCore(input.domain, {
-      absolutePath: input.fixturePath,
-    });
+    // Explicit fixture override (publish temp CSV) stays on the sync disk
+    // path; normal product reads go disk-then-DB so deploys without the
+    // data/companies folder still resolve Brand Core.
+    const repo = getBrandCoreRepository();
+    const loaded = input.fixturePath
+      ? repo.getBrandCore(input.domain, { absolutePath: input.fixturePath })
+      : await repo.getBrandCoreAsync(input.domain);
     return {
       ok: true,
       value: { context: loaded.context, identity: loaded.identity },

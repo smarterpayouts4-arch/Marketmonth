@@ -3,7 +3,7 @@ title: Discovery CSV quality (Zynava)
 status: active
 authority: supporting
 owner: engineering
-last_verified: 2026-07-28
+last_verified: 2026-07-29
 related_paths:
   - src/engine/discovery/**
   - scripts/publish-company-profile.ts
@@ -45,13 +45,13 @@ Crawl → Neon draft → quality gate → publish → materialize rich CSV → I
 | FAQ | Strong | Structured FAQs; skip bulk `customerProblems` when FAQs exist |
 | Catalog + extras | Strong/Exceptional | EXTRA_URLS in BFS; Calcium + Omega-3 + Creatine CI |
 | Gate before publish | Strong | `approval_ready` required |
-| Idea Lab lift | Strong | Smoke `measuredLift` (catalog in offers + FAQ proofs + topics cite either) |
+| Idea Lab lift | Strong | Smoke `measuredLift` (indexed products on Core, **catalog disjoint from offers**, FAQ proofs, topics cite indexed or FAQ) |
 | Reliability | Strong | Brand upsert, retry/delay, telemetry, hash-gated publish, schema reject, CSV locks |
 
 ## Smoke artifact
 
 `npm run smoke:zynava-idealab` writes JSON with:
 
-- `catalogInOffersOk`, `faqProofOk`, `topicOk`
+- `indexedOnCoreOk`, `indexedSeparatedOk`, `faqProofOk`, `topicOk`, `indexedCitedInTopics`, `faqCitedInTopics`
 
 See also [`discovery-engine.md`](./discovery-engine.md) and [`CURRENT_STATE.md`](../CURRENT_STATE.md) Discovery area.

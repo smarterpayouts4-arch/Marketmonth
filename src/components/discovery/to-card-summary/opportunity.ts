@@ -32,10 +32,10 @@ export function mapOpportunity({
     .filter(Boolean);
   const contentAngles = contentAnglesFull.slice(0, 2);
 
-  // Content decision first — missing website links are not “missed channels.”
+  // Content decision first - missing website links are not “missed channels.”
   const growthAngleRaw = leadOffer
     ? `Turn real decisions about ${leadOffer} into clear explanations, then choose distribution formats that fit that content.`
-    : `Decide the idea your brand can own, then test formats—do not treat undetected social links as absence.`;
+    : `Decide the idea your brand can own, then test formats. Do not treat undetected social links as absence.`;
 
   const opportunitySource = profile.marketingOpportunity?.trim();
   const growthOpportunity = previewField(
@@ -44,7 +44,7 @@ export function mapOpportunity({
         opportunitySource
       )
       ? opportunitySource
-      : `Own a clear decision story around ${leadOffer}—not generic category education.`,
+      : `Own a clear decision story around ${leadOffer}, not generic category education.`,
     LIMITS.growthOpportunity
   );
   const growthAngle = previewField(growthAngleRaw, LIMITS.growthAngle);

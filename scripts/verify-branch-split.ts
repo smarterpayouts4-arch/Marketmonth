@@ -27,7 +27,7 @@ import path from "node:path";
 config({ path: ".env.local" });
 config({ path: ".env" });
 
-import type { MarketingFocus } from "../src/brain/content/marketing-focus";
+import type { TopicCategoryId } from "../src/brain/content/topic-category";
 import { compileBrandCore } from "../src/brain/core/compile-brand-core";
 import { generateTopicCandidates } from "../src/brain/evaluation/generate-topic-candidates";
 import { preferBrandCoreForTopics } from "../src/brain/evaluation/prefer-brand-core-context";
@@ -47,12 +47,11 @@ import {
   type ProvenanceEvent,
 } from "../src/lib/provenance";
 
-const OBJECTIVES: MarketingFocus[] = [
-  "brand_awareness",
-  "value_proposition",
+const OBJECTIVES: TopicCategoryId[] = [
+  "customer_questions",
   "product_education",
-  "decision_support",
-  "trust_authority",
+  "trust_proof",
+  "offers_conversion",
 ];
 
 type Args = { url: string; persist: boolean };

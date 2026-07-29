@@ -6,16 +6,16 @@
     "faq_topic": 4
   },
   "byObjective": {
-    "brand_awareness": {
-      "status": "insufficient_context",
-      "candidateCount": 0,
-      "titles": [],
-      "leaks": []
-    },
-    "value_proposition": {
-      "status": "insufficient_context",
-      "candidateCount": 0,
-      "titles": [],
+    "customer_questions": {
+      "status": "success",
+      "completeness": "limited",
+      "candidateCount": 4,
+      "titles": [
+        "Do you offer same-day emergency service? can look straightforward—until you compare optio…",
+        "The Do you install tankless water heaters? problem buyers notice too late",
+        "Why comparing Are your quotes flat-rate? gets more confusing the more options you see",
+        "Why comparing areas do you serve? gets more confusing the more options you see"
+      ],
       "leaks": []
     },
     "product_education": {
@@ -23,35 +23,40 @@
       "completeness": "limited",
       "candidateCount": 5,
       "titles": [
-        "Why comparing slab leak detection gets more confusing the longer you shop",
-        "Why comparing garbage disposal replacement gets more confusing the longer you shop",
-        "Before comparing tankless water heater install, make one label check",
+        "Before comparing tankless water heater install, check one thing first",
         "emergency drain clearing can look straightforward—until you compare options carefully",
-        "Before comparing main line hydro jetting, make one label check"
+        "Why comparing slab leak detection gets more confusing the more options you see",
+        "Why comparing garbage disposal replacement gets more confusing the more options you see",
+        "Before comparing main line hydro jetting, check one thing first"
       ],
       "leaks": []
     },
-    "decision_support": {
-      "status": "insufficient_context",
-      "candidateCount": 0,
-      "titles": [],
-      "leaks": []
-    },
-    "trust_authority": {
+    "trust_proof": {
       "status": "success",
       "completeness": "limited",
       "candidateCount": 4,
       "titles": [
-        "Before comparing Do you offer same-day emergency service?, make one label check",
-        "The Are your quotes flat-rate? label check that can change your comparison",
-        "The Do you install tankless water heaters? label check that can change your comparison",
-        "Why comparing areas do you serve? gets more confusing the longer you shop"
+        "Do you offer same-day emergency service? can look straightforward—until you compare optio…",
+        "The Do you install tankless water heaters? problem buyers notice too late",
+        "Why comparing Are your quotes flat-rate? gets more confusing the more options you see",
+        "Why comparing areas do you serve? gets more confusing the more options you see"
+      ],
+      "leaks": []
+    },
+    "offers_conversion": {
+      "status": "success",
+      "completeness": "limited",
+      "candidateCount": 3,
+      "titles": [
+        "Do you offer same-day emergency service? can look straightforward—until you compare optio…",
+        "Do you install tankless water heaters? can look straightforward—until you compare options…",
+        "Are your quotes flat-rate? can look straightforward—until you compare options carefully"
       ],
       "leaks": []
     }
   },
   "totalLeaks": 0,
-  "measuredAt": "2026-07-29T02:43:36.301Z",
+  "measuredAt": "2026-07-29T14:00:10.913Z",
   "discoveryContentOpportunities": [
     "Tankless water heater install",
     "Emergency drain clearing",

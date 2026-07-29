@@ -1,9 +1,15 @@
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 
+import type {
+  BrainTraceStep,
+  IdeaLabCandidatesGenerationTrace,
+  IdeaLabEvidenceClaimView,
+} from "./idea-lab.types";
 import type {
   ClassificationConfidence,
   TopicSubjectKind,
 } from "./topic-subject";
+import type { TopicLlmFailureReason } from "./gtc/llm-candidates/types";
 
 export const TOPIC_CANDIDATE_SCORE_VERSION =
   "topic-candidate-score-v2" as const;
@@ -31,45 +37,29 @@ export type TopicCandidateSubjectIdentity = {
   sourceType?: "brand_observed" | "industry_research";
 };
 
-export type TopicTitleSource =
-  | "deterministic-v2"
-  | "openai-polished"
-  | "openai-fallback";
-
-export type TitlePolishFailureReason =
-  | "missing_api_key"
-  | "timeout"
-  | "api_error"
-  | "invalid_json"
-  | "schema_mismatch"
-  | "candidate_id_mismatch"
-  | "title_validation_rejected"
-  | "no_eligible_candidates";
+export type TopicTitleSource = "deterministic-v2" | "llm-generated";
 
 /** Ranked topic option before six-direction generation (Idea Lab). */
 export type TopicCandidate = {
   topicId: string;
   rank: number;
-  /** Display title (may be OpenAI-polished expression). */
   title: string;
-  /** Deterministic title before optional polish — never overwritten. */
-  originalTitle?: string;
-  /**
-   * deterministic-v2 = provider off or never polished.
-   * openai-polished = accepted rewrite.
-   * openai-fallback = polish enabled but failed (batch or systemic).
-   */
   titleSource?: TopicTitleSource;
-  titlePolishVersion?: string;
-  titlePolishModel?: string;
-  titlePolishReason?: string;
-  /** Per-candidate polish failure (e.g. validation reject). */
-  titlePolishFailureReason?: TitlePolishFailureReason;
-  titlePolishFailureDetail?: string;
-  objective: MarketingFocus;
+  /** Same as objective; explicit for LLM-enriched candidates. */
+  categoryId?: TopicCategoryId;
+  objective: TopicCategoryId;
   audience: string;
   audiencePain: string;
   strategicAngle: string;
+  hook?: string;
+  audienceQuestion?: string;
+  whyItFits?: string;
+  suggestedFormats?: string[];
+  platformFit?: string[];
+  funnelRole?: string;
+  /** Canonical evidence ids (mirrors evidenceIds for LLM path). */
+  evidenceRefs?: string[];
+  confidence?: number;
   relevanceReasons: string[];
   evidenceIds: string[];
   /** Nested subject identity (canonical for Inspector). */
@@ -81,6 +71,8 @@ export type TopicCandidate = {
   classificationConfidence: ClassificationConfidence;
   score: TopicCandidateScore;
   scoreVersion: typeof TOPIC_CANDIDATE_SCORE_VERSION;
+  /** Per-component weighted breakdown (explainScore) — highest first. */
+  scoreExplanation?: string[];
   recommended: boolean;
   /** Hooked Trigger metadata (topic-title-hook-v2). */
   titleHookVersion?: string;
@@ -126,7 +118,7 @@ export type TopicCandidateGenerationResult =
 
 export type IdeaLabCandidatesResult = {
   sessionId: string;
-  objective: MarketingFocus;
+  objective: TopicCategoryId;
   generation: TopicCandidateGenerationResult;
   /** Convenience mirror of generation.candidates (empty when insufficient). */
   candidates: TopicCandidate[];
@@ -140,12 +132,26 @@ export type IdeaLabCandidatesResult = {
   /** Candidate generation never writes Lab topic history. */
   historyWritten: false;
   scoreVersion: typeof TOPIC_CANDIDATE_SCORE_VERSION;
-  /** Batch polish failure when provider was enabled (not set when provider off). */
-  titlePolishFailureReason?: TitlePolishFailureReason;
-  titlePolishFailureDetail?: string;
+  /** Present when LLM candidate stage ran but fell back or partially failed. */
+  llmFailureReason?: TopicLlmFailureReason;
+  llmFailureDetail?: string;
+  llmTokenUsage?: {
+    promptTokens?: number;
+    completionTokens?: number;
+    totalTokens?: number;
+  };
+  /** Evidence→candidate pipeline summary for Test Inspector. */
+  generationTrace?: IdeaLabCandidatesGenerationTrace;
+  /** All indexed evidence claims keyed by id (Inspector resolution). */
+  evidenceClaimsById?: Record<string, IdeaLabEvidenceClaimView>;
+  /** Stage-by-stage trace from the candidates run (when available). */
+  candidateTrace?: BrainTraceStep[];
 };
 
 export const TOPIC_OBJECTIVE_REQUIRED = "TOPIC_OBJECTIVE_REQUIRED" as const;
 
 export const INSUFFICIENT_PRODUCT_EDUCATION_SUBJECTS =
   "INSUFFICIENT_PRODUCT_EDUCATION_SUBJECTS" as const;
+
+export const NO_PUBLISHED_COMMERCIAL_TERMS =
+  "no_published_commercial_terms" as const;

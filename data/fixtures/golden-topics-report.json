@@ -1,0 +1,101 @@
+{
+  "measuredAt": "2026-07-29T14:07:22.563Z",
+  "report": {
+    "zynava.com": {
+      "customer_questions": {
+        "status": "success",
+        "completeness": "limited",
+        "candidateCount": 5,
+        "titles": [
+          "Why comparing Does ZYNAVA sell supplements? gets more confusing the more options you see",
+          "Do I need to create an account? can look straightforward—until you compare options carefu…",
+          "The Is ZYNAVA medical advice? problem buyers notice too late",
+          "How does the Supplement Advisor work?",
+          "Why comparing is ZYNAVA? gets more confusing the more options you see"
+        ]
+      },
+      "product_education": {
+        "status": "success",
+        "completeness": "limited",
+        "candidateCount": 5,
+        "titles": [
+          "Why comparing Vitamin B12 — The Blood & Nerve Vitamin gets more confusing the more option…",
+          "Vitamin D can look straightforward—until you compare options carefully",
+          "Why comparing Vitamin C gets more confusing the more options you see",
+          "Why comparing Vitamin B6 gets more confusing the more options you see",
+          "Why comparing Vitamin A gets more confusing the more options you see"
+        ]
+      },
+      "trust_proof": {
+        "status": "success",
+        "completeness": "limited",
+        "candidateCount": 4,
+        "titles": [
+          "Why comparing Does ZYNAVA sell supplements? gets more confusing the more options you see",
+          "What ZYNAVA will and will not claim about How does the Supplement Advisor work?",
+          "The Is ZYNAVA medical advice? problem buyers notice too late",
+          "Why comparing is ZYNAVA? gets more confusing the more options you see"
+        ]
+      },
+      "offers_conversion": {
+        "status": "success",
+        "completeness": "complete",
+        "candidateCount": 6,
+        "titles": [
+          "Why Personalized supplement plan builder (b… matters for ZYNAVA buyers",
+          "Why price changes how options compare",
+          "Why Compare Supplement Prices Based on Your… matters for ZYNAVA buyers",
+          "Does ZYNAVA sell supplements? can look straightforward—until you compare options carefully",
+          "Why comparing ZYNAVA gets more confusing the more options you see",
+          "The is ZYNAVA? problem buyers notice too late"
+        ]
+      }
+    },
+    "clearflow-plumbing": {
+      "customer_questions": {
+        "status": "success",
+        "completeness": "limited",
+        "candidateCount": 4,
+        "titles": [
+          "Do you offer same-day emergency service? can look straightforward—until you compare optio…",
+          "The Do you install tankless water heaters? problem buyers notice too late",
+          "Why comparing Are your quotes flat-rate? gets more confusing the more options you see",
+          "Why comparing areas do you serve? gets more confusing the more options you see"
+        ]
+      },
+      "product_education": {
+        "status": "success",
+        "completeness": "limited",
+        "candidateCount": 5,
+        "titles": [
+          "Before comparing tankless water heater install, check one thing first",
+          "emergency drain clearing can look straightforward—until you compare options carefully",
+          "Why comparing slab leak detection gets more confusing the more options you see",
+          "Why comparing garbage disposal replacement gets more confusing the more options you see",
+          "Before comparing main line hydro jetting, check one thing first"
+        ]
+      },
+      "trust_proof": {
+        "status": "success",
+        "completeness": "limited",
+        "candidateCount": 4,
+        "titles": [
+          "Do you offer same-day emergency service? can look straightforward—until you compare optio…",
+          "The Do you install tankless water heaters? problem buyers notice too late",
+          "Why comparing Are your quotes flat-rate? gets more confusing the more options you see",
+          "Why comparing areas do you serve? gets more confusing the more options you see"
+        ]
+      },
+      "offers_conversion": {
+        "status": "success",
+        "completeness": "limited",
+        "candidateCount": 3,
+        "titles": [
+          "Do you offer same-day emergency service? can look straightforward—until you compare optio…",
+          "Do you install tankless water heaters? can look straightforward—until you compare options…",
+          "Are your quotes flat-rate? can look straightforward—until you compare options carefully"
+        ]
+      }
+    }
+  }
+}

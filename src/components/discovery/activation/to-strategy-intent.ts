@@ -35,7 +35,7 @@ function thesisFromPillar(
 
 /**
  * Boundary adapter: new UX investments → existing strategy API contract.
- * Additive bridge — derives legacy fields so fb-strategy / prompts keep working.
+ * Additive bridge - derives legacy fields so fb-strategy / prompts keep working.
  */
 export function toStrategyIntentAnswers(
   investments: DiscoveryInvestments,

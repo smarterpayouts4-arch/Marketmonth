@@ -3,15 +3,17 @@ title: Idea Lab — direction hardening (structured handoff)
 status: active
 authority: supporting
 owner: engineering
-last_verified: 2026-07-27
+last_verified: 2026-07-29
 related_paths:
   - src/brain/content/direction-writing-context.ts
+  - src/brain/content/topic-category.ts
   - src/brain/content/providers/deterministic-provider.ts
   - src/brain/content/generate-content-directions.ts
   - src/brain/content/hook-enrichment/
   - src/brain/use-cases/run-idea-lab-directions.ts
   - src/brain/content/__fixtures__/direction-writing/
   - project-knowledge/DECISIONS/0003-selected-topic-context-for-directions.md
+  - project-knowledge/DECISIONS/0004-topic-category-model.md
 ---
 
 # Idea Lab — direction hardening (structured handoff)
@@ -25,9 +27,9 @@ This document is the human reference for runtime contracts, fixtures, tests, and
 ## Flow
 
 ```text
-TopicObjective (MarketingFocus)
-  → TopicCandidate (unchanged in this slice)
-  → SelectedTopicContext
+TopicCategoryId (four chips — ADR 0004)
+  → TopicCandidate
+  → SelectedTopicContext (objective = TopicCategoryId)
   → DirectionWritingContext (DerivedLabel + framingStrategy)
   → deterministic-v1 (generatorVersion deterministic-directions-v2)
   → six ContentVariations
@@ -59,13 +61,13 @@ Psychology / Marketing Hook polish runs **after** human topic selection and dete
 
 Lineage (Idea Lab) records all three plus `framingStrategy` and a snapshot of `DirectionWritingContext`.
 
-## Canonical MarketingFocus
+## Canonical TopicCategoryId
 
-Use only values from `src/brain/content/marketing-focus.ts`:
+Use only values from `src/brain/content/topic-category.ts` (ADR 0004):
 
-`brand_awareness` | `value_proposition` | `product_education` | `decision_support` | `trust_authority`
+`customer_questions` | `product_education` | `trust_proof` | `offers_conversion`
 
-**Never** use `customer_decision_support` as an identifier. UI copy may say “Customer decision support”; code, API, lineage, docs, and tests use `decision_support` only.
+Retired `MarketingFocus` values in stored runs migrate via `parseTopicCategory`. **Awareness is out of scope** for topic generation — there is no `brand_awareness` chip and no `awareness_positioning` framing strategy.
 
 ## masterTitle byte-for-byte
 
@@ -104,15 +106,14 @@ For labels (`topicSubject`, audience, offer, pain, value promise):
 2. `ContentBrainContext` (Brand Core / Lab context)
 3. Title-parse fallback (`parseTopicSubjectFromTitle`) — **does not** mutate `masterTitle`
 
-### Objective → framingStrategy (structural)
+### Category → framingStrategy (structural)
 
-| MarketingFocus | ObjectiveFramingStrategy |
-| -------------- | ------------------------ |
+| TopicCategoryId | ObjectiveFramingStrategy |
+| --------------- | ------------------------ |
 | `product_education` | `education_process` |
-| `value_proposition` | `value_differentiation` |
-| `brand_awareness` | `awareness_positioning` |
-| `decision_support` | `decision_criteria` |
-| `trust_authority` | `trust_credibility` |
+| `offers_conversion` | `value_differentiation` |
+| `customer_questions` | `decision_criteria` |
+| `trust_proof` | `trust_credibility` |
 
 Lineage stores both: `{ objective, framingStrategy }`. Tests assert strategy by enum equality — not word-hunting in copy.
 
@@ -179,7 +180,7 @@ Directions (punchlines):
 
 Absent capability never present: `lab-certified medical dosing advice`.
 
-### After — professional-service (`value_proposition` → `value_differentiation`)
+### After — professional-service (`offers_conversion` → `value_differentiation`)
 
 | Field | Value |
 | ----- | ----- |
@@ -189,7 +190,7 @@ Absent capability never present: `lab-certified medical dosing advice`.
 
 Sample punchlines: starting guide / FAQ / problem-solution / five checks / comparison / trust transparency — all grounded in Northline Advisors + fundraising readiness offer. Absent: `guaranteed term-sheet outcomes`.
 
-### After — software-product (`decision_support` → `decision_criteria`)
+### After — software-product (`customer_questions` → `decision_criteria`)
 
 | Field | Value |
 | ----- | ----- |
@@ -203,7 +204,7 @@ Sample punchlines grounded in ParcelKit webhook retry console. Absent: `zero-lat
 
 | Case | Where |
 | ---- | ----- |
-| FramingStrategy map for all five MarketingFocus | `direction-writing-hardening.test.ts` |
+| FramingStrategy map for all four TopicCategoryId values | `direction-writing-hardening.test.ts` |
 | Exact master incl. awkward punctuation | same |
 | Three category fixtures: 6 angles, no `about How/Why/What`, absent capability | same |
 | deepFreeze: selected + writing context not mutated | same |
@@ -247,3 +248,4 @@ When product Marketing Topic adopts the same handoff:
 - [`src/app/dev/brain/idea-lab/SANDBOX.md`](../src/app/dev/brain/idea-lab/SANDBOX.md) — Lab sandbox rules
 - ADR 0002 — provider baseline freeze
 - ADR 0003 — SelectedTopicContext decision
+- ADR 0004 — TopicCategoryId model (upstream of directions)

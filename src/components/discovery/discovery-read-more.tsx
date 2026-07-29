@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 type DiscoveryReadMoreProps = {
   title: string;
   triggerLabel: string;
-  /** When false, only the preview renders — no expand control. */
+  /** When false, only the preview renders - no expand control. */
   overflow: boolean;
   preview?: ReactNode;
   children: ReactNode;

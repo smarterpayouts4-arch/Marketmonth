@@ -1,4 +1,7 @@
-import { howItWorksSteps } from "@/components/landing/data/mock-landing-demo";
+import {
+  processLabel,
+  processSteps,
+} from "@/components/landing/landing-copy";
 import { Reveal } from "@/components/landing/reveal";
 
 export function HowItWorks() {
@@ -10,12 +13,12 @@ export function HowItWorks() {
             How it works
           </p>
           <h2 className="text-section mt-3 max-w-[20ch] text-foreground">
-            Learn → Strategize → Build → Review
+            {processLabel}
           </h2>
         </Reveal>
 
-        <ol className="mt-12 grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-          {howItWorksSteps.map((step, index) => (
+        <ol className="mt-12 grid gap-10 sm:grid-cols-3 lg:gap-8">
+          {processSteps.map((step, index) => (
             <Reveal key={step.title}>
               <li className="border-t border-border pt-5">
                 <span className="font-display text-sm font-bold text-accent">

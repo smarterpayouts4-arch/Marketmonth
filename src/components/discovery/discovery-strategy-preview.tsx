@@ -85,7 +85,7 @@ export function DiscoveryStrategyPreview({
           setBusy(false);
           return;
         }
-        // Auth.js Google — production path. Redirect URIs must be registered
+        // Auth.js Google - production path. Redirect URIs must be registered
         // in Google Cloud Console (http://localhost:3000/api/auth/callback/google).
         await signIn("google", {
           callbackUrl: data.callbackUrl ?? "/dashboard",

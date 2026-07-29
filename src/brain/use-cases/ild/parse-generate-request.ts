@@ -1,7 +1,7 @@
 import { selectedTopicContextSchema } from "@/brain/content/direction-writing-context";
 import type { SelectedTopicContext } from "@/brain/content/direction-writing-context";
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
-import { MARKETING_FOCUS_VALUES } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
+import { TOPIC_CATEGORY_IDS } from "@/brain/content/topic-category";
 import type { CompanyResearchImportV1 } from "@/brain/evaluation/company-research-assist";
 import { TOPIC_OBJECTIVE_REQUIRED } from "@/brain/evaluation/topic-candidate-types";
 
@@ -13,7 +13,8 @@ export type IdeaLabGenerateStage =
 
 export type IdeaLabGenerateBody = {
   stage?: IdeaLabGenerateStage;
-  marketingFocus?: string;
+  companyId?: string;
+  topicCategory?: string;
   selectedTopic?: string;
   selectedCandidateId?: string;
   selectedTopicContext?: unknown;
@@ -27,7 +28,8 @@ export type ParsedIdeaLabGenerateRequest =
   | {
       ok: true;
       stage: "research_prompt";
-      marketingFocus?: string;
+      companyId: string;
+      topicCategory?: string;
     }
   | {
       ok: true;
@@ -37,13 +39,15 @@ export type ParsedIdeaLabGenerateRequest =
   | {
       ok: true;
       stage: "candidates";
-      marketingFocus?: string;
+      companyId: string;
+      topicCategory?: string;
       researchImport?: string | CompanyResearchImportV1;
     }
   | {
       ok: true;
       stage: "directions";
-      marketingFocus: MarketingFocus;
+      companyId: string;
+      topicCategory: TopicCategoryId;
       selectedCandidateId?: string;
       selectedTopicContext?: SelectedTopicContext;
       manualTopic?: string;
@@ -55,8 +59,27 @@ export type ParsedIdeaLabGenerateRequest =
       error: string;
     };
 
-function isMarketingFocus(value: string): value is MarketingFocus {
-  return (MARKETING_FOCUS_VALUES as readonly string[]).includes(value);
+function isTopicCategoryId(value: string): value is TopicCategoryId {
+  return (TOPIC_CATEGORY_IDS as readonly string[]).includes(value);
+}
+
+export const IDEA_LAB_DEFAULT_COMPANY_ID = "zynava.com";
+
+/**
+ * companyId flows into a data/companies/<id>/ file path, so it must be a
+ * plain domain-like slug — no separators, no traversal.
+ */
+const COMPANY_ID_RE = /^[a-z0-9][a-z0-9.-]{0,127}$/;
+
+function resolveCompanyId(
+  raw: string | undefined
+): { ok: true; companyId: string } | { ok: false; error: string } {
+  const trimmed = raw?.trim().toLowerCase();
+  if (!trimmed) return { ok: true, companyId: IDEA_LAB_DEFAULT_COMPANY_ID };
+  if (!COMPANY_ID_RE.test(trimmed) || trimmed.includes("..")) {
+    return { ok: false, error: "companyId must be a plain domain slug" };
+  }
+  return { ok: true, companyId: trimmed };
 }
 
 /**
@@ -65,6 +88,12 @@ function isMarketingFocus(value: string): value is MarketingFocus {
 export function parseIdeaLabGenerateRequest(
   body: IdeaLabGenerateBody
 ): ParsedIdeaLabGenerateRequest {
+  const company = resolveCompanyId(body.companyId);
+  if (!company.ok) {
+    return { ok: false, status: 400, error: company.error };
+  }
+  const companyId = company.companyId;
+
   const stage: IdeaLabGenerateStage =
     body.stage === "directions"
       ? "directions"
@@ -87,7 +116,8 @@ export function parseIdeaLabGenerateRequest(
     return {
       ok: true,
       stage: "research_prompt",
-      marketingFocus: body.marketingFocus,
+      companyId,
+      topicCategory: body.topicCategory,
     };
   }
 
@@ -112,12 +142,13 @@ export function parseIdeaLabGenerateRequest(
     return {
       ok: true,
       stage: "candidates",
-      marketingFocus: body.marketingFocus,
+      companyId,
+      topicCategory: body.topicCategory,
       researchImport,
     };
   }
 
-  if (!body.marketingFocus || !isMarketingFocus(body.marketingFocus)) {
+  if (!body.topicCategory || !isTopicCategoryId(body.topicCategory)) {
     return {
       ok: false,
       status: 400,
@@ -139,7 +170,7 @@ export function parseIdeaLabGenerateRequest(
     }
     selectedTopicContext = {
       ...parsed.data,
-      objective: body.marketingFocus,
+      objective: body.topicCategory,
     };
   }
 
@@ -161,7 +192,8 @@ export function parseIdeaLabGenerateRequest(
   return {
     ok: true,
     stage: "directions",
-    marketingFocus: body.marketingFocus,
+    companyId,
+    topicCategory: body.topicCategory,
     selectedCandidateId: body.selectedCandidateId,
     selectedTopicContext,
     manualTopic: legacyTitle,

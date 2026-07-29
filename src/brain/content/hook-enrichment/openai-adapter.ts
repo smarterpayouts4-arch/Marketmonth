@@ -1,9 +1,22 @@
-import OpenAI from "openai";
-
+import { callBrainLlm } from "@/brain/llm/openai-client";
 import { resolveModel } from "@/brain/policy/model-registry";
 
 import type { HookEnrichmentRequest, HookEnrichmentResult } from "./types";
 import { HOOK_ENRICHMENT_VERSION } from "./types";
+
+const HOOK_ENRICHMENT_JSON_SCHEMA = {
+  name: "hook_enrichment",
+  schema: {
+    type: "object",
+    additionalProperties: false,
+    required: ["hook", "tensionLine", "payoffLine"],
+    properties: {
+      hook: { type: "string" },
+      tensionLine: { type: ["string", "null"] },
+      payoffLine: { type: ["string", "null"] },
+    },
+  },
+};
 
 type RawHookJson = {
   hook?: unknown;
@@ -50,18 +63,16 @@ export async function enrichHookWithOpenAI(
   });
 
   try {
-    const client = new OpenAI({ apiKey });
-    const completion = await client.chat.completions.create({
+    const result = await callBrainLlm({
+      apiKey,
       model,
+      system,
+      user,
       temperature: 0.5,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
+      jsonSchema: HOOK_ENRICHMENT_JSON_SCHEMA,
     });
-    const raw = completion.choices[0]?.message?.content ?? "";
-    const json = JSON.parse(raw) as RawHookJson;
+    if (!result.ok) return null;
+    const json = JSON.parse(result.raw) as RawHookJson;
     const hook = asTrimmedString(json.hook, 120);
     if (!hook) return null;
     return {

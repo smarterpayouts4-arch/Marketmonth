@@ -1,8 +1,8 @@
 import { landingImagery } from "./shared";
 
-/** Illustrative organic-loop teaser — not real performance data. */
+/** Illustrative organic-loop teaser - not real performance data. */
 export const organicLoopTeaser = {
-  disclaimer: "Illustrative demo — not real analytics",
+  disclaimer: "Illustrative demo - not real analytics",
   bars: [
     { channel: "TikTok", value: 78 },
     { channel: "YouTube", value: 62 },
@@ -10,9 +10,9 @@ export const organicLoopTeaser = {
   ],
 } as const;
 
-/** Illustrative growth preview — labeled demo metrics only. */
+/** Illustrative growth preview - labeled demo metrics only. */
 export const growthPreview = {
-  disclaimer: "Illustrative demo — not real analytics",
+  disclaimer: "Illustrative demo - not real analytics",
   callout: "+87% Content impact this month",
   months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"] as const,
   values: [28, 36, 44, 58, 72, 87] as const,

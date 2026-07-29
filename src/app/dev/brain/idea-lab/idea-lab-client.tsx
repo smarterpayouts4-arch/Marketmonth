@@ -5,7 +5,7 @@
  * Orchestration hits /api/dev/brain/idea-lab/* exclusively via useIdeaLabSandbox.
  * Does NOT import product Marketing Topic hooks, session storage, or Atom paths.
  *
- * Flow: objective chip → Auto-generate → ranked candidates (complete/limited/insufficient)
+ * Flow: topic category chip → Auto-generate → ranked candidates (complete/limited/insufficient)
  * → select one → six directions. Candidate generation never writes Lab history.
  */
 import { Bug } from "lucide-react";
@@ -74,7 +74,7 @@ export function IdeaLabClient() {
       <div className="mt-3">
         <MarketingTopicHeader compact={lab.hasDirections} />
         <p className="mt-1.5 max-w-2xl text-sm text-text-secondary">
-          Select an objective, Auto-generate ranked topics, then pick one to get
+          Select a topic category, Auto-generate ranked topics, then pick one to get
           six directions.
         </p>
         <p className="mt-1 text-xs text-text-muted">
@@ -102,8 +102,8 @@ export function IdeaLabClient() {
           loading={lab.loading}
           generateDisabled={lab.fixtureBlocked}
           compact={lab.hasDirections}
-          marketingFocus={lab.marketingFocus}
-          onMarketingFocusChange={lab.handleFocusChange}
+          topicCategory={lab.topicCategory}
+          onTopicCategoryIdChange={lab.handleFocusChange}
           focusError={lab.focusError}
           contextExpanded={lab.contextExpanded}
           onContextExpandedChange={lab.setContextExpanded}

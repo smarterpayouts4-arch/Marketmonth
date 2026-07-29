@@ -23,7 +23,7 @@ const CHANNEL_ICONS: Record<SocialChannel, typeof FacebookIcon> = {
 };
 
 /**
- * Restrained per-channel icon tint — background stays neutral so brand
+ * Restrained per-channel icon tint - background stays neutral so brand
  * colors accent rather than overwhelm the card.
  */
 const CHANNEL_ICON_TINT: Record<SocialChannel, string> = {
@@ -39,8 +39,8 @@ type ExecutionBadgeProps = {
   className?: string;
 };
 
-/** Always shows the platform AND its format together — e.g. "Facebook ·
- * Carousel" — never a bare platform name. This is what tells the user a
+/** Always shows the platform AND its format together - e.g. "Facebook ·
+ * Carousel" - never a bare platform name. This is what tells the user a
  * daily idea is being adapted per channel, not copy-pasted everywhere. */
 export function ExecutionBadge({ execution, className }: ExecutionBadgeProps) {
   const Icon = CHANNEL_ICONS[execution.channel];
@@ -75,7 +75,7 @@ type ExecutionListProps = {
   className?: string;
 };
 
-/** Renders exactly the executions passed in — never infers channels or
+/** Renders exactly the executions passed in - never infers channels or
  * formats from the weekday. */
 export function ExecutionList({ executions, className }: ExecutionListProps) {
   return (

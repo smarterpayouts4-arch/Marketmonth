@@ -34,4 +34,20 @@ describe("stripNonContent / mainContentText", () => {
     assert.ok(!/Cookie settings/.test(text));
     assert.ok(!/Promo sidebar/.test(text));
   });
+
+  it("separates adjacent blocks instead of gluing their text", () => {
+    const text = mainContentText(FIXTURE);
+    assert.ok(
+      !/ZYNAVAThe/.test(text),
+      `heading glued to paragraph: ${JSON.stringify(text)}`
+    );
+    assert.match(text, /About ZYNAVA\nThe supplement market/);
+  });
+
+  it("keeps inline markup inside a single line", () => {
+    const text = mainContentText(
+      "<main><p>Find <a href='/x'>fair prices</a> and <strong>clear</strong> guidance.</p></main>"
+    );
+    assert.equal(text, "Find fair prices and clear guidance.");
+  });
 });

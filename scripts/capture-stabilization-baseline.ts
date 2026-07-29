@@ -7,7 +7,7 @@ import path from "node:path";
 
 import { generateContentDirections } from "../src/brain/content/generate-content-directions";
 import { parseFixtureCsv } from "../src/brain/content/repository/parse-fixture-csv";
-import type { MarketingFocus } from "../src/brain/content/marketing-focus";
+import type { TopicCategoryId } from "../src/brain/content/topic-category";
 
 const ROOT = process.cwd();
 const FIXTURE_DIR = path.join(ROOT, "data/fixtures/stabilization");
@@ -37,7 +37,7 @@ async function main() {
     ) as {
       topic: string;
       mode: "manual" | "automatic";
-      marketingFocus?: MarketingFocus;
+      topicCategory?: TopicCategoryId;
       recentMasterTopics?: string[];
     };
 
@@ -47,7 +47,7 @@ async function main() {
       topic: scenario.topic,
       directionsProvider: "deterministic-v1",
       recentMasterTopics: scenario.recentMasterTopics,
-      marketingFocus: scenario.marketingFocus,
+      topicCategory: scenario.topicCategory,
     });
 
     const outPath = path.join(OUT_DIR, `${id}.json`);

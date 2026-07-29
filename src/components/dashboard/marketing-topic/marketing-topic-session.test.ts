@@ -299,7 +299,7 @@ describe("Marketing Topic Phase 2 session + history", () => {
       lockedMasterTopic: "Magnesium for sleep quality",
       generationReason: "regenerate",
       parentGenerationId: "tgen_parent",
-      marketingFocus: null,
+      topicCategory: null,
       contextState: emptyExtraContextUi(),
     });
     assert.equal(built.ok, true);

@@ -47,25 +47,21 @@ const FIXTURES = [
 ] as const;
 
 describe("direction-writing-context", () => {
-  it("maps MarketingFocus to framingStrategy structurally", () => {
+  it("maps TopicCategoryId to framingStrategy structurally", () => {
     assert.equal(
       framingStrategyForObjective("product_education"),
       "education_process"
     );
     assert.equal(
-      framingStrategyForObjective("value_proposition"),
+      framingStrategyForObjective("offers_conversion"),
       "value_differentiation"
     );
     assert.equal(
-      framingStrategyForObjective("brand_awareness"),
-      "awareness_positioning"
-    );
-    assert.equal(
-      framingStrategyForObjective("decision_support"),
+      framingStrategyForObjective("customer_questions"),
       "decision_criteria"
     );
     assert.equal(
-      framingStrategyForObjective("trust_authority"),
+      framingStrategyForObjective("trust_proof"),
       "trust_credibility"
     );
   });
@@ -103,7 +99,7 @@ describe("hardened deterministic directions (multi-category fixtures)", () => {
         context: fx.brandContext,
         mode: "manual",
         selectedTopicContext: selected,
-        marketingFocus: selected.objective,
+        topicCategory: selected.objective,
         directionsProvider: "deterministic-v1",
       });
 
@@ -153,7 +149,7 @@ describe("hardened deterministic directions (multi-category fixtures)", () => {
     });
   }
 
-  it("product_education vs value_proposition select different framingStrategy", async () => {
+  it("product_education vs offers_conversion select different framingStrategy", async () => {
     const fx = loadFixture("supplement-comparison.json");
     const edu: SelectedTopicContext = {
       ...fx.selectedTopic,
@@ -161,19 +157,19 @@ describe("hardened deterministic directions (multi-category fixtures)", () => {
     };
     const val: SelectedTopicContext = {
       ...fx.selectedTopic,
-      objective: "value_proposition",
+      objective: "offers_conversion",
     };
     const eduBundle = await generateContentDirectionsBundle({
       context: fx.brandContext,
       mode: "manual",
       selectedTopicContext: edu,
-      marketingFocus: "product_education",
+      topicCategory: "product_education",
     });
     const valBundle = await generateContentDirectionsBundle({
       context: fx.brandContext,
       mode: "manual",
       selectedTopicContext: val,
-      marketingFocus: "value_proposition",
+      topicCategory: "offers_conversion",
     });
     assert.equal(eduBundle.writingContext?.framingStrategy, "education_process");
     assert.equal(

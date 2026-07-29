@@ -4,7 +4,7 @@ type Props = {
   text: string;
 };
 
-/** Compact strategic takeaway — not presented as website evidence. */
+/** Compact strategic takeaway - not presented as website evidence. */
 export function DiscoveryTakeaway({ text }: Props) {
   const t = text.trim();
   if (!t) return null;

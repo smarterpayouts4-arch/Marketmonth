@@ -1,7 +1,7 @@
 /**
  * Typed data model for the "Month Plan" roadmap feature.
  *
- * Illustrative demo data only — not a persisted product model. Every value a
+ * Illustrative demo data only - not a persisted product model. Every value a
  * component needs (progress, execution chips, status) is derived from this
  * shape rather than hardcoded in JSX, so the UI stays honest if the demo
  * data changes.
@@ -10,7 +10,7 @@
  * A `DailyContentItem` is one core content idea; its `executions` are the
  * platform-specific versions made from that idea (channel + format
  * together), never a bare list of platforms. Never show all five channels
- * on a single idea — real weeks mix 1–3 executions per idea and cover all
+ * on a single idea - real weeks mix 1–3 executions per idea and cover all
  * five channels across the week as a whole.
  */
 
@@ -35,12 +35,12 @@ export type ContentType =
   | "product-spotlight"
   | "lifestyle";
 
-/** The shape a channel execution takes — distinct per channel so the same
+/** The shape a channel execution takes - distinct per channel so the same
  * idea reads as "adapted for," not "copy-pasted to," each platform. */
 export type ContentFormat = "carousel" | "reel" | "short" | "video" | "post";
 
 /** One platform-specific version of a daily idea. Always rendered as
- * "Channel · Format" together — never a bare channel name — so the UI
+ * "Channel · Format" together - never a bare channel name - so the UI
  * never implies one identical asset is blindly cross-posted everywhere. */
 export type ChannelExecution = {
   channel: SocialChannel;
@@ -58,7 +58,7 @@ export type DailyContentItem = {
   imageAlt: string;
   contentType: ContentType;
   /** 1–3 platform-specific versions of this idea. Never all five channels
-   * on one idea — see module doc. */
+   * on one idea - see module doc. */
   executions: ChannelExecution[];
   status: ContentStatus;
 };
@@ -166,13 +166,13 @@ export function weekStatusBreakdown(week: MarketingWeek): {
   };
 }
 
-/** Total channel-specific posts across the whole week — sum of every
+/** Total channel-specific posts across the whole week - sum of every
  * idea's executions, not the idea count. */
 export function weekExecutionCount(week: MarketingWeek): number {
   return week.posts.reduce((sum, post) => sum + post.executions.length, 0);
 }
 
-/** Every distinct channel used anywhere in the week, in canonical order —
+/** Every distinct channel used anywhere in the week, in canonical order -
  * proof that a week's ideas collectively cover all supported platforms
  * even though no single idea uses all five. */
 export function weekChannelsCovered(week: MarketingWeek): SocialChannel[] {
@@ -182,7 +182,7 @@ export function weekChannelsCovered(week: MarketingWeek): SocialChannel[] {
   return ALL_SOCIAL_CHANNELS.filter((channel) => used.has(channel));
 }
 
-/** "Facebook, Instagram and YouTube" — natural-language join for the
+/** "Facebook, Instagram and YouTube" - natural-language join for the
  * week-level summary line. */
 export function formatChannelNames(channels: SocialChannel[]): string {
   const labels = channels.map((channel) => CHANNEL_METADATA[channel].label);

@@ -29,7 +29,21 @@ Market Month’s **discovery activation Hook** (not the finished habit loop):
 
 **Grounded pipeline:** crawl → company profile artifact (`approved.csv` preferred over `draft.csv`) → `CompanyProfileProjection` via `parseCompanyCsv` → engine `buildDiscoveryNarrative` (`src/lib/discovery/discovery-narrative.schema.ts` → `SocialDiscoveryProfile`) → UI formats only via `toDiscoveryActivation`. Evidence is classified `observed` | `inferred` | `recommended`. Cadence is always a Market Month **recommendation**, never website evidence. Social wording is **link detected** / **link not detected** only (never “no account” / performance claims). Low evidence → clarification copy + light cadence rather than fabricated strength.
 
-Presentation models live under `src/components/discovery/activation/` (`DiscoveryReveal`, `DiscoveryInvestments`, additive adapter to `StrategyIntentAnswers`). UI must not import `@/engine`. Progress is header-only (`YOUR DISCOVERY · n OF 3`).
+Presentation models live under `src/components/discovery/activation/` (`DiscoveryReveal`, `DiscoveryInvestments`, additive adapter to `StrategyIntentAnswers`). UI must not import `@/engine`. Progress is header-only (`YOUR DISCOVERY · n OF 3`). Row copy is derived in `src/lib/discovery/card-copy.ts` so the engine and the UI share one implementation.
+
+### Display copy polish (sanctioned exception to "UI formats only")
+
+An LLM may rewrite **only** a card row's `title` and `summary`, stored as the optional `display` field on a bullet (`discoveryDisplayCopySchema`). Everything else stays deterministic: bullet `text`, `classification`, `evidence`, cadence copy, pillars, platform guidance, insights, takeaways, and social wording are never model-generated. A polished row must make the *same* claim as the deterministic row — only more readable.
+
+Constraints, all enforced in `src/engine/discovery/discovery-narrative/polish/polish-display-copy.ts`:
+
+- `buildDiscoveryNarrative` stays pure and synchronous. Polish runs as an awaited post-step in `src/app/api/discovery/analyze/route.ts`, so the golden fixtures keep asserting deterministic output.
+- Fail-closed: no API key, transport error, schema mismatch, or any failed validator leaves the deterministic copy in place. Absent `display` always renders a valid card.
+- Validators reject new numbers, novel proper nouns not present in the grounded source, medical or study claims, forbidden social phrasing ("no account" / "not active" / "unused" / "inactive"), junk leakage, out-of-range lengths, and duplicate titles.
+- On whenever `OPENAI_API_KEY` is present; force off with `DISCOVERY_COPY_POLISH_PROVIDER=deterministic-only`. Model via `discoveryCopyPolish` in the model registry (`OPENAI_DISCOVERY_POLISH_MODEL`).
+- Polish improves wording, never data quality. A row whose *content* is wrong is an engine defect and must be fixed in the engine, not masked by better prose.
+
+`scripts/compare-discovery-copy.ts` renders both arms side by side against the same engine module for regression review.
 
 Honest evidence groups: Observed / Inferred / Recommended by Market Month. Product crawl Playwright is in-process (`src/lib/discovery/browser/`); Docker MCP Playwright is agent-only.
 

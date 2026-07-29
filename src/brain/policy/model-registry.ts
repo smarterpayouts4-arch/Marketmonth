@@ -17,12 +17,22 @@ export const MODEL_REGISTRY = {
     env: "OPENAI_HOOK_ENRICHMENT_MODEL",
     default: "gpt-5-nano",
   },
-  topicTitlePolish: {
-    env: "OPENAI_TOPIC_TITLE_POLISH_MODEL",
-    default: "gpt-5-nano",
+  /**
+   * Topic candidate generation. gpt-5.4-nano measured at 16s / 2769 output
+   * tokens filling all six slots, where gpt-5-nano took 76s / 9753 tokens and
+   * filled five. Override the env back to gpt-5-nano to compare.
+   */
+  topicLlmCandidates: {
+    env: "OPENAI_TOPIC_CANDIDATES_MODEL",
+    default: "gpt-5.4-nano",
   },
   discovery: {
     env: "OPENAI_DISCOVERY_MODEL",
+    default: "gpt-5.4-nano",
+  },
+  discoveryCopyPolish: {
+    env: "OPENAI_DISCOVERY_POLISH_MODEL",
+    fallbackEnv: "OPENAI_DISCOVERY_MODEL",
     default: "gpt-5.4-nano",
   },
 } as const;

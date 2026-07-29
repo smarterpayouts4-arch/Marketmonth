@@ -1,8 +1,9 @@
 /**
  * Compare discovery card copy: deterministic (Arm A) vs LLM display polish (Arm B).
  *
- * Read-only against repo data. Arm B is an experiment under scripts/ and is not
- * wired into the product path — see scripts/lib/discovery-copy-polish.ts.
+ * Read-only against repo data. Arm B calls the product polish module
+ * (`src/engine/discovery/discovery-narrative/polish/polish-display-copy.ts`)
+ * — the same post-step used by POST /api/discovery/analyze.
  *
  * Usage:
  *   npx tsx scripts/compare-discovery-copy.ts
@@ -18,9 +19,9 @@ import { config } from "dotenv";
 import { buildDiscoveryNarrative } from "../src/engine/discovery/discovery-narrative";
 import { parseCompanyCsv } from "../src/lib/company-profile/csv-contract";
 import {
-  polishCardRows,
+  polishDiscoveryDisplayCopy,
   type PolishRejection,
-} from "./lib/discovery-copy-polish";
+} from "../src/engine/discovery/discovery-narrative/polish/polish-display-copy";
 import {
   toCardView,
   type CardEvidenceRow,
@@ -166,8 +167,10 @@ function printExpandedDetail(armA: CardView): void {
     console.log(`[${tab.label}]`);
     tab.rows.forEach((row, i) => {
       console.log(`  ${i + 1}. ${row.title}`);
-      for (const line of wrap(`Detail: ${row.detail}`, 108)) {
-        console.log(`     ${line}`);
+      if (row.detail) {
+        for (const line of wrap(`Detail: ${row.detail}`, 108)) {
+          console.log(`     ${line}`);
+        }
       }
       if (row.supportingPoints.length) {
         console.log(`     Why we believe this:`);
@@ -269,21 +272,15 @@ async function main(): Promise<void> {
   let polishError: string | undefined;
 
   if (args.llm) {
-    const outcome = await polishCardRows(allRows, {
-      businessName: armA.businessName,
-      model: args.model,
-    });
-    rejections = outcome.rejections;
-    polishedCount = outcome.polishedCount;
-    polishError = outcome.error;
-    const byId = new Map(outcome.rows.map((r) => [r.id, r]));
-    armB = {
-      ...armA,
-      tabs: armA.tabs.map((tab) => ({
-        ...tab,
-        rows: tab.rows.map((row) => byId.get(row.id) ?? row),
-      })),
-    };
+    // The engine resolves its model from the registry, so --model is applied
+    // through the same env override the product uses.
+    if (args.model) process.env.OPENAI_DISCOVERY_POLISH_MODEL = args.model;
+    delete process.env.DISCOVERY_COPY_POLISH_PROVIDER;
+    const outcome = await polishDiscoveryDisplayCopy(narrative);
+    rejections = outcome.report.rejections;
+    polishedCount = outcome.report.polishedCount;
+    polishError = outcome.report.error;
+    armB = toCardView(outcome.profile);
   }
 
   if (polishError) {

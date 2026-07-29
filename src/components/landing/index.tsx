@@ -5,11 +5,13 @@ import { DemoTheater } from "@/components/landing/demo-theater";
 import { FeatureSection } from "@/components/landing/feature-section";
 import { FinalCTA } from "@/components/landing/final-cta";
 import { HeroLanding } from "@/components/landing/hero-landing";
-import { HowItWorks } from "@/components/landing/how-it-works";
 import { LandingNavbar } from "@/components/landing/landing-navbar";
+import {
+  freeAnalysisLine,
+  processLabel,
+} from "@/components/landing/landing-copy";
 import { OutcomeStats } from "@/components/landing/outcome-stats";
 import { ProcessStrip } from "@/components/landing/process-strip";
-import { SocialProof } from "@/components/landing/social-proof";
 import { PRODUCT_IDENTITY } from "@/seo/config/product-identity";
 
 export function LandingPage() {
@@ -31,9 +33,7 @@ export function LandingPage() {
             <DemoTheater />
             <ProcessStrip />
             <FeatureSection />
-            <SocialProof />
             <OutcomeStats />
-            <HowItWorks />
           </div>
         </div>
         <FinalCTA />
@@ -45,11 +45,11 @@ export function LandingPage() {
               {PRODUCT_IDENTITY.displayName}
             </p>
             <p className="mt-1 text-[13px] font-medium tracking-wide text-text-muted">
-              Learn → Strategize → Build → Review
+              {processLabel}
             </p>
           </div>
-          <p className="text-sm text-text-muted">
-            Prototype landing · Design tokens from globals
+          <p className="max-w-[36ch] text-sm text-text-muted sm:text-right">
+            {freeAnalysisLine}
           </p>
         </div>
       </footer>

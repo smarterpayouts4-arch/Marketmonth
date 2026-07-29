@@ -1,6 +1,6 @@
 import type { DirectionWritingContext } from "../../direction-writing-context";
 import { shortHash } from "../../evidence";
-import type { MarketingFocus } from "../../marketing-focus";
+import type { TopicCategoryId } from "../../topic-category";
 import { evaluateSafety, mergeSafety } from "../../safety";
 import type {
   ContentAngle,
@@ -24,7 +24,7 @@ export function buildSixVariations(input: {
   context: ContentBrainContext;
   masterTopic: MasterTopic;
   writing: DirectionWritingContext;
-  marketingFocus?: MarketingFocus;
+  topicCategory?: TopicCategoryId;
 }): [
   ContentVariation,
   ContentVariation,

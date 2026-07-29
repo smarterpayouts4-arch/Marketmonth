@@ -17,7 +17,7 @@ type StatusDotProps = {
   className?: string;
 };
 
-/** Small status indicator used on each daily card — filled + checked for
+/** Small status indicator used on each daily card - filled + checked for
  * "planned", outline for anything not yet committed. */
 export function StatusDot({ status, className }: StatusDotProps) {
   return (
@@ -44,7 +44,7 @@ const LEGEND_ORDER: ContentStatus[] = [
   "empty",
 ];
 
-/** Status legend derived from `STATUS_METADATA` — the real status model,
+/** Status legend derived from `STATUS_METADATA` - the real status model,
  * not a hardcoded caption. */
 export function StatusLegend({ className }: { className?: string }) {
   return (

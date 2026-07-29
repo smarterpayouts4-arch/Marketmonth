@@ -69,7 +69,7 @@ export function DiscoveryEvidenceItem({
               <span className="text-[13px] font-semibold leading-snug text-foreground sm:text-sm">
                 {item.title}
               </span>
-              {item.tag && !expanded ? (
+              {item.tag ? (
                 <span className="rounded-full bg-subtle px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-text-muted">
                   {item.tag}
                 </span>
@@ -100,11 +100,13 @@ export function DiscoveryEvidenceItem({
             : "grid-rows-[0fr] opacity-0"
         )}
       >
-        <div className="overflow-hidden">
+        <div className="min-h-0 overflow-hidden">
           <div className="space-y-2 border-t border-border/60 px-3 pb-3 pt-2.5 sm:pl-[2.75rem]">
-            <p className="text-[13px] leading-snug text-foreground">
-              {item.detail}
-            </p>
+            {item.detail ? (
+              <p className="text-[13px] leading-snug text-foreground">
+                {item.detail}
+              </p>
+            ) : null}
             {item.supportingPoints.length > 0 ? (
               <div>
                 <p className="text-[10px] font-semibold tracking-[0.08em] text-text-muted uppercase">

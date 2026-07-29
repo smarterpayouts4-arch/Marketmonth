@@ -12,6 +12,8 @@ export const HISTORICAL_NAME_ALLOW_PREFIXES = [
 /** Paths that are the live identity source or tooling (not stale user-facing hard-codes). */
 export const IDENTITY_SOURCE_ALLOW_PREFIXES = [
   "src/seo/config/product-identity.ts",
+  "src/seo/config/public-positioning.ts",
+  "src/seo/config/approved-capabilities.ts",
   "src/seo/verification/",
 ] as const;
 

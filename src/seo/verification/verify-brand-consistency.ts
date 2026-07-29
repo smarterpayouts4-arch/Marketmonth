@@ -67,7 +67,7 @@ export function verifyBrandConsistency(root = REPO_ROOT): {
 function main() {
   const result = verifyBrandConsistency();
   if (!result.ok) {
-    console.error("Brand consistency failed — forbidden stale product names:");
+    console.error("Brand consistency failed - forbidden stale product names:");
     for (const v of result.violations) {
       console.error(`  [${v.kind}] ${v.file}: ${v.matches.join(", ")}`);
     }
@@ -77,7 +77,7 @@ function main() {
     process.exit(1);
   }
   console.log(
-    `ok brand consistency — no forbidden stale names (historical paths noted: ${result.historicalSkipped} files scanned under allow prefixes)`
+    `ok brand consistency - no forbidden stale names (historical paths noted: ${result.historicalSkipped} files scanned under allow prefixes)`
   );
 }
 

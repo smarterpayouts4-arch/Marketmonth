@@ -9,7 +9,7 @@ export type TopicTitleItchType =
   | "ability_cue"
   | "passthrough";
 
-export type TopicTitleHookProviderUsed = "deterministic-v1" | "openai";
+export type TopicTitleHookProviderUsed = "deterministic-v1";
 
 export type TopicFrameHint = string;
 

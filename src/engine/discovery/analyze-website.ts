@@ -160,10 +160,6 @@ export async function analyzeWebsite(
     () => extractBrandSignals(corpus)
   );
 
-  const offerHints = await runStage(input.onStage, "finding_offers", () =>
-    collectOfferHints(signals).map((o) => o.label)
-  );
-
   const [seo, social, competitorHints] = await runStage(
     input.onStage,
     "reviewing_social",
@@ -190,17 +186,9 @@ export async function analyzeWebsite(
   );
 
   const brandProfile = build.profile;
-  const mergedOffers = collectOfferHints(signals, brandProfile);
-  const offerByLabel = new Map<string, (typeof mergedOffers)[number]>();
-  for (const o of mergedOffers) {
-    const key = o.label.toLowerCase();
-    if (!offerByLabel.has(key)) offerByLabel.set(key, o);
-  }
-  for (const label of offerHints) {
-    const key = label.toLowerCase();
-    if (!offerByLabel.has(key)) offerByLabel.set(key, { label });
-  }
-  const offerSet = [...offerByLabel.values()].slice(0, 8);
+  const offerSet = await runStage(input.onStage, "finding_offers", () =>
+    collectOfferHints(signals, brandProfile).slice(0, 8)
+  );
 
   const detectedLocations = extractLocations(corpus);
   const evidence = [...build.evidence];

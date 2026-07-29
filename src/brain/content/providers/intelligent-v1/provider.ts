@@ -1,5 +1,4 @@
-import OpenAI from "openai";
-
+import { callBrainLlm } from "@/brain/llm/openai-client";
 import { resolveModel } from "@/brain/policy/model-registry";
 
 import type { DirectionProvider } from "../types";
@@ -80,18 +79,18 @@ export const intelligentV1Provider: DirectionProvider = {
     let parseError: string | null = null;
 
     try {
-      const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-      const completion = await client.chat.completions.create({
+      // json_object until the directions schema gets a strict mirror (P1.3).
+      const result = await callBrainLlm({
+        apiKey: process.env.OPENAI_API_KEY!,
         model,
+        system: messages.system,
+        user: messages.user,
         temperature: 0.4,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: messages.system },
-          { role: "user", content: messages.user },
-        ],
       });
-      const raw = completion.choices[0]?.message?.content ?? "";
-      const json = JSON.parse(raw) as unknown;
+      if (!result.ok) {
+        throw new Error(result.detail || "OpenAI call failed");
+      }
+      const json = JSON.parse(result.raw) as unknown;
       const shape = intelligentDirectionsResultSchema.safeParse(json);
       if (!shape.success) {
         parseError = shape.error.message;

@@ -1,4 +1,4 @@
-import { parseMarketingFocus } from "@/brain/content/marketing-focus";
+import { parseTopicCategory } from "@/brain/content/topic-category";
 import { getBrandCoreRepository } from "@/brain/core";
 import {
   buildPersonalizedResearchPrompt,
@@ -19,7 +19,7 @@ export type BuildIdeaLabResearchPromptResult =
  * Build the thin Research Assist copy/paste prompt from Brand Core repository.
  */
 export function buildIdeaLabResearchPrompt(input: {
-  marketingFocus?: unknown;
+  topicCategory?: unknown;
   companyId?: string;
   fixturePath?: string;
 }): BuildIdeaLabResearchPromptResult {
@@ -27,7 +27,7 @@ export function buildIdeaLabResearchPrompt(input: {
     throw new Error("Idea Lab is production-impossible");
   }
 
-  const parsed = parseMarketingFocus(input.marketingFocus);
+  const parsed = parseTopicCategory(input.topicCategory);
   if (!parsed.ok || !parsed.value) {
     return {
       ok: false,

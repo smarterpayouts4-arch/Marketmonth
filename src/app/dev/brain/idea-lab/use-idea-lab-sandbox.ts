@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 import type { CompanyResearchImportV1 } from "@/brain/evaluation/company-research-assist";
 import type {
   IdeaLabInspectResult,
@@ -69,7 +69,7 @@ export function useIdeaLabSandbox() {
   const [showPaths, setShowPaths] = useState(false);
   const [savingEval, setSavingEval] = useState(false);
 
-  const [marketingFocus, setMarketingFocus] = useState<MarketingFocus | null>(
+  const [topicCategory, setTopicCategoryId] = useState<TopicCategoryId | null>(
     null
   );
   const [contextExpanded, setContextExpanded] = useState(false);
@@ -118,13 +118,13 @@ export function useIdeaLabSandbox() {
     void refreshRuns();
   };
 
-  const handleFocusChange = (value: MarketingFocus | null) => {
-    setMarketingFocus(value);
+  const handleFocusChange = (value: TopicCategoryId | null) => {
+    setTopicCategoryId(value);
     if (value) setFocusError(null);
   };
 
   const buildResearchPrompt = async () => {
-    if (!marketingFocus) {
+    if (!topicCategory) {
       setFocusError(OBJECTIVE_REQUIRED_MESSAGE);
       setResearchStatus("error");
       setResearchMessage(OBJECTIVE_REQUIRED_MESSAGE);
@@ -138,7 +138,7 @@ export function useIdeaLabSandbox() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           stage: "research_prompt",
-          marketingFocus,
+          topicCategory,
         }),
       });
       const data = (await res.json()) as {
@@ -214,7 +214,7 @@ export function useIdeaLabSandbox() {
   };
 
   const generateCandidates = async () => {
-    if (!marketingFocus) {
+    if (!topicCategory) {
       setFocusError(OBJECTIVE_REQUIRED_MESSAGE);
       setError(null);
       return;
@@ -240,7 +240,7 @@ export function useIdeaLabSandbox() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           stage: "candidates",
-          marketingFocus,
+          topicCategory,
           ...(researchImport ? { researchImport } : {}),
         }),
       });
@@ -284,7 +284,7 @@ export function useIdeaLabSandbox() {
     masterTitle: string;
     candidate?: TopicCandidate | null;
   }) => {
-    if (!marketingFocus) {
+    if (!topicCategory) {
       setFocusError(OBJECTIVE_REQUIRED_MESSAGE);
       return;
     }
@@ -303,7 +303,7 @@ export function useIdeaLabSandbox() {
           selectedCandidateId ??
           `typed_${Date.now().toString(36)}`,
         masterTitle: args.masterTitle,
-        objective: marketingFocus,
+        objective: topicCategory,
         audience: args.candidate?.audience,
         audiencePain: args.candidate?.audiencePain,
         strategicAngle: args.candidate?.strategicAngle,
@@ -316,7 +316,7 @@ export function useIdeaLabSandbox() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           stage: "directions",
-          marketingFocus,
+          topicCategory,
           selectedTopicContext,
         }),
       });
@@ -479,7 +479,7 @@ export function useIdeaLabSandbox() {
     showPaths,
     setShowPaths,
     savingEval,
-    marketingFocus,
+    topicCategory,
     contextExpanded,
     setContextExpanded,
     contextState,

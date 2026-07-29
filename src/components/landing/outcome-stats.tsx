@@ -1,4 +1,8 @@
-import { illustrativeProof } from "@/components/landing/data/mock-landing-demo";
+import {
+  capabilityBoundaryHeading,
+  capabilityBoundarySubhead,
+  landingCopy,
+} from "@/components/landing/landing-copy";
 import { Reveal } from "@/components/landing/reveal";
 
 export function OutcomeStats() {
@@ -8,19 +12,22 @@ export function OutcomeStats() {
         <Reveal>
           <div className="flex flex-wrap items-baseline gap-3">
             <p className="font-display text-sm font-semibold text-primary">
-              Outcome cues
+              Capability boundary
             </p>
             <span className="text-xs font-medium text-text-muted">
-              Illustrative · Not real metrics
+              Honest · Not performance metrics
             </span>
           </div>
           <h2 className="text-section mt-3 text-foreground">
-            Directional goals for the prototype
+            {capabilityBoundaryHeading}
           </h2>
+          <p className="mt-3 max-w-[48ch] text-[1.02rem] leading-relaxed text-text-secondary">
+            {capabilityBoundarySubhead}
+          </p>
         </Reveal>
 
         <div className="mt-10 grid gap-8 sm:grid-cols-3 sm:gap-6">
-          {illustrativeProof.stats.map((stat) => (
+          {landingCopy.illustrativeStats.map((stat) => (
             <Reveal key={stat.label}>
               <div className="border-t border-border pt-5 text-left">
                 <p className="font-display text-[2.35rem] font-bold tracking-[-0.04em] text-primary">

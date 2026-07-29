@@ -1,5 +1,5 @@
 import type { SelectedTopicContext } from "@/brain/content/direction-writing-context";
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 import type { ContentBrainContext } from "@/brain/content/types";
 import type { BrandCore, BrandCoreIdentity } from "@/brain/core";
 import {
@@ -38,7 +38,7 @@ export async function runIdeaLabGenerateStage(args: {
   brandCore: BrandCore;
   identity: BrandCoreIdentity;
   selectedTopicContext: SelectedTopicContext;
-  marketingFocus: MarketingFocus;
+  topicCategory: TopicCategoryId;
   selectedCandidateId?: string;
   fixturePath: string;
   hash: string;
@@ -53,7 +53,7 @@ export async function runIdeaLabGenerateStage(args: {
     brandCore,
     identity,
     selectedTopicContext,
-    marketingFocus,
+    topicCategory,
     selectedCandidateId,
     fixturePath,
     hash,
@@ -76,7 +76,7 @@ export async function runIdeaLabGenerateStage(args: {
     durationMs: null,
     outputSummary: {
       selectedTopic: selectedTopicContext.masterTitle,
-      marketingFocus,
+      topicCategory,
       selectedCandidateId: selectedTopicContext.topicId,
       framingStrategyHint: selectedTopicContext.objective,
     },
@@ -86,7 +86,7 @@ export async function runIdeaLabGenerateStage(args: {
     domain: context.domain || identity.company_id,
     mode: "manual",
     topic: selectedTopicContext.masterTitle,
-    marketingFocus,
+    topicCategory,
     fixturePath,
     repository: labRepo,
     directionsProvider: IDEA_LAB_PROVIDER_ID,
@@ -184,7 +184,7 @@ export async function runIdeaLabGenerateStage(args: {
       outputSummary: {
         masterTopic: result.masterTopic.punchline,
         source: result.masterTopic.source,
-        marketingFocus,
+        topicCategory,
         selectedCandidateId: selectedCandidateId ?? null,
       },
       warnings: [

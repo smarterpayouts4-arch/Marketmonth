@@ -56,20 +56,19 @@ describe("deriveNarrative", () => {
     assert.equal(descriptionHasChrome(n.description), false);
   });
 
-  it("populates services from observed headings only (no invented workflow labels)", () => {
+  it("does not backfill services from page headings", () => {
     const n = deriveNarrative({
       businessName: "ZYNAVA",
       signals: signals({
         aboutText:
           "Search and compare supplements, build a plan, and ask the advisor.",
-        headings: ["Price comparison", "Preference planner"],
+        headings: ["Why Zynava Exists", "Price comparison", "Preference planner"],
       }),
     });
-    assert.ok(n.services.includes("Price comparison"));
-    assert.ok(n.services.includes("Preference planner"));
+    assert.deepEqual(n.services, []);
     assert.ok(
-      !n.services.some((s) => /Supplement search and discovery/i.test(s)),
-      "must not invent hardcoded service labels"
+      !n.services.some((s) => /Why Zynava Exists/i.test(s)),
+      "marketing headings must not become services"
     );
     assert.equal(n.marketingOpportunity.length === 0 || !/Educate on/i.test(n.marketingOpportunity), true);
   });

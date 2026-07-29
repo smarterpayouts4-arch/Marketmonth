@@ -178,6 +178,22 @@
       "generated": false
     },
     {
+      "id": "0004-topic-category-model",
+      "path": "project-knowledge/DECISIONS/0004-topic-category-model.md",
+      "title": "ADR 0004 — Topic Category Model",
+      "description": "Idea Lab topic generation previously used five `MarketingFocus` values that mixed funnel stages with editorial jobs. That made evidence selection ambiguous (two",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "accepted",
+      "owner": "product",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
       "id": "definition-of-done",
       "path": "project-knowledge/DEFINITION-OF-DONE.md",
       "title": "MarketMonth Definition of Done",
@@ -389,7 +405,7 @@
       "id": "idea-lab-topic-strategy",
       "path": "project-knowledge/IDEA_LAB_TOPIC_STRATEGY.md",
       "title": "Idea Lab — objective topic strategy",
-      "description": "text",
+      "description": "Canonical ids in `src/brain/content/topic-category.ts`:",
       "kind": "supporting",
       "authority": "supporting",
       "status": "active",

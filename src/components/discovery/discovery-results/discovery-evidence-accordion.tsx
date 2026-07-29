@@ -11,7 +11,7 @@ type Props = {
 };
 
 /**
- * Compact evidence accordion — one open row at a time; card grows with content.
+ * Compact evidence accordion - one open row at a time; card grows with content.
  */
 export function DiscoveryEvidenceAccordion({ items }: Props) {
   const [expandedEvidenceId, setExpandedEvidenceId] = useState<string | null>(

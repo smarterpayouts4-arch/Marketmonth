@@ -2,6 +2,7 @@ export type TopicSubjectKind =
   | "catalog_product"
   | "product_category"
   | "ingredient_or_component"
+  | "health_outcome"
   | "comparison_attribute"
   | "audience_problem"
   | "platform_capability"

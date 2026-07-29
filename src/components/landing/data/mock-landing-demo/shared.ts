@@ -1,4 +1,17 @@
-/** Unique local assets — one photo per purpose, no logo renders. */
+/**
+ * Legacy shared landing fixtures.
+ * Prefer `@/components/landing/landing-copy` and
+ * `@/seo/config/public-positioning` for visitor-facing product claims.
+ */
+
+import {
+  PUBLIC_DIFFERENTIATORS,
+  PUBLIC_ILLUSTRATIVE_STATS,
+  PUBLIC_PROCESS,
+  PUBLIC_WHAT_YOU_GET,
+} from "@/seo/config/public-positioning";
+
+/** Unique local assets - one photo per purpose, no logo renders. */
 export const landingImagery = {
   tiktok: "/landing/tiktok.jpg",
   instagram: "/landing/instagram.jpg",
@@ -10,88 +23,25 @@ export const landingImagery = {
   planning: "/landing/planning.jpg",
 } as const;
 
-export const whyDifferent = [
-  {
-    title: "Starts from your website",
-    body: "No blank brief. Discovery learns the business before anything is planned.",
-  },
-  {
-    title: "Ideas before assets",
-    body: "You see the subjects your brand should own — then organize them into a month.",
-  },
-  {
-    title: "Strategy you can approve",
-    body: "Pillars, themes, and formats stay visible so the plan never feels like a black box.",
-  },
-  {
-    title: "Built for a full month",
-    body: "One clear path from brand understanding to a publishable marketing month.",
-  },
-] as const;
+/** @deprecated Prefer landingCopy.differentiators */
+export const whyDifferent = PUBLIC_DIFFERENTIATORS;
 
-export const whatYouGet = [
-  "Brand discovery from your site",
-  "Content subjects your brand should own",
-  "A monthly strategy with clear pillars",
-  "One idea → many formats",
-  "A reviewable plan before you publish",
-] as const;
+/** @deprecated Prefer landingCopy.whatYouGet */
+export const whatYouGet = PUBLIC_WHAT_YOU_GET;
 
-export const howItWorksSteps = [
-  {
-    title: "Learn the brand",
-    body: "Paste a website. We discover audience, voice, and what you sell.",
-  },
-  {
-    title: "Strategize the month",
-    body: "See the topics your business should lead with, organized into a monthly plan.",
-  },
-  {
-    title: "Build the content",
-    body: "Each strong idea expands into a coordinated family of platform-ready assets.",
-  },
-  {
-    title: "Review & approve",
-    body: "Approve what ships, then learn what worked next month.",
-  },
-] as const;
+/** @deprecated Prefer processSteps from landing-copy */
+export const howItWorksSteps = PUBLIC_PROCESS.steps;
 
-/** Illustrative placeholders only — never present as real customer evidence. */
+/**
+ * Kept for SocialProof component compatibility only.
+ * Fictional testimonials are removed from the conversion path.
+ */
 export const illustrativeProof = {
   disclaimer:
-    "Illustrative demo content — not real customer testimonials or ratings.",
-  quotes: [
-    {
-      quote:
-        "I finally know what my shop should talk about each month — and every post sounds like us.",
-      attribution: "Demo example · Local retailer",
-    },
-    {
-      quote:
-        "Seeing subjects before assets made the whole month feel concrete instead of chaotic.",
-      attribution: "Demo example · Wellness brand",
-    },
-    {
-      quote:
-        "Review kept our team aligned — nothing shipped until we approved the plan.",
-      attribution: "Demo example · Small team",
-    },
-  ],
-  stats: [
-    {
-      label: "Plan a month",
-      value: "One afternoon",
-      note: "Illustrative pacing goal",
-    },
-    {
-      label: "From website to ideas",
-      value: "Minutes",
-      note: "Illustrative demo timing",
-    },
-    {
-      label: "Formats from one idea",
-      value: "5+",
-      note: "Illustrative format spread",
-    },
-  ],
+    "Illustrative demo content - not real customer testimonials or ratings.",
+  quotes: [] as readonly {
+    quote: string;
+    attribution: string;
+  }[],
+  stats: PUBLIC_ILLUSTRATIVE_STATS,
 } as const;

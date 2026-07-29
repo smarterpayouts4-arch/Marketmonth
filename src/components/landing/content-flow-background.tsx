@@ -1,7 +1,7 @@
 /**
  * Decorative DNA / content-network motif for the lower landing page
  * (teaser row → HowItWorks). Three quiet helix clusters that weave through
- * open whitespace. Purely visual — aria-hidden, pointer-events-none,
+ * open whitespace. Purely visual - aria-hidden, pointer-events-none,
  * no animation. Rendered behind content (content sits on relative z-10).
  */
 export function ContentFlowBackground() {
@@ -14,7 +14,7 @@ export function ContentFlowBackground() {
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMidYMin slice"
     >
-      {/* Cluster B — teaser row / process strip band */}
+      {/* Cluster B - teaser row / process strip band */}
       <path
         d="M-40 700 C160 620, 320 520, 560 480 C760 448, 900 520, 1080 470 C1220 432, 1330 380, 1440 330"
         stroke="rgba(66, 137, 112, 0.15)"
@@ -57,7 +57,7 @@ export function ContentFlowBackground() {
       <circle cx="1205" cy="428" r="2.5" fill="rgba(108, 167, 143, 0.15)" />
       <circle cx="140" cy="690" r="2.5" fill="rgba(66, 137, 112, 0.14)" />
 
-      {/* Cluster C — demo theater / feature band (right-to-left drift) */}
+      {/* Cluster C - demo theater / feature band (right-to-left drift) */}
       <path
         d="M1440 1700 C1260 1610, 1090 1520, 880 1490 C680 1462, 540 1540, 360 1490 C220 1452, 90 1400, -40 1360"
         stroke="rgba(66, 137, 112, 0.14)"
@@ -100,7 +100,7 @@ export function ContentFlowBackground() {
       <circle cx="195" cy="1438" r="2.5" fill="rgba(108, 167, 143, 0.14)" />
       <circle cx="1300" cy="1680" r="2.5" fill="rgba(66, 137, 112, 0.13)" />
 
-      {/* Cluster D — proof / stats / how-it-works band */}
+      {/* Cluster D - proof / stats / how-it-works band */}
       <path
         d="M-40 3100 C180 3010, 360 2920, 580 2880 C800 2848, 940 2920, 1140 2870 C1270 2840, 1360 2790, 1440 2750"
         stroke="rgba(66, 137, 112, 0.15)"

@@ -5,7 +5,7 @@
  */
 export const LIMITS = {
   businessName: 48,
-  /** Exceptional-detail threshold — below this, full text scrolls in-card. */
+  /** Exceptional-detail threshold - below this, full text scrolls in-card. */
   business: 480,
   valueProposition: 360,
   audience: 480,
@@ -24,15 +24,6 @@ export const META_VISIBLE = {
   channels: 4,
   competitors: 3,
 } as const;
-
-export const PLATFORM_LABELS: Record<string, string> = {
-  instagram: "Instagram",
-  facebook: "Facebook",
-  linkedin: "LinkedIn",
-  tiktok: "TikTok",
-  youtube: "YouTube",
-  x: "X",
-};
 
 /** Long-form / self-publish channels we can wire for article distribution later. */
 export const ARTICLE_PLATFORM_HINTS = [

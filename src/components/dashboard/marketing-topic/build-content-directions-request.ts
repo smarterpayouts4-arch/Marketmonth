@@ -1,4 +1,4 @@
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 import type { GenerationReason } from "@/brain/content/topic-generation-record";
 import type { ExtraContextInput } from "@/brain/content/types";
 
@@ -12,7 +12,7 @@ export type ContentDirectionsClientRequest = {
   domain: string;
   mode: "automatic" | "manual";
   topic?: string;
-  marketingFocus?: MarketingFocus;
+  topicCategory?: TopicCategoryId;
   extraContext?: ExtraContextInput;
   requestedVariations: 6;
   generationReason?: GenerationReason;
@@ -32,7 +32,7 @@ export function buildContentDirectionsRequest(input: {
   domain: string;
   mode: "automatic" | "manual";
   topic?: string;
-  marketingFocus: MarketingFocus | null;
+  topicCategory: TopicCategoryId | null;
   contextState: ExtraContextUiState;
   generationReason?: GenerationReason;
   parentGenerationId?: string;
@@ -64,7 +64,7 @@ export function buildContentDirectionsRequest(input: {
         lockedMasterTopic: input.lockedMasterTopic.trim(),
         generationReason: "regenerate",
         parentGenerationId: input.parentGenerationId,
-        marketingFocus: input.marketingFocus ?? undefined,
+        topicCategory: input.topicCategory ?? undefined,
         extraContext,
         requestedVariations: 6,
       },
@@ -82,7 +82,7 @@ export function buildContentDirectionsRequest(input: {
       mode: input.mode,
       topic: input.mode === "manual" ? input.topic!.trim() : undefined,
       generationReason: reason ?? (input.mode === "manual" ? "manual" : "automatic"),
-      marketingFocus: input.marketingFocus ?? undefined,
+      topicCategory: input.topicCategory ?? undefined,
       extraContext,
       requestedVariations: 6,
     },

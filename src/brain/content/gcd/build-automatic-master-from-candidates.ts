@@ -1,5 +1,5 @@
 import { generateTopicCandidates } from "@/brain/evaluation/generate-topic-candidates";
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 
 import { shortHash } from "../evidence";
 import { evaluateSafety, mergeSafety } from "../safety";
@@ -13,11 +13,11 @@ import { clamp } from "../providers/deterministic/text";
 export function buildAutomaticMasterFromCandidates(
   context: ContentBrainContext,
   recentMasterTopics: string[] = [],
-  marketingFocus: MarketingFocus = "product_education"
+  topicCategory: TopicCategoryId = "product_education"
 ): MasterTopic | null {
   const result = generateTopicCandidates({
     context,
-    objective: marketingFocus,
+    objective: topicCategory,
     recentTitles: recentMasterTopics,
     includeIndustryResearch: false,
   });

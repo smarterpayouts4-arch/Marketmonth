@@ -30,7 +30,7 @@ describe("Idea Lab UI sandbox structure", () => {
     );
   });
 
-  it("gates Auto-generate on objective and uses candidates then directions stages", () => {
+  it("gates Auto-generate on topic category and uses candidates then directions stages", () => {
     const client = read("idea-lab-client.tsx");
     const hook = read("use-idea-lab-sandbox.ts");
     const candidatesPanel = read("idea-lab-candidates-panel.tsx");
@@ -89,9 +89,25 @@ describe("Idea Lab UI sandbox structure", () => {
     const list = read("idea-lab-candidate-list.tsx");
     const badge = read("idea-lab-title-hook-badge.tsx");
     assert.match(list, /IdeaLabTitleHookBadge/);
+    assert.match(list, /whyItFits/);
     assert.match(badge, /titleItchType/);
     assert.match(badge, /trigger:/);
     assert.equal(badge.includes("generateTopicCandidates"), false);
+  });
+
+  it("registers Evidence tab in Test Inspector", () => {
+    const inspector = read("idea-lab-test-inspector.tsx");
+    const evidenceTab = read("ili/evidence-tab.tsx");
+    assert.match(inspector, /EvidenceTab/);
+    assert.match(inspector, /id: "evidence"/);
+    assert.match(evidenceTab, /inspector-evidence/);
+    assert.match(evidenceTab, /whyItFits/);
+    assert.match(evidenceTab, /deterministicFallbackUsed/);
+    assert.equal(
+      evidenceTab.includes("@/brain/evaluation/gtc/"),
+      false,
+      "Evidence tab must not import gtc/ internals"
+    );
   });
 
   it("reuses Marketing Topic presentational components", () => {

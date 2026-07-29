@@ -14,7 +14,7 @@ import { mapCompetitors } from "./to-card-summary/competitors";
 import { mapOffering } from "./to-card-summary/offering";
 import { mapOpportunity } from "./to-card-summary/opportunity";
 
-/** Pure display transform — no AI, no network. */
+/** Pure display transform - no AI, no network. */
 export function toCardSummary(profile: BrandProfileView): DiscoveryCardSummary {
   const offering = mapOffering(profile);
   const channels = mapChannels(profile);

@@ -42,7 +42,7 @@ async function main() {
 
   const outcome = await runIdeaLabTopicCandidates({
     companyId,
-    marketingFocus: "product_education",
+    topicCategory: "product_education",
     liveIndustryResearch: false,
   });
 

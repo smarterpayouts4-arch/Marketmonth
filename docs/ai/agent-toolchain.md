@@ -100,7 +100,7 @@ YouTube remains a **research input**. Asset generation stays in MarketMonth surf
 | Click through UI / catch layout bugs | Playwright (Docker) or Cursor browser |
 | Library API truth | Context7 |
 | Cross-repo patterns | RepoBrain (advisory) |
-| Fresh web facts | Perplexity (advisory) |
+| Fresh web facts | Perplexity (advisory) — see [perplexity-api-key-runbook.md](./perplexity-api-key-runbook.md) |
 
 ## What we deliberately do not do
 
@@ -115,7 +115,7 @@ YouTube remains a **research input**. Asset generation stays in MarketMonth surf
 |------------|--------|
 | `marketmonth-discovery` | Workspace `.cursor/mcp.json` → local stdio (copy from `.cursor/mcp.json.example`; gitignored local file) |
 | `MCP_DOCKER` | User Cursor MCP → Docker gateway; use profile `marketmonth_development` |
-| `repobrain` / `perplexity` | User-level; advisory |
+| `repobrain` / `perplexity` | User-level; advisory — key rotation: [perplexity-api-key-runbook.md](./perplexity-api-key-runbook.md) |
 
 ### Indexing and context
 

@@ -1,6 +1,6 @@
 /**
  * Deterministic insight vs Observed display helpers.
- * Suppress only normalized exact / near-identical duplicates — not fuzzy overlap.
+ * Suppress only normalized exact / near-identical duplicates - not fuzzy overlap.
  */
 
 const TRIVIAL_PREFIX =

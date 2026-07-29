@@ -50,7 +50,7 @@ export function IdeaLabCandidatesPanel({
           role="status"
         >
           <p className="text-sm font-medium text-foreground">
-            Not enough product subjects for this objective
+            Not enough product subjects for this topic category
           </p>
           <p className="mt-1 text-sm text-text-secondary">
             {candidateDiagnostic?.message}
@@ -88,7 +88,7 @@ export function IdeaLabCandidatesPanel({
           className="mt-6 rounded-xl border border-dashed border-border bg-card/50 px-4 py-6 text-center text-sm text-text-secondary"
           data-testid="idea-lab-empty"
         >
-          Select an objective, then Auto-generate to see ranked topic candidates.
+          Select a topic category, then Auto-generate to see ranked topic candidates.
         </p>
       ) : null}
     </>

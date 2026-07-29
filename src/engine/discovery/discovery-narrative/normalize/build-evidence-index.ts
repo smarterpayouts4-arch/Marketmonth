@@ -7,6 +7,7 @@ import type {
 import type { CompanyProfileProjection } from "@/lib/company-profile/projection.schema";
 
 import type { EvidenceItem, EvidenceRecordType } from "../types";
+import { deglueText } from "./deglue";
 import { deduplicateEvidence } from "./dedupe-and-prefer-complete";
 import { scoreEvidence } from "./score-evidence";
 import {
@@ -383,7 +384,31 @@ export function buildEvidenceIndex(
     });
   }
 
-  return deduplicateEvidence(out);
+  return deduplicateEvidence(repairGluedText(out, projection.businessName));
+}
+
+/**
+ * Profiles captured before `html-clean` separated block boundaries still hold
+ * run-together text. Repair on read so stored data does not have to be recrawled
+ * for the card to be legible.
+ */
+function repairGluedText(
+  items: EvidenceItem[],
+  businessName: string
+): EvidenceItem[] {
+  const protect = businessName.trim() ? [businessName.trim()] : [];
+  return items.map((item) => {
+    if (!item.normalizedText) return item;
+    const repaired = deglueText(item.normalizedText, protect);
+    if (repaired === item.normalizedText) return item;
+    return {
+      ...item,
+      normalizedText: repaired,
+      sourceSnippet: item.sourceSnippet
+        ? deglueText(item.sourceSnippet, protect)
+        : item.sourceSnippet,
+    };
+  });
 }
 
 export function normalizeCsvRows(

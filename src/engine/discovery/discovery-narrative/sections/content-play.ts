@@ -4,7 +4,13 @@ import type {
 } from "@/lib/discovery/discovery-narrative.schema";
 
 import type { BrandSignalGraph, EvidenceItem } from "../types";
-import { bulletFrom, businessNoun, firstText, toEvidenceRef } from "./helpers";
+import { pickTopicHint } from "../topic-selection";
+import {
+  bulletFrom,
+  businessNoun,
+  createEvidenceLedger,
+  toEvidenceRef,
+} from "./helpers";
 
 /**
  * Derive 3–5 pillars from the company's own evidence — never a fixed template.
@@ -130,36 +136,53 @@ export function buildContentPlaySection(input: {
   ].filter((i) => i.normalizedText);
 
   const pillarNames = input.pillars.map((p) => p.name).join(", ");
-  const topicHint =
-    firstText(input.graph.contentInventory) ||
-    firstText(input.graph.offerInventory) ||
-    input.ownedIdea;
+  const topic = pickTopicHint(input.graph, input.ownedIdea);
+
+  // Each bullet draws from the pool that actually supports its claim, with a
+  // shared ledger so no two bullets surface the same primary excerpt.
+  const ledger = createEvidenceLedger();
+  const topicPool = [
+    ...(topic.source ? [topic.source] : []),
+    ...input.graph.contentInventory.filter((i) => i.field === "heading"),
+    ...input.graph.offerInventory,
+    ...input.graph.contentInventory,
+  ];
+  const valueTrustPool = [
+    ...input.graph.valueMechanism,
+    ...input.graph.trustSignals,
+  ];
+  const platformPool = [...input.graph.socialFootprint, ...input.graph.contentInventory];
 
   const bullets = [
     bulletFrom(
-      `Build one monthly idea around ${topicHint.slice(0, 80)}, then expand it across days and formats.`,
-      support,
-      "recommended"
+      `Build one monthly idea around ${topic.phrase}, then expand it across days and formats.`,
+      [...topicPool, ...support],
+      "recommended",
+      ledger
     ),
     bulletFrom(
       `Recurring pillars grounded in your evidence: ${pillarNames}.`,
-      support,
-      "inferred"
+      [...valueTrustPool, ...support],
+      "inferred",
+      ledger
     ),
     bulletFrom(
       `Adapt the same idea by platform instead of pasting identical posts everywhere.`,
-      support,
-      "recommended"
+      [...platformPool, ...support],
+      "recommended",
+      ledger
     ),
     bulletFrom(
       `Publishing rhythm: ${input.cadenceLabel} — recommended by Market Month, not found on your website.`,
-      support,
-      "recommended"
+      [...topicPool, ...support],
+      "recommended",
+      ledger
     ),
     bulletFrom(
       `Make ${name} known for helping people move from confusion to “${input.ownedIdea.toLowerCase()}” through connected content.`,
-      support,
-      "recommended"
+      [...valueTrustPool, ...support],
+      "recommended",
+      ledger
     ),
   ].filter(Boolean);
 

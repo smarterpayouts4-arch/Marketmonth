@@ -1,4 +1,4 @@
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 import type { ContentAngle } from "@/brain/content/types";
 
 export const HOOK_ENRICHMENT_VERSION = "hook-enrichment-v1" as const;
@@ -10,7 +10,7 @@ export type HookEnrichmentProviderUsed = "deterministic-v1" | "openai";
 
 export type HookEnrichmentRequest = {
   masterTitle: string;
-  objective: MarketingFocus;
+  objective: TopicCategoryId;
   angle: ContentAngle;
   groundedSummary: string;
   allowedFacts: string[];

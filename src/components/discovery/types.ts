@@ -91,7 +91,7 @@ export type DiscoveryIds = {
   strategyPreviewId?: string;
 };
 
-/** Full copy for overflow dialogs — not length-clamped for display. */
+/** Full copy for overflow dialogs - not length-clamped for display. */
 export type DiscoveryCardFullCopy = {
   business: string;
   valueProposition: string;
@@ -127,26 +127,26 @@ export type DiscoveryCardSummary = {
   audience: string;
   audienceNeed: string;
   audienceHook: string;
-  /** Presentation only — mapped from products/services. */
+  /** Presentation only - mapped from products/services. */
   coreOffering: string;
   offerItems: string[];
   products: string[];
   services: string[];
   offerFit: string;
   brandPosition: string;
-  /** Presentation only — mapped from Brand Profile marketingOpportunity. */
+  /** Presentation only - mapped from Brand Profile marketingOpportunity. */
   growthOpportunity: string;
   growthAngle: string;
   contentAngles: string[];
   activeChannels: string[];
-  /** Social platforms detected as missing — presentation only. */
+  /** Social platforms detected as missing - presentation only. */
   missedChannels: string[];
-  /** Article / long-form publish platforms not detected — presentation only. */
+  /** Article / long-form publish platforms not detected - presentation only. */
   missedArticlePlatforms: string[];
   suggestedCompetitors: string[];
   /** Unclamped / uncapped copy for Read more surfaces. */
   full: DiscoveryCardFullCopy;
-  /** Deterministic overflow flags — true only when preview hides content. */
+  /** Deterministic overflow flags - true only when preview hides content. */
   overflow: DiscoveryTabOverflow;
 };
 
@@ -154,7 +154,7 @@ export type StrategyIntentAnswers = {
   goal: "awareness" | "leads" | "sales" | "loyalty";
   promoteFirst: string;
   reach: "local" | "national" | "online_broad";
-  /** Confirmed when reach is local — never invented. */
+  /** Confirmed when reach is local - never invented. */
   targetLocation?: string;
   /** Activation Hook investments (optional; mapped from DiscoveryInvestments). */
   growthDirection?: string;

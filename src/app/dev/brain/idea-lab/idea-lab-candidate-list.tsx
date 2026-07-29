@@ -107,9 +107,15 @@ export function IdeaLabCandidateList({
                     <p className="mt-1 text-sm font-medium text-foreground">
                       {c.title}
                     </p>
-                    <p className="mt-0.5 text-xs text-text-secondary">
-                      {c.strategicAngle}
-                    </p>
+                    {c.whyItFits ? (
+                      <p className="mt-0.5 text-xs text-text-secondary">
+                        {c.whyItFits}
+                      </p>
+                    ) : (
+                      <p className="mt-0.5 text-xs text-text-secondary">
+                        {c.strategicAngle}
+                      </p>
+                    )}
                   </div>
                   <span className="shrink-0 text-[11px] font-semibold tabular-nums text-text-muted">
                     {c.score.overall.toFixed(2)}

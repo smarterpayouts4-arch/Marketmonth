@@ -1,23 +1,5 @@
+import { processSteps } from "@/components/landing/landing-copy";
 import { Reveal } from "@/components/landing/reveal";
-
-const steps = [
-  {
-    title: "Learn",
-    body: "Tell us about your business — we read your website.",
-  },
-  {
-    title: "Strategize",
-    body: "See what your business should lead with this month.",
-  },
-  {
-    title: "Build",
-    body: "Watch strong ideas become platform-ready content.",
-  },
-  {
-    title: "Review",
-    body: "Approve the plan before anything goes out.",
-  },
-] as const;
 
 export function ProcessStrip() {
   return (
@@ -31,18 +13,19 @@ export function ProcessStrip() {
             <h2 className="text-section mt-3 text-foreground">
               Simple on purpose
             </h2>
-            <p className="mx-auto mt-3 max-w-[40ch] text-base leading-relaxed text-text-secondary">
-              One clear path. No dashboard maze before you understand the product.
+            <p className="mx-auto mt-3 max-w-[42ch] text-base leading-relaxed text-text-secondary">
+              One clear path: discover what your site already knows, choose a
+              direction, then build. No dashboard maze before value.
             </p>
           </div>
         </Reveal>
 
-        <div className="relative mt-12 grid gap-10 sm:grid-cols-2 md:gap-8 lg:grid-cols-4">
+        <div className="relative mt-12 grid gap-10 sm:grid-cols-3 md:gap-8">
           <div
             aria-hidden
-            className="pointer-events-none absolute top-[1.15rem] right-[10%] left-[10%] hidden h-px bg-border lg:block"
+            className="pointer-events-none absolute top-[1.15rem] right-[12%] left-[12%] hidden h-px bg-border sm:block"
           />
-          {steps.map((step, index) => (
+          {processSteps.map((step, index) => (
             <Reveal key={step.title}>
               <div className="relative text-center md:text-left">
                 <span className="font-display inline-flex size-9 items-center justify-center rounded-full border border-border bg-background text-sm font-bold text-primary shadow-soft">

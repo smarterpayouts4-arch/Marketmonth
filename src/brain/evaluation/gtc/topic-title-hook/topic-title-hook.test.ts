@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import type { MarketingFocus } from "@/brain/content/marketing-focus";
+import type { TopicCategoryId } from "@/brain/content/topic-category";
 
 import type { TopicSeed } from "../../objective-topic-strategies";
 import {
@@ -38,7 +38,7 @@ function seed(overrides: Partial<TopicSeed> = {}): TopicSeed {
 function framed(
   s: TopicSeed,
   title: string,
-  objective: MarketingFocus = "product_education"
+  objective: TopicCategoryId = "product_education"
 ): FramedCandidate {
   return {
     title,
@@ -192,7 +192,7 @@ describe("topic-title-hook (Hooked Trigger v2)", () => {
     );
   });
 
-  it("brand awareness never emits PE shells for platform_capability / brand_position", () => {
+  it("offers_conversion never emits PE shells for platform_capability / brand_position", () => {
     for (const subjectType of [
       "platform_capability",
       "brand_position",
@@ -211,18 +211,18 @@ describe("topic-title-hook (Hooked Trigger v2)", () => {
           `Why ${s.subject} matters for Zynava shoppers`,
           i,
           undefined,
-          "brand_awareness"
+          "offers_conversion"
         );
         assert.equal(
           PE_BAN_RE.test(hooked.title),
           false,
-          `BA banned PE phrase in: ${hooked.title}`
+          `offers_conversion banned PE phrase in: ${hooked.title}`
         );
       }
     }
   });
 
-  it("brand awareness allows comparison_attribute price-per-serving framing", () => {
+  it("offers_conversion allows comparison_attribute price-per-serving framing", () => {
     const s = seed({
       subject: "price per serving",
       subjectType: "comparison_attribute",
@@ -236,7 +236,7 @@ describe("topic-title-hook (Hooked Trigger v2)", () => {
         "Why price per serving matters when comparing supplements",
         i,
         used,
-        "brand_awareness"
+        "offers_conversion"
       );
       used.add(hooked.title.toLowerCase());
       if (/price per serving/i.test(hooked.title)) {
