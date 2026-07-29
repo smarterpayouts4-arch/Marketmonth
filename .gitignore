@@ -76,3 +76,7 @@ next-env.d.ts
 /scan-console.log
 /tmp-test-out.txt
 /tmp/
+/tmp-*.log
+/tmp-*.txt
+scripts/tmp-*.ts
+scripts/tmp-*.mjs

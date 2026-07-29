@@ -104,8 +104,8 @@ Last verified: 2026-07-28 (reaffirmed Partial; intelligence still not Live)
 
 ### Content Brain
 
-Status: Partial — fixture-backed concrete directions; canonical Content Atom (`ready|invalid`); `channelRegistry` with **YouTube Short** enabled and other channels clean `not_connected` scaffolds; Studio honesty (no fake generation); semantic StrategyLock; MT fresh session + Topic Generation History (dev JSON); ID-only localStorage pointers for Studio handoff  
-Last verified: 2026-07-28 (aligned with CONTENT_BRAIN.md; Gate 2 remains Partial)
+Status: Partial — fixture-backed concrete directions; canonical Content Atom (`ready|invalid`); `channelRegistry` with **YouTube Short** enabled and other channels clean `not_connected` scaffolds; Studio honesty (no fake generation); semantic StrategyLock; MT fresh session + Topic Generation History (dev CSV default / prod `topic_generations`); Idea Lab LLM+fallback vs product deterministic-only (documented two-generator policy); ID-only localStorage pointers for Studio handoff  
+Last verified: 2026-07-29 (Topic Generator P0–P3 remediation; Gate 2 remains Partial)
 
 ### Brand / Strategy / Content / Review / Calendar
 
@@ -119,5 +119,5 @@ Last verified: 2026-07-28 (reaffirmed Planned — not implemented)
 
 ### Auth + Data
 
-Status: Partial — Auth.js + Neon schema + discovery persist when `DATABASE_URL` set  
-Last verified: 2026-07-28 (reaffirmed Partial; not hardened on all surfaces)
+Status: Partial — Auth.js + Neon schema + discovery persist when `DATABASE_URL` set; brain topic/directions/atom/topic-generation routes session + durable rate limit + tenant check; schema migrations through `0007` (`MARKETMONTH_SCHEMA_VERSION=7`) in-repo — production Neon apply still Missing  
+Last verified: 2026-07-29

@@ -1,10 +1,10 @@
 /**
  * The commercial-mechanic vocabulary: how a buyer transacts, not what is sold.
  *
- * Tuned for PRECISION over recall against scripts/tmp-offer-precision.ts. A
- * false offer gets restated as a factual claim in generated marketing copy,
- * which is a trust and legal exposure; a missed offer costs one content angle.
- * An empty offer list is a valid, expected result for many businesses.
+ * Tuned for PRECISION over recall (see extract-offers tests). A false offer
+ * gets restated as a factual claim in generated marketing copy, which is a
+ * trust and legal exposure; a missed offer costs one content angle. An empty
+ * offer list is a valid, expected result for many businesses.
  */
 
 /**
