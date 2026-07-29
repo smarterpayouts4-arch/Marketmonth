@@ -136,7 +136,7 @@ export async function buildAndPersistSuccessRun(args: {
       offers: brandCore.offers,
       audiences: context.audience ? [context.audience] : [],
       proofCount: brandCore.proof_library.length,
-      usedAsPrimaryIdeaInput: false,
+      usedAsPrimaryIdeaInput: true,
     },
     generation: {
       masterTopic,

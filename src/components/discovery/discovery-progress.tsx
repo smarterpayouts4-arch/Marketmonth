@@ -21,8 +21,6 @@ function stepStates(status: DiscoveryStatus): StepState[] {
     case "error":
       return ["current", "future", "future", "future"];
     case "result":
-      return ["complete", "future", "future", "future"];
-    case "intent":
       return ["complete", "current", "future", "future"];
     case "generating_strategy":
       return ["complete", "complete", "current", "future"];

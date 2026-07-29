@@ -83,7 +83,7 @@ export async function runIdeaLabGenerateStage(args: {
   });
 
   const outcome = await generateAndRecordContentDirections({
-    domain: context.domain || "zynava.com",
+    domain: context.domain || identity.company_id,
     mode: "manual",
     topic: selectedTopicContext.masterTitle,
     marketingFocus,

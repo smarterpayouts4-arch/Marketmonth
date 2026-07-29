@@ -1,149 +1,117 @@
 /**
- * Refresh data/fixtures/zynava-discovery.csv from a live zynava.com crawl.
- * DB-free — writes only via buildDiscoveryCsvDocument.
+ * Diagnostic-only: propose a Zynava discovery CSV from live crawl or frozen corpus.
+ * Never writes data/companies/zynava.com/approved.csv — only *.proposed.csv.
+ *
+ * Sole approved CSV writer: `npm run publish:company-profile`.
  *
  * Usage:
- *   npm run refresh:zynava-fixture -- --force
- * Without --force: runs crawl + acceptance gate, writes page snapshots, does not overwrite CSV.
+ *   npm run refresh:zynava-fixture
+ *   npm run refresh:zynava-fixture -- --live
+ *   npm run refresh:zynava-fixture -- --force   (overwrite proposed even if gate fails)
  */
 import { config } from "dotenv";
-import { copyFileSync, existsSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
 
 config({ path: ".env.local" });
 config({ path: ".env" });
 
+import { withWriteLock } from "../src/brain/store/write-lock";
 import {
-  buildCrawlMeta,
-  buildDiscoveryEvidence,
-  contentOpportunitiesForCatalog,
+  buildDiscoveryProfileFromCorpus,
   crawlWebsite,
+  ensureExtraPages,
   evaluateDiscoveryAcceptance,
-  extractBrandSignals,
-  findSocialLinks,
+  getCompanyDiscoveryConfig,
   persistCrawlPageSnapshots,
 } from "../src/engine/discovery";
-import type { BrandProfile } from "../src/engine/discovery/brand-profile";
-import type { CrawledPage, CrawlCorpus } from "../src/engine/discovery/types";
-import { fetchStaticPage } from "../src/lib/discovery/browser/fetch-static-page";
+import {
+  applyApprovedOverrides,
+  evidenceFromOverrides,
+  loadApprovedOverrides,
+} from "../src/engine/discovery/fixture-propose/apply-overrides";
+import {
+  corpusFromFrozenPages,
+  loadFrozenCorpus,
+} from "../src/engine/discovery/reconcile/frozen-corpus";
 import {
   buildDiscoveryCsvDocument,
   DISCOVERY_CSV_SCHEMA_VERSION,
-} from "../src/lib/dev/discovery-csv-rows";
-import { loadZynavaFixture } from "../src/lib/dev/load-zynava-fixture";
-import { ZYNAVA_WEBSITE } from "../src/lib/dev/zynava-constants";
-
-const PLATFORM_PRODUCTS = [
-  "Supplement search",
-  "Price comparison",
-  "Supplement plan builder",
-  "AI supplement advisor",
-] as const;
-
-const EXTRA_URLS = [
-  "https://zynava.com/tools/ingredient-explorer",
-  "https://zynava.com/how-it-works",
-] as const;
-
-async function ensureExtraPages(corpus: CrawlCorpus): Promise<CrawlCorpus> {
-  const have = new Set(corpus.pages.map((p) => p.url.replace(/\/$/, "")));
-  const pages: CrawledPage[] = [...corpus.pages];
-
-  for (const url of EXTRA_URLS) {
-    const key = url.replace(/\/$/, "");
-    if ([...have].some((h) => h === key || h.startsWith(key))) continue;
-    try {
-      const collected = await fetchStaticPage({
-        url,
-        pageType: /how-it-works/i.test(url) ? "how_it_works" : "other",
-      });
-      if (!collected.html || collected.html.length < 200) continue;
-      const kind = /how-it-works/i.test(url) ? "how_it_works" : "other";
-      pages.push({
-        url: collected.url || url,
-        status: 200,
-        html: collected.html,
-        title: collected.title ?? "",
-        kind,
-        collectionMethod: "fetch",
-      });
-      have.add(key);
-    } catch (err) {
-      console.warn(
-        `Optional fetch failed for ${url}:`,
-        err instanceof Error ? err.message : err
-      );
-    }
-  }
-
-  return { ...corpus, pages };
-}
+} from "../src/lib/company-profile/csv-contract";
+import { companyArtifactPaths } from "../src/lib/company-profile/company-paths";
+import { loadCompanyBrand } from "../src/lib/company-profile/load-company-brand";
+import {
+  ZYNAVA_PLATFORM_CAPABILITIES,
+  ZYNAVA_WEBSITE,
+} from "../src/lib/dev/zynava-constants";
 
 async function main() {
   const force = process.argv.includes("--force");
-  const out = join(process.cwd(), "data", "fixtures", "zynava-discovery.csv");
+  const preferLive = process.argv.includes("--live");
+  const paths = companyArtifactPaths("zynava.com");
   const retrievedAt = new Date().toISOString();
 
-  console.log(`Crawling ${ZYNAVA_WEBSITE}…`);
-  let corpus = await crawlWebsite(ZYNAVA_WEBSITE);
-  corpus = await ensureExtraPages(corpus);
+  let corpus;
+  let sourceNote: string;
+
+  const frozen = loadFrozenCorpus(paths.frozenCorpusDir);
+  const hasFrozen =
+    "pages" in frozen && frozen.pages.length > 0 && !preferLive;
+
+  if (hasFrozen && "pages" in frozen) {
+    corpus = corpusFromFrozenPages(frozen.pages);
+    sourceNote = `proposed from frozen Layer-1 (${frozen.pages.length} pages)`;
+    console.log(`Using frozen corpus: ${paths.frozenCorpusDir}`);
+  } else {
+    console.log(`Crawling ${ZYNAVA_WEBSITE}…`);
+    corpus = await crawlWebsite(ZYNAVA_WEBSITE);
+    const extras = getCompanyDiscoveryConfig(ZYNAVA_WEBSITE).extraSeedUrls;
+    corpus = await ensureExtraPages(corpus, extras);
+    sourceNote = "proposed from live crawl + company discovery config";
+    const { dir: pagesDir, manifest } = persistCrawlPageSnapshots({
+      companyId: "zynava.com",
+      corpus,
+      retrievedAt,
+    });
+    console.log(
+      `Layer-1 snapshots: ${manifest.pageCount} pages → ${pagesDir}`
+    );
+  }
+
   console.log(
     `Corpus: ${corpus.pages.length} pages — ${corpus.pages
       .map((p) => `${p.kind}:${new URL(p.url).pathname}`)
       .join(", ")}`
   );
 
-  const { dir: pagesDir, manifest } = persistCrawlPageSnapshots({
-    companyId: "zynava.com",
+  const build = await buildDiscoveryProfileFromCorpus({
     corpus,
-    retrievedAt,
+    website: ZYNAVA_WEBSITE,
+    curatedCapabilities: [...ZYNAVA_PLATFORM_CAPABILITIES],
+    // Proposed fixture must be reproducible without LLM drift for observed path
+    derivedSource: "rules",
   });
-  console.log(
-    `Layer-1 snapshots: ${manifest.pageCount} pages → ${pagesDir} (schema CSV v${DISCOVERY_CSV_SCHEMA_VERSION})`
-  );
 
-  const signals = extractBrandSignals(corpus);
-  const social = findSocialLinks(corpus);
-  const catalogProducts = signals.catalogProducts;
-  if (catalogProducts.length < 4) {
+  const overrides = loadApprovedOverrides(paths.overridesJson);
+  const profile = applyApprovedOverrides(build.profile, overrides);
+
+  if (profile.indexedProducts.length < 4) {
     throw new Error(
-      `Expected ≥4 scrubbed catalog products from site; got ${catalogProducts.length}: ${catalogProducts
+      `Expected ≥4 scrubbed indexed products; got ${profile.indexedProducts.length}: ${profile.indexedProducts
         .map((p) => p.name)
         .join(", ")}`
     );
   }
 
-  const contentOpportunities = contentOpportunitiesForCatalog(catalogProducts);
-  const base = loadZynavaFixture();
-
-  const profile: BrandProfile = {
-    ...base.brandProfile,
-    businessName: base.brandProfile.businessName || "Zynava",
-    website: ZYNAVA_WEBSITE,
-    products: [...PLATFORM_PRODUCTS],
-    catalogProducts,
-    seoSummary: {
-      ...base.brandProfile.seoSummary,
-      contentOpportunities,
-    },
-    socialProfiles:
-      social.some((s) => s.status === "present")
-        ? social
-        : base.brandProfile.socialProfiles,
-  };
-
-  const evidence = buildDiscoveryEvidence({
-    corpus,
-    signals: { ...signals, catalogProducts },
-    social: profile.socialProfiles,
-  });
-
-  const cleanEvidence = evidence.filter((ev) => {
-    if (ev.field !== "catalogProduct") return true;
-    return !/\b(search|comparison|compare|builder|advisor|filter|engine|tool|explorer|finder|quiz|platform)\b/i.test(
-      ev.value
-    );
-  });
+  const cleanEvidence = [
+    ...build.evidence.filter((ev) => {
+      if (ev.field !== "indexedProduct") return true;
+      return !/\b(search|comparison|compare|builder|advisor|filter|engine|tool|explorer|finder|quiz|platform)\b/i.test(
+        ev.value
+      );
+    }),
+    ...evidenceFromOverrides(overrides, ZYNAVA_WEBSITE),
+  ];
 
   const gate = evaluateDiscoveryAcceptance({
     profile,
@@ -151,57 +119,57 @@ async function main() {
     corpus,
   });
   console.log("Acceptance gate:", JSON.stringify(gate, null, 2));
+  console.log("Build diagnostics:", build.diagnostics);
 
-  if (!gate.accepted) {
+  if (!gate.accepted && !force) {
     console.warn(
-      "Gate failed — CSV will not be overwritten unless you fix diagnostics. Snapshots were still written."
+      "Gate failed — proposed CSV not written. Re-run with --force to write anyway."
     );
-    if (!force) {
-      process.exitCode = 2;
-      return;
-    }
-    console.warn("--force set: writing CSV despite failed gate (explicit override).");
-  }
-
-  if (existsSync(out) && !force) {
-    console.log(
-      `Fixture exists at ${out}. Re-run with --force to overwrite (previous file will be copied to .bak).`
-    );
-    console.log(
-      "Dry-run complete: catalogProducts:",
-      catalogProducts.map((p) => p.name).join(", ")
-    );
+    process.exitCode = 2;
     return;
   }
 
-  const crawlMeta = buildCrawlMeta(corpus);
-  const notes =
-    "Refreshed from public zynava.com crawl via refresh:zynava-fixture (discovery-csv-rows)";
+  // Preserve strategy_preview only (explicit allow-list), never observed inheritance
+  const base = existsSync(paths.approvedCsv)
+    ? loadCompanyBrand("zynava.com")
+    : null;
+  const strategyPreview = base?.strategyPreview ?? null;
+
+  const notes = [
+    `Proposed Zynava discovery CSV (${sourceNote}); schema ${DISCOVERY_CSV_SCHEMA_VERSION}`,
+    "Does not replace approved CSV — use publish:company-profile",
+    ...build.diagnostics.notes,
+  ].join("; ");
 
   const csv = buildDiscoveryCsvDocument({
     profile,
     evidence: cleanEvidence,
-    crawlMeta,
-    strategyPreview: base.strategyPreview,
+    crawlMeta: build.crawlMeta,
+    strategyPreview,
     sourceUrl: ZYNAVA_WEBSITE,
+    retrievedAt,
     notes,
   });
 
-  if (existsSync(out)) {
-    const bak = `${out}.bak-${retrievedAt.replace(/[:.]/g, "-")}`;
-    copyFileSync(out, bak);
-    console.log(`Backed up previous fixture → ${bak}`);
-  }
-
-  writeFileSync(out, csv, "utf8");
+  mkdirSync(dirname(paths.proposedCsv), { recursive: true });
+  await withWriteLock(async () => {
+    writeFileSync(paths.proposedCsv, csv, "utf8");
+  });
   const rowCount = csv.trim().split("\n").length - 1;
-  console.log(`Wrote ${rowCount} rows → ${out}`);
+  console.log(`Wrote ${rowCount} rows → ${paths.proposedCsv}`);
   console.log(
-    "catalogProducts:",
-    catalogProducts.map((p) => `${p.name} <${p.sourceUrl}>`).join("; ")
+    "indexedProducts:",
+    profile.indexedProducts.map((p) => `${p.name} <${p.sourceUrl}>`).join("; ")
   );
-  console.log("contentOpportunities:", contentOpportunities.join(" | "));
-  console.log("products[] (platform):", profile.products.join(", "));
+  console.log("products[] (platform curated):", profile.products.join(", "));
+  console.log(
+    "Approved CSV untouched:",
+    paths.approvedCsv,
+    existsSync(paths.approvedCsv) ? "(exists)" : "(missing)"
+  );
+  console.log(
+    "Sole Idea Lab SoT writer: npm run publish:company-profile (not this script)"
+  );
 }
 
 main().catch((err) => {

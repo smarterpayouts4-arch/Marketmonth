@@ -3,7 +3,7 @@ export { evaluateAndExpandUserTopic } from "./expand-user-topic";
 export { assessReadiness } from "./readiness";
 export { evaluateSafety, mergeSafety } from "./safety";
 export { buildEvidenceId, toEvidence, shortHash } from "./evidence";
-export { buildAutomaticMaster } from "./providers/deterministic-provider";
+export { buildAutomaticMasterFromCandidates } from "./gcd/build-automatic-master-from-candidates";
 export { resolveProvider } from "./providers/resolve-provider";
 export {
   buildContentDirectionsHandoff,

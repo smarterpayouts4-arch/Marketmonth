@@ -1,13 +1,11 @@
+import { existsSync } from "node:fs";
 import path from "node:path";
 
 import type { ContentBrainContext } from "@/brain/content/types";
-import {
-  DEFAULT_FIXTURE_RELATIVE,
-  defaultFixtureAbsolute,
-} from "@/brain/content/repository/default-fixture";
 import { loadFixtureBrandCore } from "@/brain/content/repository/load-fixture-brand-core";
 import { parseFixtureCsv } from "@/brain/content/repository/parse-fixture-csv";
-import { readFileSync } from "node:fs";
+import { artifactRelativePath } from "@/lib/company-profile/artifact-store";
+import { readCompanyProfileAsBrainContext } from "@/lib/company-profile/read-company-profile";
 
 import type { BrandCore } from "./brand-core.schema";
 import { compileBrandCore } from "./compile-brand-core";
@@ -18,7 +16,8 @@ import {
 
 /**
  * Sole preferred runtime entry for company Brand Core.
- * Dev: Zynava CSV fixture adapter. Live DB adapters land later (Neon deferred).
+ * Default path: readCompanyProfile → compileBrandCore (shared artifact reader).
+ * A missing companyId is an error — never a silent fallback to another brand.
  */
 export type GetBrandCoreResult = {
   companyId: string;
@@ -29,20 +28,48 @@ export type GetBrandCoreResult = {
   fixturePath?: string;
 };
 
-const ZYNAVA_COMPANY_IDS = new Set([
-  "zynava.com",
-  "zynava",
-  "www.zynava.com",
-]);
+/** Short aliases → canonical companyId (not path shortcuts to someone else's data). */
+const COMPANY_ID_ALIASES: Record<string, string> = {
+  zynava: "zynava.com",
+  "www.zynava.com": "zynava.com",
+  "clearflow-plumbing": "clearflow-plumbing",
+  "clearflowplumbing.example": "clearflow-plumbing",
+  "www.clearflowplumbing.example": "clearflow-plumbing",
+};
 
-function normalizeCompanyId(companyId: string): string {
-  return companyId.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/$/, "");
+export function normalizeCompanyId(companyId: string): string {
+  return companyId
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/\/$/, "")
+    .replace(/^www\./, "");
 }
 
-function fixturePathForCompany(companyId: string): string | null {
+function resolveCompanyId(companyId: string): string {
   const id = normalizeCompanyId(companyId);
-  if (ZYNAVA_COMPANY_IDS.has(id) || id.endsWith("zynava.com")) {
-    return DEFAULT_FIXTURE_RELATIVE;
+  return COMPANY_ID_ALIASES[id] ?? id;
+}
+
+function fixtureExists(relativePath: string): boolean {
+  return existsSync(path.join(process.cwd(), relativePath));
+}
+
+/**
+ * Resolve approved discovery CSV for a company id.
+ * Convention only: data/companies/<id>/approved.csv
+ */
+export function fixturePathForCompany(companyId: string): string | null {
+  const id = resolveCompanyId(companyId);
+  if (!id) return null;
+
+  const candidates = [
+    artifactRelativePath(id, "approved"),
+    // slug variants (dots → hyphens) for non-domain company folders
+    artifactRelativePath(id.replace(/\./g, "-"), "approved"),
+  ];
+  for (const candidate of candidates) {
+    if (fixtureExists(candidate)) return candidate;
   }
   return null;
 }
@@ -51,6 +78,7 @@ function fixturePathForCompany(companyId: string): string | null {
  * Load + compile Brand Core for a company id (domain preferred).
  * Pass `context` when the caller already merged research / live expansions —
  * still goes through `compileBrandCore` (catalog/FAQ-aware).
+ * Pass `absolutePath` / `fixturePath` only for publish temp CSV and tests.
  */
 export function getBrandCore(
   companyId: string,
@@ -60,7 +88,12 @@ export function getBrandCore(
     absolutePath?: string;
   }
 ): GetBrandCoreResult {
-  const normalized = normalizeCompanyId(companyId);
+  const normalized = resolveCompanyId(companyId);
+  if (!normalized && !options?.fixturePath && !options?.absolutePath && !options?.context) {
+    throw new Error(
+      "getBrandCore: companyId is required (no silent default brand)"
+    );
+  }
 
   if (options?.context) {
     const brandCore = compileBrandCore(options.context);
@@ -75,30 +108,49 @@ export function getBrandCore(
     };
   }
 
-  const fixtureRelative =
-    options?.fixturePath ?? fixturePathForCompany(normalized);
-  if (!fixtureRelative && !options?.absolutePath) {
+  // Explicit path override (publish temp / tests) — bypass shared reader.
+  if (options?.absolutePath || options?.fixturePath) {
+    const loaded = loadFixtureBrandCore({
+      fixturePath: options.fixturePath,
+      absolutePath: options.absolutePath,
+    });
+    return {
+      companyId: loaded.identity.company_id || normalized,
+      context: loaded.context,
+      brandCore: loaded.brandCore,
+      identity: loaded.identity,
+      source: "fixture",
+      fixturePath: loaded.fixturePath,
+    };
+  }
+
+  const fixtureRelative = fixturePathForCompany(normalized);
+  if (!fixtureRelative) {
     throw new Error(
-      `getBrandCore: no fixture adapter for companyId "${companyId}" (Neon live adapter deferred)`
+      `getBrandCore: no approved artifact for companyId "${companyId}". ` +
+        `Expected data/companies/<companyId>/approved.csv or pass fixturePath/absolutePath.`
     );
   }
 
-  const loaded = loadFixtureBrandCore({
-    fixturePath: fixtureRelative ?? undefined,
-    absolutePath: options?.absolutePath,
+  const context = readCompanyProfileAsBrainContext(normalized, {
+    state: "approved",
+    branch: "branch-b",
+    step: "getBrandCore",
   });
+  const brandCore = compileBrandCore(context);
+  const identity = resolveBrandCoreIdentity(brandCore);
 
   return {
-    companyId: loaded.identity.company_id,
-    context: loaded.context,
-    brandCore: loaded.brandCore,
-    identity: loaded.identity,
+    companyId: identity.company_id || normalized,
+    context,
+    brandCore,
+    identity,
     source: "fixture",
-    fixturePath: loaded.fixturePath,
+    fixturePath: fixtureRelative,
   };
 }
 
-/** Sync helper when only absolute CSV path is known (tests / scripts). */
+/** Sync helper when only CSV text is known (tests / scripts). */
 export function getBrandCoreFromCsvText(
   companyId: string,
   csvText: string
@@ -108,17 +160,4 @@ export function getBrandCoreFromCsvText(
     throw new Error("getBrandCoreFromCsvText: parseFixtureCsv returned null");
   }
   return getBrandCore(companyId, { context });
-}
-
-export function resolveZynavaFixtureAbsolute(
-  fixturePath?: string
-): string {
-  if (!fixturePath) return defaultFixtureAbsolute();
-  return path.isAbsolute(fixturePath)
-    ? fixturePath
-    : path.join(process.cwd(), fixturePath);
-}
-
-export function readFixtureText(absolutePath: string): string {
-  return readFileSync(absolutePath, "utf8");
 }

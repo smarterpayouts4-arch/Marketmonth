@@ -64,3 +64,15 @@ next-env.d.ts
 # Content brain JSON runtime store (dev only)
 /data/runtime/
 !/data/runtime/.gitkeep
+
+# Local visual-QA screenshots written to the repo root by browser tooling
+/f-*.jpeg
+/g-*.jpeg
+/v-*.jpeg
+/scan-*.jpeg
+/.playwright-mcp/
+
+# Local scratch output
+/scan-console.log
+/tmp-test-out.txt
+/tmp/

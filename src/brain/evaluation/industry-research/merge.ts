@@ -36,7 +36,7 @@ export function mergeIndustryResearchIntoContext(
       ...context.evidenceById,
       ...expansion.evidenceById,
     },
-    // Never touch products / catalogProducts / brandName
+    // Never touch products / indexedProducts / brandName
   };
 }
 

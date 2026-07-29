@@ -33,7 +33,7 @@ describe("E2E: generation_id → Atom → YouTube Short", () => {
   it("use case compiles Brand Core, records history, selection builds atom with same identity", async () => {
     const fixturePath = path.join(
       process.cwd(),
-      "data/fixtures/zynava-discovery.csv"
+      "data/companies/zynava.com/approved.csv"
     );
     const historyRepo = createTopicGenerationRepository({
       filePath: historyPath,
@@ -80,7 +80,7 @@ describe("E2E: generation_id → Atom → YouTube Short", () => {
 
     const brandRepo = createBrandContextRepository({
       source: "fixture",
-      fixturePath: "data/fixtures/zynava-discovery.csv",
+      fixturePath: "data/companies/zynava.com/approved.csv",
     });
     const context = await brandRepo.loadByDomain("zynava.com");
     assert.ok(context);

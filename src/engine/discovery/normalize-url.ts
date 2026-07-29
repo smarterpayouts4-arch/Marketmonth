@@ -32,12 +32,29 @@ export function normalizeWebsiteUrl(input: string): string {
 
   url.hash = "";
   url.search = "";
-  // Strip trailing slash except origin
+  // Strip trailing slash on non-root paths.
   if (url.pathname !== "/" && url.pathname.endsWith("/")) {
     url.pathname = url.pathname.slice(0, -1);
   }
 
-  return url.toString();
+  let normalized = url.toString();
+  // Origin-only URLs always serialize with a trailing slash in WHATWG URL;
+  // strip it so https://x.com and https://x.com/ share one brand key.
+  if (url.pathname === "/" && normalized.endsWith("/")) {
+    normalized = normalized.slice(0, -1);
+  }
+
+  return normalized;
+}
+
+/** Alternate slash form for legacy rows written before origin slash canonicalization. */
+export function websiteUrlSlashAlternates(normalizedUrl: string): string[] {
+  const primary = normalizedUrl.trim();
+  if (!primary) return [];
+  const alt = primary.endsWith("/")
+    ? primary.slice(0, -1)
+    : `${primary}/`;
+  return alt && alt !== primary ? [primary, alt] : [primary];
 }
 
 export function getOrigin(normalizedUrl: string): string {

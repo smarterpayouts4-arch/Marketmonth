@@ -70,15 +70,15 @@ export function hasConcreteGroundedAttribute(
 export function groundedAttributePayoffTitle(
   ctx: TopicTitleHookContext
 ): string | null {
-  const attr = ctx.comparisonAttribute?.trim().toLowerCase();
-  if (attr === "price per serving") {
-    return "Price per serving can change which supplement looks cheaper";
+  const attr = ctx.comparisonAttribute?.trim();
+  if (!attr) return null;
+  const lower = attr.toLowerCase();
+  // Reflect the grounded attribute itself — never invent an industry noun.
+  if (lower === "price per serving" || lower === "serving size" || lower === "form") {
+    return `${attr[0].toUpperCase()}${attr.slice(1)} can change how two options compare`;
   }
-  if (attr === "serving size") {
-    return "Serving size can change how two options compare";
-  }
-  if (attr === "form") {
-    return "Form can change how two supplement options compare";
+  if (attr.length >= 3 && attr.length <= 48) {
+    return `Why ${attr} changes how options compare`;
   }
   return null;
 }

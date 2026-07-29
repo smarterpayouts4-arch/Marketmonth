@@ -21,7 +21,7 @@ import type { ContentBrainContext } from "./types";
 
 function loadFixtureContext(): ContentBrainContext {
   const text = readFileSync(
-    path.join(process.cwd(), "data/fixtures/zynava-discovery.csv"),
+    path.join(process.cwd(), "data/companies/zynava.com/approved.csv"),
     "utf8"
   );
   const ctx = parseFixtureCsv(text);

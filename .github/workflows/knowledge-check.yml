@@ -24,6 +24,8 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cursor context structure (Group A)
+        run: npm run validate:cursor-context
       - name: Stabilization validation
         run: npm run validate:stabilization
       - name: Quality rubric check

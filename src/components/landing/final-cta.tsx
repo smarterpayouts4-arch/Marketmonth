@@ -23,21 +23,21 @@ export function FinalCTA() {
                 Ready to turn your website into a month of marketing?
               </h2>
               <p className="mx-auto mt-4 max-w-[40ch] text-[1.05rem] leading-relaxed text-primary-foreground/78">
-                Open the prototype and walk Discovery → Content → Strategy on
-                your own brand path.
+                Walk Learn → Strategize → Build → Review on your own brand
+                path — starting with your website.
               </p>
               <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Link
-                  href="/dashboard"
+                  href="#analyze"
                   className="inline-flex h-12 items-center justify-center rounded-xl bg-accent px-7 text-[0.95rem] font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
                 >
-                  Start free
+                  Analyze my website
                 </Link>
                 <Link
-                  href="/dashboard"
+                  href="#demo-theater"
                   className="inline-flex h-12 items-center justify-center rounded-xl border border-primary-foreground/25 bg-transparent px-7 text-[0.95rem] font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/10"
                 >
-                  Open dashboard
+                  See it work
                 </Link>
               </div>
               <p className="mt-5 text-sm text-primary-foreground/50">

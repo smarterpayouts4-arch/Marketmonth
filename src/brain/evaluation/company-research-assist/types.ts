@@ -38,7 +38,7 @@ export type CompanyResearchPromptContext = {
   websiteUrl: string;
   selectedObjective: string;
   knownCategories: string[];
-  knownCatalogProducts: string[];
+  knownIndexedProducts: string[];
   knownCapabilities: string[];
   knownAudiences: string[];
   knownCustomerProblems: string[];

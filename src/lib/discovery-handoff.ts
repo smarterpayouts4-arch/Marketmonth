@@ -59,26 +59,3 @@ export function getDiscoveryWorkspaceHandoff(): DiscoveryWorkspaceHandoff | null
     return null;
   }
 }
-
-/** @deprecated use getDiscoveryWorkspaceHandoff */
-export function setDiscoveryCompanyName(name: string): void {
-  const cleaned = name.replace(/\s+/g, " ").trim();
-  if (!cleaned) return;
-  try {
-    sessionStorage.setItem(COMPANY_KEY, cleaned);
-  } catch {
-    // ignore
-  }
-}
-
-/** @deprecated use getDiscoveryWorkspaceHandoff */
-export function getDiscoveryCompanyName(): string | null {
-  const handoff = getDiscoveryWorkspaceHandoff();
-  if (handoff?.companyName) return handoff.companyName;
-  try {
-    const value = sessionStorage.getItem(COMPANY_KEY);
-    return value?.trim() || null;
-  } catch {
-    return null;
-  }
-}

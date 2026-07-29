@@ -27,7 +27,7 @@ async function main() {
     "Does magnesium actually help with sleep?";
   const domain = argValue("--domain")?.trim() || "zynava.com";
   const fixturePath =
-    argValue("--fixture")?.trim() || "data/fixtures/zynava-discovery.csv";
+    argValue("--fixture")?.trim() || "data/companies/zynava.com/approved.csv";
 
   const comparison_group_id = `cmp_${Date.now().toString(36)}`;
   const outDir = path.join(process.cwd(), "tmp", "directions-compare");

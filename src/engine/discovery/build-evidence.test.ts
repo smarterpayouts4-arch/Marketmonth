@@ -23,7 +23,7 @@ function baseSignals(overrides: Partial<BrandSignals> = {}): BrandSignals {
         sourceUrl: "https://zynava.com/faq",
       },
     ],
-    catalogProducts: [
+    indexedProducts: [
       { name: "Supplement plan builder", sourceUrl: "https://zynava.com/" },
     ],
     organization: {
@@ -79,10 +79,39 @@ describe("buildDiscoveryEvidence enrichment", () => {
     assert.ok(fields.includes("contactPhone"));
     assert.ok(fields.includes("logoUrl"));
     assert.ok(fields.includes("faq"));
-    assert.ok(fields.includes("catalogProduct"));
+    assert.ok(fields.includes("indexedProduct"));
     assert.ok(fields.includes("legalName"));
     assert.ok(fields.includes("founder"));
     assert.ok(fields.includes("knowsAbout"));
     assert.ok(fields.includes("social.facebook"));
+    assert.ok(
+      !fields.includes("customerProblems"),
+      "structured faqs must skip bulk faqText customerProblems"
+    );
+  });
+
+  it("never promotes bulk faqText into customerProblems", () => {
+    const corpus: CrawlCorpus = {
+      normalizedUrl: "https://zynava.com",
+      origin: "https://zynava.com",
+      pages: [
+        {
+          url: "https://zynava.com/faq",
+          status: 200,
+          html: "<html><body><main><p>How It Works ContactMore</p></main></body></html>",
+          title: "FAQ",
+          kind: "faq",
+        },
+      ],
+    };
+    const evidence = buildDiscoveryEvidence({
+      corpus,
+      signals: baseSignals({
+        faqs: [],
+        faqText: "How It Works ContactMore glued chrome FAQ dump",
+      }),
+      social: [],
+    });
+    assert.ok(!evidence.some((e) => e.field === "customerProblems"));
   });
 });

@@ -17,6 +17,11 @@ export {
   type GetBrandCoreResult,
 } from "./get-brand-core";
 export {
+  getBrandCoreRepository,
+  setBrandCoreRepositoryForTests,
+  type BrandCoreRepository,
+} from "./brand-core-repository";
+export {
   resolveBrandCoreIdentity,
   type BrandCoreIdentity,
 } from "./brand-core-identity";

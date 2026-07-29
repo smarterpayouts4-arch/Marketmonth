@@ -7,7 +7,8 @@ export type TopicSubjectKind =
   | "platform_capability"
   | "brand_position"
   | "decision_criterion"
-  | "trust_method";
+  | "trust_method"
+  | "faq_topic";
 
 export type ClassificationConfidence = "high" | "medium" | "low";
 

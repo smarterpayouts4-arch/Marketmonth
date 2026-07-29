@@ -2,7 +2,9 @@ import { z } from "zod";
 
 import { analyzeWebsite, DISCOVERY_STAGES } from "@/engine/discovery";
 import type { DiscoveryStreamEvent } from "@/engine/discovery";
-import { buildDiscoveryActivationProfile } from "@/engine/discovery/build-activation-profile";
+import { buildDiscoveryNarrative } from "@/engine/discovery/discovery-narrative";
+import { readCompanyProfileAsync } from "@/lib/company-profile/read-company-profile";
+import { recordProvenance } from "@/lib/provenance";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -14,6 +16,34 @@ const bodySchema = z.object({
 
 function encode(event: DiscoveryStreamEvent): string {
   return `${JSON.stringify(event)}\n`;
+}
+
+/**
+ * Build the discovery card from the company profile artifact.
+ * Prefer approved.csv when available; fall back to draft.csv.
+ */
+async function discoveryNarrativeFromArtifact(companyId: string | undefined) {
+  if (!companyId) return null;
+  for (const state of ["approved", "draft"] as const) {
+    try {
+      const projection = await readCompanyProfileAsync(companyId, {
+        state,
+        branch: "branch-a",
+        step: "analyze-route",
+      });
+      return buildDiscoveryNarrative({ projection });
+    } catch {
+      // try next state
+    }
+  }
+  recordProvenance({
+    branch: "branch-a",
+    step: "analyze-route:artifact-miss",
+    companyId,
+    source: "memory",
+    detail: { reason: "no readable approved/draft artifact; used in-memory profile" },
+  });
+  return null;
 }
 
 export async function POST(request: Request) {
@@ -56,14 +86,11 @@ export async function POST(request: Request) {
           },
         });
 
-        const activationProfile =
-          result.activationProfile ??
-          buildDiscoveryActivationProfile({
+        const discoveryNarrative =
+          (await discoveryNarrativeFromArtifact(result.companyId)) ??
+          result.discoveryNarrative ??
+          buildDiscoveryNarrative({
             brandProfile: result.brandProfile,
-            offerHints: [
-              ...result.brandProfile.services,
-              ...result.brandProfile.products,
-            ],
           });
 
         send({
@@ -75,7 +102,7 @@ export async function POST(request: Request) {
           cached: result.cached,
           pageCount: result.pageCount ?? 0,
           detectedLocations: result.detectedLocations ?? [],
-          activationProfile,
+          discoveryNarrative,
         });
       } catch (error) {
         send({

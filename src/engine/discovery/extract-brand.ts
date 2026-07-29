@@ -1,10 +1,12 @@
 import * as cheerio from "cheerio";
 
 import { extractContactPhones } from "./extract-contact";
-import { mergeAndScrubCatalogProducts } from "./extract-catalog-names";
+import { mergeAndScrubIndexedProducts } from "./extract-catalog-names";
 import { extractFaqs } from "./extract-faq";
 import { extractOrganizationFacts } from "./extract-organization";
-import { extractCatalogProducts } from "./extract-product-jsonld";
+import { extractIndexedProducts } from "./extract-product-jsonld";
+import { mainContentText } from "@/lib/discovery/html-clean";
+
 import { stripNonContent } from "./strip-non-content";
 import type { BrandSignals, CrawlCorpus } from "./types";
 
@@ -42,7 +44,7 @@ function textOf($: Root, selector: string, limit = 4000): string {
 }
 
 function pageText(html: string, limit = 3500): string {
-  return textOf(loadClean(html), "main, article, body", limit);
+  return mainContentText(html, limit);
 }
 
 export function extractBrandSignals(corpus: CrawlCorpus): BrandSignals {
@@ -55,6 +57,7 @@ export function extractBrandSignals(corpus: CrawlCorpus): BrandSignals {
   const title =
     $meta("title").first().text().trim() ||
     $meta('meta[property="og:site_name"]').attr("content")?.trim() ||
+    home.title?.trim() ||
     corpus.origin;
 
   const metaDescription =
@@ -92,12 +95,18 @@ export function extractBrandSignals(corpus: CrawlCorpus): BrandSignals {
     : undefined;
 
   const contactEmails = new Set<string>();
-  const emailRe = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+  const emailRe = /\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,24}\b/g;
+  const isPlausibleEmail = (email: string): boolean => {
+    if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,10}$/i.test(email)) return false;
+    if (/example\.com|sentry|wixpress|cloudflare/i.test(email)) return false;
+    const tld = email.split(".").pop() ?? "";
+    // Reject glued cleanedText artifacts: business@zynava.commonday
+    if (/phone|support|monday|contact|home|about/i.test(tld)) return false;
+    return true;
+  };
   for (const page of corpus.pages) {
     for (const email of page.html.match(emailRe) ?? []) {
-      if (!/example\.com|sentry|wixpress|cloudflare/i.test(email)) {
-        contactEmails.add(email.toLowerCase());
-      }
+      if (isPlausibleEmail(email)) contactEmails.add(email.toLowerCase());
       if (contactEmails.size >= 5) break;
     }
   }
@@ -125,7 +134,7 @@ export function extractBrandSignals(corpus: CrawlCorpus): BrandSignals {
     faqPage ? pageText(faqPage.html, 2500) : ""
   );
   const faqs = extractFaqs(corpus);
-  const jsonLdCatalog = extractCatalogProducts(corpus);
+  const jsonLdCatalog = extractIndexedProducts(corpus);
   const organization = extractOrganizationFacts(corpus);
   const contactPhones = [
     ...extractContactPhones(corpus),
@@ -178,14 +187,14 @@ export function extractBrandSignals(corpus: CrawlCorpus): BrandSignals {
     contactEmails.add(organization.email.toLowerCase());
   }
 
-  const catalogProducts = mergeAndScrubCatalogProducts({
+  const indexedProducts = mergeAndScrubIndexedProducts({
     jsonLdProducts: jsonLdCatalog,
     corpus,
     offerNames: organization?.offerNames,
     offerSourceUrl: organization?.sourceUrl,
   });
 
-  const catalogNames = catalogProducts.map((p) => p.name);
+  const catalogNames = indexedProducts.map((p) => p.name);
   const enrichedProductText = [
     productText,
     ...productLines.slice(0, 12),
@@ -207,7 +216,7 @@ export function extractBrandSignals(corpus: CrawlCorpus): BrandSignals {
     productText: enrichedProductText,
     faqText,
     faqs,
-    catalogProducts,
+    indexedProducts,
     organization,
     bodySample,
     testimonialText,

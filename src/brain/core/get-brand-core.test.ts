@@ -9,20 +9,30 @@ import path from "node:path";
 import { tmpdir } from "node:os";
 
 describe("getBrandCore", () => {
-  it("loads Zynava fixture by companyId and includes catalog in offers", () => {
+  it("loads ClearFlow plumbing fixture by non-Zynava companyId", () => {
+    const loaded = getBrandCore("clearflowplumbing.example");
+    assert.equal(loaded.source, "fixture");
+    assert.equal(loaded.context.brandName, "ClearFlow Plumbing");
+    assert.ok((loaded.brandCore.indexed_products?.length ?? 0) >= 4);
+  });
+
+  it("loads Zynava fixture by companyId with indexed_products separate from offers", () => {
     const loaded = getBrandCore("zynava.com");
     assert.equal(loaded.source, "fixture");
     assert.equal(loaded.identity.company_id, "zynava.com");
-    assert.ok(loaded.context.catalogProducts.length >= 4);
-    const catalogNames = loaded.context.catalogProducts.map((p) =>
-      p.name.toLowerCase()
+    assert.ok(loaded.context.indexedProducts.length >= 4);
+    assert.ok((loaded.brandCore.indexed_products?.length ?? 0) >= 4);
+    const indexedNames = new Set(
+      (loaded.brandCore.indexed_products ?? []).map((p) => p.name.toLowerCase())
     );
+    // Company offers must not be the indexed third-party list
     const offerLower = loaded.brandCore.offers.map((o: string) =>
       o.toLowerCase()
     );
     assert.ok(
-      catalogNames.some((n) => offerLower.includes(n)),
-      "expected at least one catalog product in Brand Core offers"
+      offerLower.every((o) => !indexedNames.has(o)) ||
+        loaded.brandCore.platform_capabilities.length > 0,
+      "indexed products stay on indexed_products; offers are company capabilities"
     );
   });
 

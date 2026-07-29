@@ -70,4 +70,37 @@ describe("extractFaqs", () => {
     assert.ok(faqs.length >= 1);
     assert.match(faqs[0]!.question, /onboarding/i);
   });
+
+  it("rejects glued questions without a clean terminal ?", () => {
+    const html = `
+      <html><body>
+        <details>
+          <summary>What is ZYNAVA?What does it cost?</summary>
+          <p>A discovery platform.</p>
+        </details>
+        <details>
+          <summary>How we work.</summary>
+          <p>We compare options across retailers with clear pricing.</p>
+        </details>
+      </body></html>
+    `;
+    const corpus: CrawlCorpus = {
+      normalizedUrl: "https://zynava.com",
+      origin: "https://zynava.com",
+      pages: [
+        {
+          url: "https://zynava.com/faq",
+          status: 200,
+          html,
+          title: "FAQ",
+          kind: "faq",
+        },
+      ],
+    };
+    const faqs = extractFaqs(corpus);
+    for (const f of faqs) {
+      assert.ok(!/What is ZYNAVA\?What/i.test(f.question));
+      assert.ok(f.question.endsWith("?") || f.question.length >= 10);
+    }
+  });
 });

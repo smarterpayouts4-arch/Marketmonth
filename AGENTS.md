@@ -21,6 +21,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 | Feature-specific | `project-knowledge/FEATURES/<feature>.md` |
 | Data | [`project-knowledge/DATA_MODEL.md`](project-knowledge/DATA_MODEL.md) |
 | Tool / MCP choice | APS workflow `use-agent-toolchain` + [`docs/ai/agent-toolchain.md`](docs/ai/agent-toolchain.md) |
+| Auditor / readiness | [`docs/ai/agent-auditor-playbook.md`](docs/ai/agent-auditor-playbook.md) + `mm_get_agent_bootstrap` / `mm_list_project_docs`; optional `npm run agent:preflight -- --workflow <id>`; `npm run mcp:doctor` |
 
 Then follow **APS** (`.cursor/rules/agent-prompt-router.mdc`): classify → ≤3 workflows → resolve pointers → task spec → evidence labels.
 
@@ -58,6 +59,8 @@ Never start the whole app just to answer a docs question. If docs and code disag
 
 [`project-knowledge/generated/indexes/docs-index.json`](project-knowledge/generated/indexes/docs-index.json)
 
+Bootstrap pointers (generated): [`agent-bootstrap.json`](project-knowledge/generated/indexes/agent-bootstrap.json)
+
 ## Commands
 
 ```bash
@@ -69,9 +72,14 @@ npm run knowledge:update
 npm run knowledge:check
 npm run knowledge:guardian
 npm run mcp:test
+npm run mcp:doctor
+npm run agent:preflight -- --workflow audit-existing-system
+npm run validate:cursor-context
 node agent-prompt-system/scripts/install.mjs
 node agent-prompt-system/scripts/validate.mjs
 ```
+
+Cursor indexing / context hygiene: [`docs/ai/cursor-context-and-indexing-policy.md`](docs/ai/cursor-context-and-indexing-policy.md). After changing [`.cursorignore`](.cursorignore), Sync the codebase index (do not delete unless corrupted).
 
 Official quality score requires full `npm run quality:update` (probes). Do **not** treat `quality:update --fast` as the official score.
 

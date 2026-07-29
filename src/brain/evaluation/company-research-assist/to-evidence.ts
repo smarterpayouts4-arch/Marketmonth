@@ -4,7 +4,7 @@ import type { CompanyResearchImportV1 } from "./types";
 
 /**
  * Merge approved research findings into a run-scoped context copy.
- * Does not rewrite CSV. catalog_candidate never becomes catalogProducts in v1.
+ * Does not rewrite CSV. catalog_candidate never becomes indexedProducts in v1.
  * sourceType remains external / user research via evidenceType.
  */
 export function mergeResearchImportIntoContext(
@@ -20,7 +20,7 @@ export function mergeResearchImportIntoContext(
 
   let i = 0;
   for (const finding of importData.findings) {
-    // Never auto-promote catalog candidates into catalogProducts
+    // Never auto-promote catalog candidates into indexedProducts
     if (finding.type === "catalog_candidate") {
       continue;
     }

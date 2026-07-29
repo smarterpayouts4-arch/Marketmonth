@@ -13,7 +13,7 @@ export function promptContextFromBrain(
     websiteUrl: context.website || `https://${context.domain}`,
     selectedObjective,
     knownCategories: [],
-    knownCatalogProducts: context.catalogProducts
+    knownIndexedProducts: context.indexedProducts
       .map((p) => p.name)
       .filter(Boolean)
       .slice(0, 12),
@@ -70,7 +70,7 @@ Known categories:
 ${bulletList(ctx.knownCategories)}
 
 Known catalog products (official only if confirmed):
-${bulletList(ctx.knownCatalogProducts)}
+${bulletList(ctx.knownIndexedProducts)}
 
 Known platform capabilities (not catalog products):
 ${bulletList(ctx.knownCapabilities)}

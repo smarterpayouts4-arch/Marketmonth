@@ -19,9 +19,10 @@ export const PREFERRED_KINDS: Record<MarketingFocus, TopicSubjectKind[]> = {
     "ingredient_or_component",
     "product_category",
     "comparison_attribute",
+    "faq_topic",
   ],
-  decision_support: ["decision_criterion", "comparison_attribute"],
-  trust_authority: ["trust_method", "brand_position"],
+  decision_support: ["decision_criterion", "comparison_attribute", "faq_topic"],
+  trust_authority: ["trust_method", "brand_position", "faq_topic"],
 };
 
 export function preferredKindBoost(

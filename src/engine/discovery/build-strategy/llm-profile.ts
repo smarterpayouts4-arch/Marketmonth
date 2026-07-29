@@ -12,6 +12,7 @@ export async function llmBrandProfile(args: ProfileArgs): Promise<BrandProfile> 
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const completion = await client.chat.completions.create({
     model: process.env.OPENAI_DISCOVERY_MODEL || "gpt-5.4-nano",
+    temperature: 0,
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: BRAND_PROFILE_SYSTEM },
@@ -52,7 +53,7 @@ export async function llmBrandProfile(args: ProfileArgs): Promise<BrandProfile> 
     socialProfiles: args.social,
     seoSummary: args.seo,
     // Typed catalog from signals — never invent from LLM products[]
-    catalogProducts: args.signals.catalogProducts.map((p) => ({
+    indexedProducts: args.signals.indexedProducts.map((p) => ({
       name: p.name,
       price: p.price,
       sourceUrl: p.sourceUrl,
@@ -63,5 +64,15 @@ export async function llmBrandProfile(args: ProfileArgs): Promise<BrandProfile> 
         ? c.reason
         : `Suggested competitor — ${c.reason}`,
     })),
+    // LLM free text is derived — activation/topics must not treat as observed labels
+    derivedFieldNames: [
+      "description",
+      "audience",
+      "products",
+      "services",
+      "valueProposition",
+      "brandVoice",
+      "marketingOpportunity",
+    ],
   };
 }

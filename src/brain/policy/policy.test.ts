@@ -29,6 +29,6 @@ describe("Content Brain policy", () => {
   });
 
   it("uses single relative fixture ingest path", () => {
-    assert.equal(DEFAULT_FIXTURE_RELATIVE, "data/fixtures/zynava-discovery.csv");
+    assert.equal(DEFAULT_FIXTURE_RELATIVE, "data/companies/zynava.com/approved.csv");
   });
 });

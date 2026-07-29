@@ -24,6 +24,15 @@ export const PROJECT_DOCS = {
   contentBrainStabilization: "docs/ai/content-brain-stabilization.md",
   siteSeo: "project-knowledge/FEATURES/site-seo.md",
   discoveryEngine: "project-knowledge/FEATURES/discovery-engine.md",
+  discoveryCsvQuality: "project-knowledge/FEATURES/discovery-csv-quality.md",
+  contentBrainFeature: "project-knowledge/FEATURES/content-brain.md",
+  ideaLabFeature: "project-knowledge/FEATURES/idea-lab.md",
+  authFeature: "project-knowledge/FEATURES/auth.md",
+  websiteBestPracticeAuditor:
+    "project-knowledge/FEATURES/website-best-practice-auditor.md",
+  adr0001: "project-knowledge/DECISIONS/0001-knowledge-os.md",
+  adr0002: "project-knowledge/DECISIONS/0002-directions-deterministic-v1-baseline.md",
+  adr0003: "project-knowledge/DECISIONS/0003-selected-topic-context-for-directions.md",
   qualityRubric: "project-knowledge/QUALITY_RUBRIC.md",
   ownershipRules: "project-knowledge/ownership-rules.json",
   brandChangeMap: "project-knowledge/BRAND_CHANGE_MAP.md",
@@ -31,6 +40,7 @@ export const PROJECT_DOCS = {
   agents: "AGENTS.md",
   mcp: "docs/ai/mcp.md",
   agentToolchain: "docs/ai/agent-toolchain.md",
+  agentAuditorPlaybook: "docs/ai/agent-auditor-playbook.md",
   route_map: "project-knowledge/generated/maps/ROUTE_MAP.md",
   routeMap: "project-knowledge/generated/maps/ROUTE_MAP.md",
   api_map: "project-knowledge/generated/maps/API_MAP.md",
@@ -41,6 +51,7 @@ export const PROJECT_DOCS = {
   structure_warnings: "project-knowledge/generated/reports/STRUCTURE_WARNINGS.md",
   docs_index: "project-knowledge/generated/indexes/docs-index.json",
   manifest: "project-knowledge/generated/indexes/manifest.json",
+  agentBootstrap: "project-knowledge/generated/indexes/agent-bootstrap.json",
 } as const;
 
 export type ProjectDocId = keyof typeof PROJECT_DOCS;

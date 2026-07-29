@@ -72,7 +72,7 @@ describe("Brain ownership architecture boundaries", () => {
     assert.match(src, /buildContentAtomFromHandoff/);
     assert.doesNotMatch(src, /createBrandContextRepository/);
     assert.doesNotMatch(src, /runCoreContentBrain/);
-    assert.doesNotMatch(src, /zynava-discovery\.csv/);
+    assert.doesNotMatch(src, /data\/companies\/[^"']*approved\.csv/);
   });
 
   it("UI does not import CsvTopicGenerationRepository or history CSV", () => {

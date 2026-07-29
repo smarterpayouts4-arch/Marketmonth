@@ -1,4 +1,4 @@
-import type { DiscoveryActivationProfile } from "@/lib/discovery/activation-profile";
+import type { SocialDiscoveryProfile } from "@/lib/discovery/discovery-narrative.schema";
 import type {
   BrandProfileView,
   DetectedLocationView,
@@ -17,7 +17,7 @@ export type AnalyzeStreamEvent = {
   brandProfileId?: string;
   pageCount?: number;
   detectedLocations?: DetectedLocationView[];
-  activationProfile?: DiscoveryActivationProfile;
+  discoveryNarrative?: SocialDiscoveryProfile;
 };
 
 export async function readAnalyzeNdjson(
@@ -31,7 +31,7 @@ export async function readAnalyzeNdjson(
       brandProfileId: string;
       pageCount?: number;
       detectedLocations?: DetectedLocationView[];
-      activationProfile?: DiscoveryActivationProfile;
+      discoveryNarrative?: SocialDiscoveryProfile;
     }) => void;
   }
 ) {
@@ -75,7 +75,7 @@ export async function readAnalyzeNdjson(
           brandProfileId: event.brandProfileId,
           pageCount: event.pageCount,
           detectedLocations: event.detectedLocations,
-          activationProfile: event.activationProfile,
+          discoveryNarrative: event.discoveryNarrative,
         });
       }
     }

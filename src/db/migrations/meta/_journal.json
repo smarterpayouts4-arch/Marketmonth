@@ -22,6 +22,27 @@
       "when": 1784980000000,
       "tag": "0002_brands_dev_key",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1785200000000,
+      "tag": "0003_brands_published_profile",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1785400000000,
+      "tag": "0004_clean_slate_publish",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1785500000000,
+      "tag": "0005_company_profile_artifacts",
+      "breakpoints": true
     }
   ]
 }

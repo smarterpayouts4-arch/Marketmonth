@@ -166,7 +166,7 @@ const SHELLS: Shell[] = [
     build: (ctx) => {
       const noun = nounForShell(ctx);
       if (!noun) return null;
-      return `The ${noun} problem shoppers notice too late`;
+      return `The ${noun} problem buyers notice too late`;
     },
   },
 ];

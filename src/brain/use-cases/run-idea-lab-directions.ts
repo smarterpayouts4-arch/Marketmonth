@@ -10,7 +10,6 @@ import {
 import {
   assertDev,
   buildAndPersistSuccessRun,
-  DEFAULT_FIXTURE,
   gateIdeaLabDirections,
   loadAndParseIdeaLabFixture,
   runIdeaLabGenerateStage,
@@ -29,7 +28,6 @@ export async function runIdeaLabDirections(
 ): Promise<IdeaLabRun> {
   assertDev();
   const runStarted = startTimer();
-  const fixturePath = input.fixturePath ?? DEFAULT_FIXTURE;
   const historyRepositoryPath = getIdeaLabHistoryPath();
   const labHistoryRecordCountBefore = labHistoryRecordCount();
   const runId = `ilab_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
@@ -45,7 +43,16 @@ export async function runIdeaLabDirections(
   });
   if (!gated.ok) return gated.run;
 
+  const companyId = input.companyId?.trim();
+  const fixturePath = input.fixturePath;
+  if (!companyId && !fixturePath) {
+    throw new Error(
+      "runIdeaLabDirections: companyId or fixturePath is required (no silent default brand)"
+    );
+  }
+
   const loaded = await loadAndParseIdeaLabFixture({
+    companyId: companyId || "ad-hoc",
     fixturePath,
     runId,
     runStarted,
@@ -62,7 +69,7 @@ export async function runIdeaLabDirections(
     selectedTopicContext: gated.value.selectedTopicContext,
     marketingFocus: gated.value.marketingFocus,
     selectedCandidateId: input.selectedCandidateId,
-    fixturePath,
+    fixturePath: loaded.value.fixturePath,
     hash: loaded.value.hash,
     historyRepositoryPath,
     runId,

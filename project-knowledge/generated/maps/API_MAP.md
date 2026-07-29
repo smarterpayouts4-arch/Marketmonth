@@ -9,6 +9,7 @@
 | /api/brain/content-directions | `src/app/api/brain/content-directions/route.ts` |
 | /api/brain/content/production | `src/app/api/brain/content/production/route.ts` |
 | /api/brain/session | `src/app/api/brain/session/route.ts` |
+| /api/brain/topic-candidates | `src/app/api/brain/topic-candidates/route.ts` |
 | /api/brain/topic-generation | `src/app/api/brain/topic-generation/route.ts` |
 | /api/dev/brain/idea-lab/generate | `src/app/api/dev/brain/idea-lab/generate/route.ts` |
 | /api/dev/brain/idea-lab/runs | `src/app/api/dev/brain/idea-lab/runs/route.ts` |

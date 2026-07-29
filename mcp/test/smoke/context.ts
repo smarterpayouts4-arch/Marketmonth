@@ -79,3 +79,74 @@ export async function checkReadProjectDoc(client: Client): Promise<void> {
   if (docEnv.status !== "complete") fail("mm_read_project_doc currentState failed");
   console.log("ok mm_read_project_doc");
 }
+
+export async function checkListProjectDocs(client: Client): Promise<void> {
+  const listed = await client.callTool({
+    name: "mm_list_project_docs",
+    arguments: {},
+  });
+  const env = parseEnvelope(toolText(listed));
+  if (env.status !== "complete") fail("mm_list_project_docs failed");
+  const data = env.data as { documents?: { documentId: string }[]; count?: number };
+  if (!data?.documents?.length || !data.count) fail("mm_list_project_docs empty");
+  if (!data.documents.some((d) => d.documentId === "discoveryCsvQuality")) {
+    fail("mm_list_project_docs missing discoveryCsvQuality");
+  }
+  console.log(`ok mm_list_project_docs (${data.count})`);
+}
+
+export async function checkAgentBootstrap(client: Client): Promise<void> {
+  const boot = await client.callTool({
+    name: "mm_get_agent_bootstrap",
+    arguments: {},
+  });
+  const env = parseEnvelope(toolText(boot));
+  if (env.status !== "complete") fail(`mm_get_agent_bootstrap failed: ${env.error}`);
+  const data = env.data as { bootstrap?: { requiredFirstReads?: string[] } };
+  if (!data?.bootstrap?.requiredFirstReads?.includes("AGENTS.md")) {
+    fail("agent-bootstrap missing requiredFirstReads");
+  }
+  console.log("ok mm_get_agent_bootstrap");
+}
+
+export async function checkFindProjectDoc(client: Client): Promise<void> {
+  const found = await client.callTool({
+    name: "mm_find_project_doc",
+    arguments: { query: "content brain", limit: 5 },
+  });
+  const env = parseEnvelope(toolText(found));
+  if (env.status !== "complete") fail(`mm_find_project_doc failed: ${env.error}`);
+  const data = env.data as { matches?: { documentId: string }[]; count?: number };
+  if (!data?.matches?.length) fail("mm_find_project_doc empty for content brain");
+  if (
+    !data.matches.some(
+      (m) =>
+        m.documentId === "contentBrain" || m.documentId === "contentBrainFeature"
+    )
+  ) {
+    fail("mm_find_project_doc missed contentBrain* ids");
+  }
+  console.log(`ok mm_find_project_doc (${data.count})`);
+}
+
+export async function checkReadProjectDocUnknown(client: Client): Promise<void> {
+  const bad = await client.callTool({
+    name: "mm_read_project_doc",
+    arguments: { documentId: "adr0004_does_not_exist" },
+  });
+  const env = parseEnvelope(toolText(bad));
+  if (env.status !== "failed" || env.error !== "DOCUMENT_NOT_REGISTERED") {
+    fail("expected DOCUMENT_NOT_REGISTERED for unknown id");
+  }
+  const data = env.data as {
+    availableAlternatives?: string[];
+    recommendedAction?: string;
+  };
+  if (!data?.availableAlternatives?.length) {
+    fail("DOCUMENT_NOT_REGISTERED missing availableAlternatives");
+  }
+  if (!data.recommendedAction?.includes("mm_list_project_docs")) {
+    fail("DOCUMENT_NOT_REGISTERED missing recommendedAction");
+  }
+  console.log("ok mm_read_project_doc structured unknown-id error");
+}

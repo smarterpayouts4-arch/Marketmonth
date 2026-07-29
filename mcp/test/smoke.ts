@@ -5,8 +5,12 @@
  * Network discovery tools are not exercised live here.
  */
 import {
+  checkAgentBootstrap,
+  checkFindProjectDoc,
+  checkListProjectDocs,
   checkProductOverview,
   checkReadProjectDoc,
+  checkReadProjectDocUnknown,
   checkRouteInventory,
   checkSeoStatus,
   checkStageForRequest,
@@ -20,6 +24,7 @@ import {
   checkUrlPolicyNegatives,
 } from "./smoke/security.js";
 import { testAllowlistDrift } from "./smoke/allowlist-drift.js";
+import { testNavDrift } from "./smoke/nav-drift.js";
 
 async function main() {
   const client = await connectSmokeClient();
@@ -29,6 +34,10 @@ async function main() {
   await checkRouteInventory(client);
   await checkStageForRequest(client);
   await checkReadProjectDoc(client);
+  await checkListProjectDocs(client);
+  await checkAgentBootstrap(client);
+  await checkFindProjectDoc(client);
+  await checkReadProjectDocUnknown(client);
   await checkSeoStatus(client);
   await checkReadProjectDocRejectsTraversal(client);
 
@@ -37,6 +46,7 @@ async function main() {
   await checkResolveProjectDoc();
   await checkDocsRegistryRejectsEnv();
   await testAllowlistDrift();
+  await testNavDrift();
 
   const brain = await client.callTool({
     name: "mm_read_project_doc",

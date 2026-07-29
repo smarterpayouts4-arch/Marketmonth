@@ -152,6 +152,10 @@ const generatedPairs = [
     installed: path.join(repoRoot, '.cursor', 'rules', 'agent-prompt-router.mdc'),
   },
   {
+    template: path.join(apsRoot, 'adapters', 'cursor', 'agent-bootstrap.mdc'),
+    installed: path.join(repoRoot, '.cursor', 'rules', 'agent-bootstrap.mdc'),
+  },
+  {
     template: path.join(apsRoot, 'adapters', 'cursor', 'skills', 'aps-router', 'SKILL.md'),
     installed: path.join(repoRoot, '.cursor', 'skills', 'aps-router', 'SKILL.md'),
   },

@@ -1,16 +1,10 @@
-import * as cheerio from "cheerio";
+import { mainContentText } from "@/lib/discovery/html-clean";
 
 import type { CollectedPage } from "./types";
 
 const NAV_TIMEOUT_MS = 15_000;
 const RENDER_WAIT_MS = 1_200;
 const TOTAL_BUDGET_MS = 25_000;
-
-function visibleText(html: string): string {
-  const $ = cheerio.load(html);
-  $("script, style, noscript, svg, iframe").remove();
-  return $("body").text().replace(/\s+/g, " ").trim();
-}
 
 type Closable = { close: () => Promise<unknown> };
 
@@ -130,7 +124,7 @@ export async function fetchRenderedPage(input: {
       pageType: input.pageType,
       title: title || undefined,
       html,
-      text: visibleText(html),
+      text: mainContentText(html),
       collectionMethod: "playwright",
       status: response?.status() ?? 200,
     };

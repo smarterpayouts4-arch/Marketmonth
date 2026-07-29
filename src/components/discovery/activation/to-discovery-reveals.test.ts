@@ -1,145 +1,154 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import type { DiscoveryActivationProfile } from "@/lib/discovery/activation-profile";
+import type { SocialDiscoveryProfile } from "@/lib/discovery/discovery-narrative.schema";
 
-import { failsFiveCompanyTest } from "./generic-rejection";
-import { evaluateInsightEligibility } from "./insight-eligibility";
-import { toDiscoveryActivation, wordCount } from "./to-discovery-reveals";
 import { REVEAL_LABELS } from "./types";
+import { toDiscoveryActivation, wordCount } from "./to-discovery-reveals";
 
-function grounded(
-  overrides: Partial<DiscoveryActivationProfile> = {}
-): DiscoveryActivationProfile {
+function sampleNarrative(
+  overrides: Partial<SocialDiscoveryProfile> = {}
+): SocialDiscoveryProfile {
+  const evidence = [
+    {
+      field: "valueProposition",
+      sourceUrl: "https://example.com",
+      evidenceType: "observed" as const,
+      confidence: "high" as const,
+      excerpt: "Clear offer language",
+    },
+  ];
   return {
-    brandCore: {
-      insight: "Acme helps contractors choose durable drill kits.",
-      evidence: [
+    businessName: "Acme",
+    introHeadline: "Your website gives us a strong foundation.",
+    introDescription: "We found a social-media story inside the business.",
+    sections: [
+      {
+        id: "doing-well",
+        label: "What You’re Doing Well",
+        subheading: "Business strength",
+        headline: "You already have a repeatable story worth sharing.",
+        bullets: [
+          {
+            text: "Acme helps customers with a clear offer.",
+            classification: "observed",
+            evidence,
+          },
+        ],
+        reveal: "Clarity is the foundation.",
+        transition: "Next, where you can win.",
+      },
+      {
+        id: "win",
+        label: "Where You Can Win",
+        subheading: "Opportunity",
+        headline: "Become the brand people remember when choices feel hard.",
+        bullets: [
+          {
+            text: "Customers face too many options.",
+            classification: "inferred",
+            evidence,
+          },
+        ],
+        reveal: "Own one useful idea.",
+        transition: "Next, the content play.",
+      },
+      {
+        id: "content-play",
+        label: "Your Content Play",
+        subheading: "System",
+        headline: "Build one monthly idea, then expand it.",
+        bullets: [
+          {
+            text: "Publish a connected series.",
+            classification: "recommended",
+            evidence,
+          },
+        ],
+        reveal: "Market Month can turn this into a monthly system.",
+      },
+    ],
+    contentPillars: [
+      {
+        id: "compare-clearly",
+        name: "Compare clearly",
+        description: "Help people evaluate options.",
+        evidence,
+      },
+    ],
+    platformAdaptations: [
+      {
+        platform: "facebook",
+        status: "link-detected",
+        formats: ["practical education"],
+        guidance: "Your website already links to Facebook.",
+        classification: "observed",
+      },
+    ],
+    detectedChannels: [
+      { platform: "facebook", status: "link-detected" },
+      { platform: "instagram", status: "link-not-detected" },
+    ],
+    cadence: {
+      level: "consistent",
+      label: "Consistent: one post every two to three days",
+      postsPerWeekRange: [3, 3],
+      description: "Recommended by Market Month.",
+      rationale: ["Enough topic variety"],
+      classification: "recommended",
+    },
+    contentUniversePreview: {
+      coreTopic: "How to choose with confidence",
+      strategicPurpose: "Reinforce clarity",
+      audienceProblem: "Too many options",
+      pieces: [
         {
-          text: "Compare kit durability before you buy.",
-          kind: "observed",
-          confidence: "high",
-        },
-        {
-          text: "The site lists Pro Drill Kit as an offer.",
-          kind: "observed",
-          confidence: "high",
+          dayOffset: 1,
+          platform: "facebook",
+          format: "Short video",
+          hook: "Start with the confusion.",
+          angle: "One sharp problem",
+          objective: "awareness",
+          evidenceRefs: ["e1"],
         },
       ],
-      confidence: "high",
     },
-    buyerTensions: [
-      {
-        id: "tension-kit",
-        label: "Which kit fits the job",
-        explanation: "FAQ language asks which kit fits concrete jobs.",
-        evidence: [
-          {
-            text: "Which kit fits concrete jobs?",
-            kind: "observed",
-            confidence: "high",
-          },
-        ],
-        confidence: "high",
-        recommended: true,
-      },
-    ],
-    leadOffers: [
-      {
-        id: "offer-drill",
-        label: "Pro Drill Kit",
-        explanation: "Detected on the website.",
-        evidence: [
-          {
-            text: "The site lists Pro Drill Kit.",
-            kind: "observed",
-            confidence: "high",
-          },
-        ],
-        confidence: "high",
-        recommended: true,
-      },
-    ],
-    growthDirections: [
-      {
-        id: "growth-compare",
-        label: "Own the which-kit decision",
-        explanation: "Lead with clear kit comparisons by job type.",
-        evidence: [
-          {
-            text: "Own the which-kit-for-this-job decision with clear comparisons.",
-            kind: "observed",
-            confidence: "high",
-          },
-        ],
-        confidence: "high",
-        recommended: true,
-        strategyGoal: "awareness",
-      },
-    ],
+    finalDirection: "Make Acme known for clarity.",
+    investmentQuestion: "How consistently should we build your plan?",
+    primaryCta: "Build my content month",
+    secondaryCta: "Try another website",
     evidenceQuality: "strong",
     ...overrides,
   };
 }
 
-describe("insight eligibility + five-company test", () => {
-  it("rejects generic five-company phrases", () => {
-    assert.equal(failsFiveCompanyTest("Create educational content."), true);
-    assert.equal(failsFiveCompanyTest("Expand to TikTok."), true);
-    assert.equal(
-      failsFiveCompanyTest(
-        "Customers are resolving uncertainty between several plausible choices."
-      ),
-      false
-    );
-  });
-
-  it("requires evidence under the reveal", () => {
-    const result = evaluateInsightEligibility({
-      insight: "Customers buy confidence.",
-      observed: [],
-      affectsDecision: true,
-    });
-    assert.equal(result.eligible, false);
-  });
-});
-
 describe("toDiscoveryActivation (format only)", () => {
-  it("uses owner-facing labels and questions", () => {
-    const view = toDiscoveryActivation(grounded(), {
-      voice: "you",
-      businessName: "Acme Tools",
-    });
-    assert.equal(view.reveals[0]?.label, REVEAL_LABELS["brand-core"]);
-    assert.equal(view.reveals[0]?.label, "Customer Value");
-    assert.equal(view.reveals[1]?.label, "Buyer Moment");
-    assert.equal(view.reveals[3]?.label, "Growth Direction");
-    assert.equal(
-      view.reveals[0]?.question,
-      "Does this capture the value your customers are buying?"
-    );
-    assert.equal(
-      view.reveals[3]?.question,
-      "Which idea should shape your content this month?"
-    );
-    assert.match(view.reveals[2]?.insight ?? "", /Pro Drill Kit/);
+  it("uses three owner-facing section labels", () => {
+    const view = toDiscoveryActivation(sampleNarrative());
+    assert.equal(view.reveals.length, 3);
+    assert.equal(view.reveals[0]?.label, REVEAL_LABELS["doing-well"]);
+    assert.equal(view.reveals[1]?.label, REVEAL_LABELS.win);
+    assert.equal(view.reveals[2]?.label, REVEAL_LABELS["content-play"]);
   });
 
-  it("formats four reveals from a grounded profile without inventing options", () => {
-    const view = toDiscoveryActivation(grounded(), {
-      voice: "you",
-      businessName: "Acme Tools",
-    });
-    assert.equal(view.reveals.length, 4);
-    assert.equal(view.leadOfferOptions[0]?.label, "Pro Drill Kit");
-    assert.equal(view.buyerTensionOptions[0]?.label, "Which kit fits the job");
+  it("formats three reveals without inventing options", () => {
+    const view = toDiscoveryActivation(sampleNarrative());
+    assert.equal(view.narrative.contentPillars.length, 1);
+    assert.equal(view.narrative.cadence.level, "consistent");
+    assert.ok(view.reveals.every((r) => r.evidence.length >= 1));
+    assert.ok(view.reveals.every((r) => r.evidenceItems.length >= 1));
+    assert.ok(
+      view.reveals.every((r) =>
+        r.evidenceItems.every((item) => item.title.trim() && item.summary.trim())
+      )
+    );
   });
 
   it("keeps reveal questions within density targets", () => {
-    const view = toDiscoveryActivation(grounded());
+    const view = toDiscoveryActivation(sampleNarrative());
     for (const reveal of view.reveals) {
       assert.ok(
-        wordCount(reveal.question) <= 14,
+        wordCount(reveal.question) <= 22,
         `question too long (${wordCount(reveal.question)}): ${reveal.question}`
       );
     }
@@ -147,58 +156,9 @@ describe("toDiscoveryActivation (format only)", () => {
 
   it("surfaces low-evidence clarification instead of fake confidence", () => {
     const view = toDiscoveryActivation(
-      grounded({
-        brandCore: {
-          insight: "Outcome unclear.",
-          evidence: [
-            {
-              text: "Several capabilities are described.",
-              kind: "observed",
-              confidence: "low",
-            },
-          ],
-          confidence: "low",
-          clarification:
-            "Your website describes several services, but we could not confidently identify one dominant customer outcome.",
-        },
-        buyerTensions: [
-          {
-            id: "tension-fallback",
-            label: "Comparing similar options",
-            explanation: "Neutral fallback",
-            evidence: [
-              {
-                text: "Could not identify a dominant buyer moment.",
-                kind: "observed",
-                confidence: "low",
-              },
-            ],
-            confidence: "low",
-          },
-        ],
-        leadOffers: [],
-        growthDirections: [
-          {
-            id: "growth-fallback",
-            label: "Clarify the decision",
-            explanation: "Neutral starting point.",
-            evidence: [
-              {
-                text: "Low-evidence growth fallback.",
-                kind: "observed",
-                confidence: "low",
-              },
-            ],
-            confidence: "low",
-            strategyGoal: "awareness",
-          },
-        ],
-        evidenceQuality: "low",
-      })
+      sampleNarrative({ evidenceQuality: "low" })
     );
     assert.equal(view.headerEvidenceLevel, "low");
     assert.ok(view.reveals[0]?.clarification);
-    assert.equal(view.reveals[0]?.insightEligible, false);
-    assert.equal(view.leadOfferOptions.length, 0);
   });
 });

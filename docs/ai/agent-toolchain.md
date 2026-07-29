@@ -3,9 +3,10 @@ title: MarketMonth Agent Toolchain
 status: active
 authority: supporting
 owner: engineering
-last_verified: 2026-07-24
+last_verified: 2026-07-28
 related_paths:
   - docs/ai/mcp.md
+  - docs/ai/cursor-context-and-indexing-policy.md
   - mcp/**
   - project-knowledge/**
 ---
@@ -112,8 +113,20 @@ YouTube remains a **research input**. Asset generation stays in MarketMonth surf
 
 | MCP server | Config |
 |------------|--------|
-| `marketmonth-discovery` | Workspace `.cursor/mcp.json` → local stdio |
+| `marketmonth-discovery` | Workspace `.cursor/mcp.json` → local stdio (copy from `.cursor/mcp.json.example`; gitignored local file) |
 | `MCP_DOCKER` | User Cursor MCP → Docker gateway; use profile `marketmonth_development` |
 | `repobrain` / `perplexity` | User-level; advisory |
 
-See also: [`mcp.md`](./mcp.md).
+### Indexing and context
+
+| Need | Action |
+|------|--------|
+| What Cursor should index / ignore | [`cursor-context-and-indexing-policy.md`](./cursor-context-and-indexing-policy.md) |
+| Structure validation (Group A) | `npm run validate:cursor-context` |
+| Semantic retrieval (Group B) | After Settings → Indexing → **Sync**, fresh-chat checklist in the audit doc + playbook |
+| Auditor / readiness spine | [`agent-auditor-playbook.md`](./agent-auditor-playbook.md) |
+| Repo MCP health | `npm run mcp:doctor` (Cursor catalog not observable) |
+| Workflow required reads (formatter) | `npm run agent:preflight -- --workflow <id>` — not a fifth authority |
+| External Docs | Official libs only — never re-add local Project Knowledge as Cursor Docs |
+
+See also: [`mcp.md`](./mcp.md), [`cursor-context-and-indexing-audit.md`](./cursor-context-and-indexing-audit.md).

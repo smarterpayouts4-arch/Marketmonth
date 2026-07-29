@@ -90,6 +90,10 @@
       "sourceFile": "src/app/api/brain/session/route.ts"
     },
     {
+      "path": "/api/brain/topic-candidates",
+      "sourceFile": "src/app/api/brain/topic-candidates/route.ts"
+    },
+    {
       "path": "/api/brain/topic-generation",
       "sourceFile": "src/app/api/brain/topic-generation/route.ts"
     },
@@ -222,6 +226,12 @@
       "classification": "undocumented"
     },
     {
+      "variable": "MM_PROVENANCE",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
       "variable": "MM_VOICE_MODEL",
       "inEnvExample": false,
       "referencedInSrc": true,
@@ -307,12 +317,15 @@
       "src/engine/discovery",
       "src/components/discovery",
       "src/components/landing",
-      "src/seo"
+      "src/seo",
+      "src/brain/content",
+      "src/app/dev/brain/idea-lab",
+      "src/lib/auth"
     ]
   },
   "contentFingerprints": {
     "routes": "cfd0f9170564bd51",
-    "apis": "5d91f358cbf59ba7",
-    "env": "8ee7dc76a60bc8ea"
+    "apis": "883b0df2f7a62ee0",
+    "env": "771d9e8c017dfd9b"
   }
 }

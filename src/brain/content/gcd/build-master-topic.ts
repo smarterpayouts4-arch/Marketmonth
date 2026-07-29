@@ -1,16 +1,29 @@
-import { buildAutomaticMaster } from "../providers/deterministic-provider";
 import { evaluateSafety, mergeSafety } from "../safety";
 import type { SelectedTopicContext } from "../direction-writing-context";
 import { evaluateAndExpandUserTopic } from "../expand-user-topic";
 import { shortHash } from "../evidence";
 import type { DirectionProviderId } from "../providers/types";
-import type { ContentBrainContext, GenerateContentDirectionsInput, MasterTopic } from "../types";
+import type {
+  ContentBrainContext,
+  GenerateContentDirectionsInput,
+  MasterTopic,
+} from "../types";
+import type { MarketingFocus } from "../marketing-focus";
 import { blockedProvenance } from "./provenance";
 import type { GenerateContentDirectionsBundle } from "./types";
+import { buildAutomaticMasterFromCandidates } from "./build-automatic-master-from-candidates";
 
 export type MasterTopicStageResult =
   | { ok: true; masterTopic: MasterTopic; extraWarnings: string[] }
   | { ok: false; bundle: GenerateContentDirectionsBundle };
+
+function confidenceFromEvidenceCount(
+  n: number
+): MasterTopic["confidence"] {
+  if (n >= 3) return "high";
+  if (n >= 1) return "medium";
+  return "low";
+}
 
 export function buildMasterTopicStage(input: {
   context: ContentBrainContext;
@@ -20,6 +33,7 @@ export function buildMasterTopicStage(input: {
   lockedMasterTopic?: string;
   topic?: string;
   recentMasterTopics?: string[];
+  marketingFocus?: MarketingFocus;
   warnings: string[];
 }): MasterTopicStageResult {
   const {
@@ -30,6 +44,7 @@ export function buildMasterTopicStage(input: {
     lockedMasterTopic,
     topic,
     recentMasterTopics,
+    marketingFocus,
     warnings,
   } = input;
 
@@ -70,10 +85,23 @@ export function buildMasterTopicStage(input: {
       };
     }
 
-    const evidenceIds = Object.keys(context.evidenceById).slice(0, 3);
+    // Prefer the selected candidate's own evidence — never arbitrary map keys.
+    const fromCandidate = (selectedTopicContext.evidenceIds ?? []).filter(
+      (id) => Boolean(context.evidenceById[id] || id)
+    );
+    const evidenceIds =
+      fromCandidate.length > 0
+        ? fromCandidate
+        : Object.keys(context.evidenceById).slice(0, 3);
+
     return {
       ok: true,
-      extraWarnings: [],
+      extraWarnings:
+        fromCandidate.length === 0
+          ? [
+              "Selected topic had no evidenceIds; fell back to context evidence sample.",
+            ]
+          : [],
       masterTopic: {
         id: `master_${shortHash(`selected|${exact}|${context.contextVersion}`)}`,
         source: "manual",
@@ -84,7 +112,7 @@ export function buildMasterTopicStage(input: {
           `Directions under the selected topic for ${context.brandName}`,
         rationale: `Owner-selected master topic (structured handoff). Six directions explore this umbrella without replacing it.`,
         evidenceIds,
-        confidence: "high",
+        confidence: confidenceFromEvidenceCount(evidenceIds.length),
         safety,
       },
     };
@@ -151,7 +179,30 @@ export function buildMasterTopicStage(input: {
     };
   }
 
-  const masterTopic = buildAutomaticMaster(context, recentMasterTopics ?? []);
+  const masterTopic = buildAutomaticMasterFromCandidates(
+    context,
+    recentMasterTopics ?? [],
+    marketingFocus ?? "product_education"
+  );
+  if (!masterTopic) {
+    return {
+      ok: false,
+      bundle: {
+        result: {
+          status: "blocked",
+          brandName: context.brandName,
+          mode,
+          missingFields: ["topic"],
+          warnings: [
+            ...warnings,
+            "Not enough grounded subjects to auto-generate a master topic. Add catalog evidence or enter a topic manually.",
+          ],
+          variations: [],
+        },
+        provenance: blockedProvenance(providerId, null),
+      },
+    };
+  }
   if (masterTopic.safety.status === "blocked") {
     return {
       ok: false,

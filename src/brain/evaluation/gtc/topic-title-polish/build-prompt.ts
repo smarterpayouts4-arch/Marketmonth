@@ -48,11 +48,11 @@ export function approvedAliasesForCandidate(
   }
   // Common grounded rephrasings only when label contains the stem
   if (/\bsearch\b/i.test(label)) {
-    aliases.add("finding supplement information");
-    aliases.add("supplement search");
+    aliases.add("finding information");
+    aliases.add("product search");
   }
   if (/\bcompar/i.test(label) && candidate.subjectKind !== "audience_problem") {
-    aliases.add("comparing supplements");
+    aliases.add("comparing options");
   }
   return [...aliases].filter(Boolean);
 }

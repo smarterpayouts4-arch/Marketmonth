@@ -68,6 +68,7 @@ export async function generateContentDirectionsBundle(
     lockedMasterTopic: input.lockedMasterTopic,
     topic: input.topic,
     recentMasterTopics: input.recentMasterTopics,
+    marketingFocus: input.marketingFocus ?? selectedTopicContext?.objective,
     warnings,
   });
   if (!masterStage.ok) {

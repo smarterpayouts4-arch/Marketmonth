@@ -6,7 +6,7 @@ import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { generateContentDirections } from "@/brain/content/generate-content-directions";
-import { buildAutomaticMaster } from "@/brain/content/providers/deterministic-provider";
+import { buildAutomaticMasterFromCandidates } from "@/brain/content/gcd/build-automatic-master-from-candidates";
 import { parseFixtureCsv } from "@/brain/content/repository/parse-fixture-csv";
 import {
   buildTopicGenerationRecord,
@@ -31,7 +31,7 @@ function readSrc(name: string): string {
 
 const FIXTURE_CSV = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
-  "../../../../data/fixtures/zynava-discovery.csv"
+  "../../../../data/companies/zynava.com/approved.csv"
 );
 
 function loadFixtureContext(): ContentBrainContext {
@@ -70,11 +70,15 @@ describe("Marketing Topic Phase 2 session + history", () => {
 
   it("4: Auto-generate prefers a non-repetitive master from recent history", () => {
     const context = loadFixtureContext();
-    const first = buildAutomaticMaster(context, []);
-    const second = buildAutomaticMaster(context, [first.punchline]);
+    const first = buildAutomaticMasterFromCandidates(context, []);
+    const second = first
+      ? buildAutomaticMasterFromCandidates(context, [first.punchline])
+      : null;
+    assert.ok(first, "expected grounded automatic master from fixture");
+    assert.ok(second, "expected alternate master when recent history excludes first");
     assert.notEqual(
-      second.punchline.trim().toLowerCase(),
-      first.punchline.trim().toLowerCase()
+      second!.punchline.trim().toLowerCase(),
+      first!.punchline.trim().toLowerCase()
     );
   });
 

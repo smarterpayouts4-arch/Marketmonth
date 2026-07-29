@@ -20,6 +20,8 @@ export type RunIdeaLabInput = {
   marketingFocus?: unknown;
   selectedCandidateId?: string;
   selectedTopicContext?: SelectedTopicContext;
+  /** Required unless fixturePath is set — never silently defaults to another brand. */
+  companyId?: string;
   fixturePath?: string;
 };
 

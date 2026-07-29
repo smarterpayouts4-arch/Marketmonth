@@ -1,4 +1,4 @@
-import type { DiscoveryActivationProfile } from "@/lib/discovery/activation-profile";
+import type { SocialDiscoveryProfile } from "@/lib/discovery/discovery-narrative.schema";
 import type {
   BrandProfileView,
   DetectedLocationView,
@@ -19,7 +19,7 @@ export async function postAnalyzeStream(
       brandProfileId: string;
       pageCount?: number;
       detectedLocations?: DetectedLocationView[];
-      activationProfile?: DiscoveryActivationProfile;
+      discoveryNarrative?: SocialDiscoveryProfile;
     }) => void;
   }
 ) {
@@ -60,6 +60,8 @@ export async function postStrategy(input: {
       growthThesis: input.answers.growthThesis,
       buyerTension: input.answers.buyerTension,
       brandCoreEdit: input.answers.brandCoreEdit,
+      cadenceLevel: input.answers.cadenceLevel,
+      channels: input.answers.channels,
     }),
   });
 

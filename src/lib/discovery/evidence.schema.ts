@@ -49,6 +49,22 @@ export const crawlMetaSchema = z.object({
       })
     )
     .optional(),
+  /** URLs that failed after retries. */
+  failedUrls: z.array(z.string()).optional(),
+  fetchAttempts: z.number().int().nonnegative().optional(),
+  extraPageFailures: z
+    .array(z.object({ url: z.string(), reason: z.string() }))
+    .optional(),
+  /** Discovery CSV schema version expected at materialize time. */
+  csvSchemaVersion: z.string().optional(),
+  acceptanceGate: z
+    .object({
+      status: z.string(),
+      accepted: z.boolean(),
+      approvalReady: z.boolean(),
+      failures: z.array(z.string()).optional(),
+    })
+    .optional(),
 });
 
 export type CrawlMeta = z.infer<typeof crawlMetaSchema>;

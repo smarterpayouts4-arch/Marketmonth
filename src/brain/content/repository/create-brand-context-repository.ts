@@ -1,4 +1,3 @@
-import { DEFAULT_FIXTURE_RELATIVE } from "./default-fixture";
 import { createFixtureBrandContextRepository } from "./fixture-repository";
 import type {
   BrandContextRepository,
@@ -9,14 +8,18 @@ import type {
  * Composition helper for API routes.
  * Live source is a stub until Neon-backed context is wired.
  * Fixture CSV is an ingest helper into Brand Core — not doctrine.
+ * Callers must pass fixturePath; there is no silent default brand.
  */
 export function createBrandContextRepository(
   options: CreateBrandContextRepositoryOptions
 ): BrandContextRepository {
   if (options.source === "fixture") {
-    return createFixtureBrandContextRepository(
-      options.fixturePath ?? DEFAULT_FIXTURE_RELATIVE
-    );
+    if (!options.fixturePath?.trim()) {
+      throw new Error(
+        "createBrandContextRepository: fixturePath is required (no silent default brand)"
+      );
+    }
+    return createFixtureBrandContextRepository(options.fixturePath);
   }
 
   // Live path deferred — return empty loader rather than inventing data.

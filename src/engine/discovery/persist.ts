@@ -4,26 +4,21 @@
  */
 export type {
   PersistedAnalysis,
-  PersistedDiscovery,
   PersistedStrategy,
 } from "./persist/types";
 
 export {
   findCachedAnalysis,
   getBrandProfileById,
+  insertProfileVersion,
   persistAnalysis,
+  publishBrandProfile,
 } from "./persist/db-analysis";
 
 export { persistStrategy } from "./persist/db-strategy";
 
 export {
   memoryGetEvidence,
-  memoryPersist,
   memoryPersistAnalysis,
   memoryPersistStrategy,
 } from "./persist/memory";
-
-export {
-  findCachedDiscovery,
-  persistDiscovery,
-} from "./persist/legacy";

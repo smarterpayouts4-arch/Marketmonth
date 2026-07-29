@@ -1,8 +1,8 @@
 import * as cheerio from "cheerio";
 
-import type { CatalogProduct, CrawlCorpus } from "./types";
+import type { IndexedProduct, CrawlCorpus } from "./types";
 
-export type { CatalogProduct };
+export type { IndexedProduct };
 
 const MAX_PRODUCTS = 24;
 const MAX_NAME = 120;
@@ -41,7 +41,7 @@ function priceFromOffers(offers: unknown): string | undefined {
 }
 
 function pushProduct(
-  out: CatalogProduct[],
+  out: IndexedProduct[],
   seen: Set<string>,
   nameRaw: string,
   sourceUrl: string,
@@ -58,7 +58,7 @@ function pushProduct(
 function walkJsonLd(
   node: unknown,
   sourceUrl: string,
-  out: CatalogProduct[],
+  out: IndexedProduct[],
   seen: Set<string>
 ) {
   if (!node || typeof node !== "object") return;
@@ -112,8 +112,8 @@ function walkJsonLd(
 }
 
 /** Structured Product / Offer names from JSON-LD on crawled pages. */
-export function extractCatalogProducts(corpus: CrawlCorpus): CatalogProduct[] {
-  const out: CatalogProduct[] = [];
+export function extractIndexedProducts(corpus: CrawlCorpus): IndexedProduct[] {
+  const out: IndexedProduct[] = [];
   const seen = new Set<string>();
   const pages = [
     ...corpus.pages.filter((p) => p.kind === "products"),

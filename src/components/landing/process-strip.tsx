@@ -2,16 +2,20 @@ import { Reveal } from "@/components/landing/reveal";
 
 const steps = [
   {
-    title: "Discovery",
-    body: "Tell me about your business.",
+    title: "Learn",
+    body: "Tell us about your business — we read your website.",
   },
   {
-    title: "Content",
-    body: "Here are the things your business should be talking about.",
+    title: "Strategize",
+    body: "See what your business should lead with this month.",
   },
   {
-    title: "Strategy",
-    body: "Organize those ideas into a real monthly plan.",
+    title: "Build",
+    body: "Watch strong ideas become platform-ready content.",
+  },
+  {
+    title: "Review",
+    body: "Approve the plan before anything goes out.",
   },
 ] as const;
 
@@ -33,10 +37,10 @@ export function ProcessStrip() {
           </div>
         </Reveal>
 
-        <div className="relative mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
+        <div className="relative mt-12 grid gap-10 sm:grid-cols-2 md:gap-8 lg:grid-cols-4">
           <div
             aria-hidden
-            className="pointer-events-none absolute top-[1.15rem] right-[12%] left-[12%] hidden h-px bg-border md:block"
+            className="pointer-events-none absolute top-[1.15rem] right-[10%] left-[10%] hidden h-px bg-border lg:block"
           />
           {steps.map((step, index) => (
             <Reveal key={step.title}>

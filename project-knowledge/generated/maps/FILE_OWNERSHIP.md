@@ -52,6 +52,7 @@ From `ownership-rules.json` matched against `src/**`.
 - `src/app/api/brain/content-directions/route.ts` → **content-brain**
 - `src/app/api/brain/content/production/route.ts` → **content-brain**
 - `src/app/api/brain/session/route.ts` → **content-brain**
+- `src/app/api/brain/topic-candidates/route.ts` → **content-brain**
 - `src/app/api/brain/topic-generation/route.ts` → **content-brain**
 - `src/app/api/discovery/analyze/route.ts` → **discovery-engine**
 - `src/app/api/discovery/strategy/route.ts` → **discovery-engine**
@@ -116,4 +117,3 @@ From `ownership-rules.json` matched against `src/**`.
 - `src/brain/channels/youtube-short/specialist.ts` → **content-brain**
 - `src/brain/channels/youtube-short/to-studio-package.ts` → **content-brain**
 - `src/brain/channels/youtube-short/validate-package.ts` → **content-brain**
-- `src/brain/connected-system.test.ts` → **content-brain**

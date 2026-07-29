@@ -34,8 +34,8 @@ export const seoSummarySchema = z.object({
   contentOpportunities: z.array(z.string()),
 });
 
-/** Named catalog/SKU from structured discovery — never merge into products[]. */
-export const catalogProductSchema = z.object({
+/** Third-party product the company indexes/compares — never inventory. */
+export const indexedProductSchema = z.object({
   name: z.string().min(1),
   price: z.string().optional(),
   sourceUrl: z.string().min(1),
@@ -46,14 +46,14 @@ export const brandProfileSchema = z.object({
   website: z.string(),
   description: z.string(),
   audience: z.string(),
-  /** Platform capabilities / offer positioning — not catalog SKUs. */
+  /** Platform capabilities / offer positioning — not indexed third-party products. */
   products: z.array(z.string()),
   services: z.array(z.string()),
   /**
-   * First-class catalog / SKU signals. Must not be flattened into products[].
+   * Indexed/compared third-party products. Must not be flattened into products[].
    * Default empty when absent (legacy profiles).
    */
-  catalogProducts: z.array(catalogProductSchema).default([]),
+  indexedProducts: z.array(indexedProductSchema).default([]),
   valueProposition: z.string(),
   brandVoice: z.string(),
   marketingOpportunity: z.string(),
@@ -61,6 +61,11 @@ export const brandProfileSchema = z.object({
   socialProfiles: z.array(socialProfileSchema),
   seoSummary: seoSummarySchema,
   competitors: z.array(competitorSchema),
+  /**
+   * Fields produced by LLM/rules overlay rather than observed crawl text.
+   * Downstream must not use these as observed option labels or citable evidence.
+   */
+  derivedFieldNames: z.array(z.string()).optional(),
 });
 
 export type BrandProfile = z.infer<typeof brandProfileSchema>;
@@ -88,11 +93,13 @@ export const strategyIntentSchema = z.object({
   promoteFirst: z.string().min(1),
   reach: z.enum(["local", "national", "online_broad"]),
   targetLocation: z.string().min(1).max(160).optional(),
-  /** Grounded growth option id (dynamic string from activation profile). */
+  /** Grounded growth option id (derived from content pillar investment). */
   growthDirection: z.string().min(1).max(80).optional(),
   growthThesis: z.string().min(1).max(400).optional(),
   buyerTension: z.string().min(1).max(200).optional(),
   brandCoreEdit: z.string().min(1).max(280).optional(),
+  cadenceLevel: z.enum(["light", "consistent", "active", "daily"]).optional(),
+  channels: z.array(z.string().min(1)).optional(),
 });
 
 export type StrategyIntent = z.infer<typeof strategyIntentSchema>;

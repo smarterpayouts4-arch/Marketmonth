@@ -28,7 +28,7 @@ function baseContext(
     audience: "People comparing dietary supplements before buying",
     products: ["comparison search", "label filters"],
     services: [],
-    catalogProducts: [],
+    indexedProducts: [],
     marketingOpportunity: "Help shoppers compare supplements with clarity",
     contentOpportunities: [
       "What to check on a supplement label before buying",
@@ -191,7 +191,7 @@ describe("industry research expander (not a topic generator)", () => {
 
   it("merge preserves brand products/catalog and appends opportunities only", () => {
     const ctx = baseContext({
-      catalogProducts: [{ name: "Zynava Clarity Pack" }],
+      indexedProducts: [{ name: "Zynava Clarity Pack" }],
     });
     const ev = toEvidence({
       recordType: "evidence",
@@ -210,7 +210,7 @@ describe("industry research expander (not a topic generator)", () => {
       evidenceById: { [ev.id]: ev },
       opportunityTexts: ["Which vitamin C forms should shoppers compare?"],
     });
-    assert.deepEqual(merged.catalogProducts, ctx.catalogProducts);
+    assert.deepEqual(merged.indexedProducts, ctx.indexedProducts);
     assert.deepEqual(merged.products, ctx.products);
     assert.ok(
       merged.contentOpportunities.includes(

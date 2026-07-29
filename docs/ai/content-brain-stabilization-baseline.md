@@ -45,7 +45,7 @@ Captured before contract/workflow changes. Audit artifact only — not brittle C
 
 | Path | Role |
 | ---- | ---- |
-| `data/fixtures/zynava-discovery.csv` | Dev Brand Core ingest fixture |
+| `data/companies/zynava.com/approved.csv` | Dev Brand Core ingest fixture |
 | `data/fixtures/stabilization/*.json` | Stabilization scenario inputs |
 | `data/fixtures/stabilization/baseline-outputs/` | Audit-only deterministic outputs |
 | `data/runtime/` | Gitignored Idea Lab runs / history |

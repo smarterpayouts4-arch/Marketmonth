@@ -1,13 +1,8 @@
-import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
-
-import { defaultFixtureAbsolute } from "@/brain/content/repository/default-fixture";
-import { parseFixtureCsv } from "@/brain/content/repository/parse-fixture-csv";
 import {
   parseMarketingFocus,
   type MarketingFocus,
 } from "@/brain/content/marketing-focus";
-import { getBrandCore } from "@/brain/core";
+import { getBrandCoreRepository } from "@/brain/core";
 import {
   mergeResearchImportIntoContext,
   parseCompanyResearchImport,
@@ -15,6 +10,7 @@ import {
 } from "@/brain/evaluation/company-research-assist";
 import { generateTopicCandidates } from "@/brain/evaluation/generate-topic-candidates";
 import { polishTopicCandidateTitles } from "@/brain/evaluation/gtc/topic-title-polish";
+import { preferBrandCoreForTopics } from "@/brain/evaluation/prefer-brand-core-context";
 import {
   expandIndustryResearchWithPerplexity,
   mergeIndustryResearchIntoContext,
@@ -27,13 +23,6 @@ import {
   type IdeaLabCandidatesResult,
 } from "@/brain/evaluation/topic-candidate-types";
 import { createTopicGenerationRepository } from "@/brain/store/create-topic-generation-repository";
-import {
-  assertCsvRectangular,
-  CsvShapeError,
-  parseCsv,
-} from "@/lib/dev/parse-csv";
-
-const DEFAULT_FIXTURE = defaultFixtureAbsolute();
 
 const RECENT_LIMIT = 12;
 
@@ -43,23 +32,15 @@ function assertDev(): void {
   }
 }
 
-function fixtureHash(text: string): string {
-  return createHash("sha256").update(text).digest("hex").slice(0, 16);
-}
-
 export type RunIdeaLabCandidatesInput = {
   marketingFocus?: unknown;
+  /** Company whose approved artifact feeds Brand Core (required unless fixturePath). */
+  companyId?: string;
+  /**
+   * Optional absolute CSV path for BrandCoreRepository adapter (tests).
+   */
   fixturePath?: string;
-  /**
-   * When true (or INDUSTRY_RESEARCH_LIVE=true), call Perplexity once to expand
-   * typed industry opportunities into context before the sole generator runs.
-   * Default false — CSV industry evidence still feeds the pipeline.
-   */
   liveIndustryResearch?: boolean;
-  /**
-   * Optional validated company-research-import-v1 for this run only.
-   * Never writes history or CSV.
-   */
   researchImport?: CompanyResearchImportV1 | string;
 };
 
@@ -73,9 +54,8 @@ export type RunIdeaLabCandidatesOutcome =
     };
 
 /**
- * Idea Lab stage 1: ranked topic candidates from CSV + objective.
- * Never generates six directions and never writes Lab topic history
- * (complete, limited, or insufficient_context).
+ * Idea Lab stage 1: ranked topic candidates via BrandCoreRepository only.
+ * Never generates six directions and never writes Lab topic history.
  */
 export async function runIdeaLabTopicCandidates(
   input: RunIdeaLabCandidatesInput = {}
@@ -100,46 +80,37 @@ export async function runIdeaLabTopicCandidates(
     };
   }
   const objective: MarketingFocus = focusParsed.value;
-
-  const fixturePath = input.fixturePath ?? DEFAULT_FIXTURE;
   const historyRepositoryPath = getIdeaLabHistoryPath();
 
-  let text: string;
+  const companyId = input.companyId?.trim();
+  if (!companyId && !input.fixturePath) {
+    return {
+      ok: false,
+      code: "FIXTURE_ERROR",
+      error:
+        "companyId or fixturePath is required (no silent default brand)",
+      status: 400,
+    };
+  }
+
+  let loaded;
   try {
-    text = readFileSync(fixturePath, "utf8");
+    loaded = getBrandCoreRepository().getBrandCore(
+      companyId || "ad-hoc",
+      input.fixturePath ? { absolutePath: input.fixturePath } : undefined
+    );
   } catch (err) {
     return {
       ok: false,
       code: "FIXTURE_ERROR",
-      error: err instanceof Error ? err.message : "CSV load failed",
+      error: err instanceof Error ? err.message : "Brand Core load failed",
       status: 500,
     };
   }
 
-  const hash = fixtureHash(text);
-
-  try {
-    const grid = parseCsv(text);
-    assertCsvRectangular(grid);
-  } catch (err) {
-    const msg =
-      err instanceof CsvShapeError
-        ? err.message
-        : err instanceof Error
-          ? err.message
-          : "CSV shape invalid";
-    return { ok: false, code: "CSV_INVALID", error: msg, status: 400 };
-  }
-
-  let context = parseFixtureCsv(text);
-  if (!context) {
-    return {
-      ok: false,
-      code: "FIXTURE_ERROR",
-      error: "parseFixtureCsv returned null",
-      status: 400,
-    };
-  }
+  let context = loaded.context;
+  const { brandCore, identity } = loaded;
+  const hash = identity.brand_core_hash;
 
   if (input.researchImport !== undefined) {
     const parsed =
@@ -167,7 +138,7 @@ export async function runIdeaLabTopicCandidates(
     industryOpportunities = expansion.opportunities;
   }
 
-  const { identity } = getBrandCore(context.domain, { context });
+  const topicContext = preferBrandCoreForTopics(context, brandCore);
 
   let recentTitles: string[] = [];
   try {
@@ -188,18 +159,16 @@ export async function runIdeaLabTopicCandidates(
     recentTitles = [];
   }
 
-  // Novelty uses Lab history titles only — generation itself never writes history
   const deterministic = generateTopicCandidates({
-    context,
+    context: topicContext,
     objective,
     recentTitles,
     industryOpportunities,
   });
 
-  // Optional expression polish only — never changes meaning, scores, or ranks
   const polished = await polishTopicCandidateTitles({
     generation: deterministic,
-    context,
+    context: topicContext,
     objective,
   });
   const generation = polished.generation;

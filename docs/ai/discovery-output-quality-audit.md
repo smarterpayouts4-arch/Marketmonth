@@ -9,7 +9,7 @@ related_paths:
   - src/lib/dev/discovery-csv-rows.ts
   - src/brain/content/repository/parse-fixture-csv.ts
   - src/brain/core/compile-brand-core.ts
-  - data/fixtures/zynava-discovery.csv
+  - data/companies/zynava.com/approved.csv
   - scripts/refresh-zynava-fixture-from-site.ts
 ---
 
@@ -17,7 +17,7 @@ related_paths:
 
 **Date:** 2026-07-28  
 **Mode:** Investigation + design only for Part 2 findings below.  
-**No-change confirmation:** This audit report was produced from read-only source inspection. It did not modify application code, `data/fixtures/zynava-discovery.csv`, Brand Core runtime outputs, or Neon data at the time of writing. (Later Phase A–C implementation is separate.)
+**No-change confirmation:** This audit report was produced from read-only source inspection. It did not modify application code, `data/companies/zynava.com/approved.csv`, Brand Core runtime outputs, or Neon data at the time of writing. (Later Phase A–C implementation is separate.)
 
 **Labels used:** Implemented / Partial / Mocked / Absent / Unsafe
 

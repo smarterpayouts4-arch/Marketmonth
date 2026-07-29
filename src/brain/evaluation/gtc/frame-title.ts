@@ -36,15 +36,12 @@ export function frameTitle(
   let title = "";
   let angle = seed.frameHint;
 
-  // Help/Helping leads — clean educational fallback for any frameHint
+  // Help/Helping leads — rewrite to an educational frame from the subject itself
   if (
     /^(Help|Helping)\b/i.test(seed.subject.trim()) ||
     /^(Help|Helping)\b/i.test(shortSub)
   ) {
-    title = clamp(
-      "What shoppers should compare across supplement brands",
-      90
-    );
+    title = clamp(`What to compare when evaluating ${shortSub}`, 90);
     if (!isMetaInstructionalPhrase(title) && !isGenericDecisionTitle(title)) {
       return {
         title,
@@ -68,7 +65,7 @@ export function frameTitle(
       angle = "Platform introduction";
       break;
     case "category_intro":
-      title = `What ${shortSub} shoppers should know first`;
+      title = `What ${shortSub} buyers should know first`;
       angle = "Category introduction";
       break;
     case "audience_recognition":
@@ -88,7 +85,7 @@ export function frameTitle(
       angle = "Clarity value";
       break;
     case "capability_value":
-      title = `Why ${shortSub} matters for ${brand} shoppers`;
+      title = `Why ${shortSub} matters for ${brand} buyers`;
       angle = "Capability value";
       break;
     case "uncertainty_reduction":
@@ -97,13 +94,7 @@ export function frameTitle(
       break;
     case "product_guide":
       if (seed.sourceType === "industry_research") {
-        title =
-          seed.subjectType === "ingredient_or_component"
-            ? clamp(
-                `What shoppers should compare on ${shortSub} supplement labels`,
-                90
-              )
-            : clamp(`What to know about ${shortSub} before you buy`, 90);
+        title = clamp(`What to know about ${shortSub} before you buy`, 90);
       } else {
         title =
           seed.subjectType === "product_category"
@@ -116,7 +107,7 @@ export function frameTitle(
       title =
         seed.sourceType === "industry_research"
           ? clamp(
-              `How shoppers evaluate ${shortSub} before buying (category education)`,
+              `How buyers evaluate ${shortSub} before choosing (category education)`,
               90
             )
           : `How to evaluate ${shortSub} before buying`;
@@ -129,23 +120,15 @@ export function frameTitle(
         title = clamp(
           subject.replace(
             /^Comparing\b/i,
-            "What shoppers should compare when looking at"
+            "What buyers should compare when looking at"
           ),
-          90
-        );
-      } else if (/price per serving/i.test(subject)) {
-        title = clamp(
-          "Why price per serving matters when comparing supplements",
           90
         );
       } else if (
         /^(Help|Helping)\b/i.test(subject) ||
-        /shoppers compare/i.test(subject)
+        /shoppers compare|buyers compare/i.test(subject)
       ) {
-        title = clamp(
-          "What shoppers should compare across supplement brands",
-          90
-        );
+        title = clamp(`What to compare when evaluating ${shortSub}`, 90);
       } else {
         title = clamp(`What to know about ${shortSub}`, 90);
       }

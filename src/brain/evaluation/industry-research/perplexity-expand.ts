@@ -116,17 +116,14 @@ export async function expandIndustryResearchWithPerplexity(
 }
 
 function inferCategoryAnchor(context: ContentBrainContext): string {
-  const blob = [
-    context.description ?? "",
-    context.marketingOpportunity ?? "",
-    ...context.contentOpportunities,
-  ]
-    .join(" ")
-    .toLowerCase();
-  if (blob.includes("supplement")) return "dietary supplements";
-  if (blob.includes("vitamin")) return "vitamins";
-  if (blob.includes("comparison")) return "product comparison shopping";
-  return context.domain || "consumer shopping";
+  const fromCatalog = context.indexedProducts?.[0]?.name?.trim();
+  if (fromCatalog) return fromCatalog;
+  const fromProducts = context.products?.[0]?.trim();
+  if (fromProducts) return fromProducts;
+  if (context.marketingOpportunity?.trim()) {
+    return context.marketingOpportunity.trim().slice(0, 80);
+  }
+  return context.domain || "the category";
 }
 
 function parseQuestionList(summary: string): string[] {

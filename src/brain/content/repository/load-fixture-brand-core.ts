@@ -5,17 +5,16 @@ import type { BrandCoreIdentity } from "@/brain/core/brand-core-identity";
 import { resolveBrandCoreIdentity } from "@/brain/core/brand-core-identity";
 import type { BrandCore } from "@/brain/core/brand-core.schema";
 import { compileBrandCore } from "@/brain/core/compile-brand-core";
+import { parseCompanyCsv } from "@/lib/company-profile/csv-contract";
+import { projectionToBrainContext } from "@/lib/company-profile/to-brain-context";
+import { recordProvenance } from "@/lib/provenance";
 
 import type { ContentBrainContext } from "../types";
-import {
-  DEFAULT_FIXTURE_RELATIVE,
-  defaultFixtureAbsolute,
-} from "./default-fixture";
-import { parseFixtureCsv } from "./parse-fixture-csv";
 
 /**
- * Single fixture → context → Brand Core compile path.
- * Product and Idea Lab should prefer this over ad-hoc read/parse/compile.
+ * Single artifact → context → Brand Core compile path for Branch B.
+ * Uses the shared CSV v2 contract, so topics see exactly the projection
+ * the discovery card sees. Callers must pass a path — no silent default brand.
  */
 export type FixtureBrandCoreLoad = {
   text: string;
@@ -25,30 +24,55 @@ export type FixtureBrandCoreLoad = {
   fixturePath: string;
 };
 
-export function loadFixtureBrandCore(options?: {
+/** True when the path is a managed company artifact rather than an ad-hoc file. */
+function isArtifactPath(absolutePath: string): boolean {
+  const normalized = absolutePath.replace(/\\/g, "/");
+  return /\/data\/companies\/[^/]+\/(draft|approved)\.csv$/.test(normalized);
+}
+
+export function loadFixtureBrandCore(options: {
   fixturePath?: string;
   absolutePath?: string;
 }): FixtureBrandCoreLoad {
+  if (!options.absolutePath && !options.fixturePath) {
+    throw new Error(
+      "loadFixtureBrandCore: fixturePath or absolutePath is required (no silent default brand)"
+    );
+  }
+
   const absolutePath =
-    options?.absolutePath ??
-    (options?.fixturePath
-      ? path.isAbsolute(options.fixturePath)
-        ? options.fixturePath
-        : path.join(process.cwd(), options.fixturePath)
-      : defaultFixtureAbsolute());
+    options.absolutePath ??
+    (path.isAbsolute(options.fixturePath!)
+      ? options.fixturePath!
+      : path.join(process.cwd(), options.fixturePath!));
 
   const text = readFileSync(absolutePath, "utf8");
-  const context = parseFixtureCsv(text);
-  if (!context) {
-    throw new Error(`Failed to parse brand fixture at ${absolutePath}`);
-  }
+  const projection = parseCompanyCsv(text);
+  const context = projectionToBrainContext(projection, text);
   const brandCore = compileBrandCore(context);
   const identity = resolveBrandCoreIdentity(brandCore);
+
+  recordProvenance({
+    branch: "branch-b",
+    step: "loadFixtureBrandCore",
+    companyId: projection.companyId || context.domain || "unknown",
+    source: isArtifactPath(absolutePath)
+      ? absolutePath.endsWith("draft.csv")
+        ? "artifact:draft"
+        : "artifact:approved"
+      : "disk:direct",
+    artifactHash: projection.artifactHash,
+    detail: {
+      absolutePath,
+      evidenceCount: Object.keys(context.evidenceById ?? {}).length,
+    },
+  });
+
   return {
     text,
     context,
     brandCore,
     identity,
-    fixturePath: options?.fixturePath ?? DEFAULT_FIXTURE_RELATIVE,
+    fixturePath: options.fixturePath ?? absolutePath,
   };
 }

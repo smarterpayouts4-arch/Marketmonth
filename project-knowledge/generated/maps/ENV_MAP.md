@@ -21,6 +21,7 @@ Names only from `.env.example` + static `process.env.*` in `src/`. Never reads `
 | MM_IMAGE_MODEL | No | Yes | undocumented |
 | MM_IMAGE_PROVIDER | No | Yes | undocumented |
 | MM_IMAGE_RENDER | No | Yes | undocumented |
+| MM_PROVENANCE | No | Yes | undocumented |
 | MM_VOICE_MODEL | No | Yes | undocumented |
 | MM_VOICE_PROVIDER | No | Yes | undocumented |
 | NEXT_PUBLIC_APP_URL | Yes | Yes | client-exposed |

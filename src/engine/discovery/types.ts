@@ -23,6 +23,12 @@ export type CrawlCorpus = {
   normalizedUrl: string;
   origin: string;
   pages: CrawledPage[];
+  /** URLs that failed fetch after retries (telemetry). */
+  failedUrls?: string[];
+  /** Total fetch attempts used (success + fail). */
+  fetchAttempts?: number;
+  /** ensureExtraPages failures (url → reason). */
+  extraPageFailures?: Array<{ url: string; reason: string }>;
 };
 
 export type FaqEntry = {
@@ -31,7 +37,7 @@ export type FaqEntry = {
   sourceUrl?: string;
 };
 
-export type CatalogProduct = {
+export type IndexedProduct = {
   name: string;
   price?: string;
   sourceUrl: string;
@@ -73,7 +79,7 @@ export type BrandSignals = {
   /** Structured FAQ entries from JSON-LD / accordion extraction. */
   faqs: FaqEntry[];
   /** Product / Offer names from JSON-LD (catalog, not platform capabilities). */
-  catalogProducts: CatalogProduct[];
+  indexedProducts: IndexedProduct[];
   /** Organization / LocalBusiness JSON-LD facts when present. */
   organization?: OrganizationFacts | null;
   bodySample: string;

@@ -2,8 +2,10 @@
 
 import {
   FileText,
+  Globe,
   MessageSquareText,
   Share2,
+  Sparkles,
   Target,
   Users,
 } from "lucide-react";
@@ -55,19 +57,39 @@ export function DiscoveryForm({
   onAnalyze,
 }: DiscoveryFormProps) {
   return (
-    <div className="flex h-full min-h-0 flex-col pb-3">
+    <div className="flex h-full min-h-0 flex-col pb-2">
+      <div className="mb-5 flex shrink-0 items-start gap-3.5">
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground sm:size-12">
+          <Sparkles className="size-5" aria-hidden />
+        </span>
+        <div className="min-w-0 pt-0.5">
+          <p className="font-serif text-[1.35rem] font-semibold tracking-[-0.02em] text-foreground sm:text-[1.5rem]">
+            Discover Your Content Universe
+          </p>
+          <p className="mt-1 text-sm leading-snug text-text-secondary sm:text-[15px]">
+            Start with your website. We&apos;ll uncover what matters.
+          </p>
+        </div>
+      </div>
+
       <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center">
-        <Input
-          value={url}
-          onChange={(event) => onUrlChange(event.target.value)}
-          aria-label="Website URL"
-          placeholder="your website"
-          disabled={disabled}
-          className="h-12 flex-1 bg-background text-[15px] placeholder:text-text-muted/80"
-          onKeyDown={(event) => {
-            if (event.key === "Enter") onAnalyze();
-          }}
-        />
+        <div className="relative min-w-0 flex-1">
+          <Globe
+            className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-text-muted"
+            aria-hidden
+          />
+          <Input
+            value={url}
+            onChange={(event) => onUrlChange(event.target.value)}
+            aria-label="Website URL"
+            placeholder="yourwebsite.com"
+            disabled={disabled}
+            className="h-12 rounded-xl bg-background pl-10 text-[15px] placeholder:text-text-muted/80"
+            onKeyDown={(event) => {
+              if (event.key === "Enter") onAnalyze();
+            }}
+          />
+        </div>
         <button
           type="button"
           onClick={onAnalyze}
@@ -81,24 +103,24 @@ export function DiscoveryForm({
         </button>
       </div>
 
-      <div className="mt-6">
-        <p className="text-[13px] font-semibold tracking-wide text-text-muted uppercase">
+      <div className="mt-5 min-h-0 flex-1 overflow-y-auto">
+        <p className="text-[12px] font-semibold tracking-wide text-text-muted uppercase">
           What we look for
         </p>
-        <ul className="mt-4 space-y-5">
+        <ul className="mt-3 space-y-3.5">
           {lookFors.map((item) => (
             <li
               key={item.title}
-              className="grid grid-cols-[2rem_1fr] items-start gap-3"
+              className="grid grid-cols-[2rem_1fr] items-start gap-2.5"
             >
-              <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <item.icon className="size-4" aria-hidden />
+              <span className="flex size-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <item.icon className="size-3.5" aria-hidden />
               </span>
-              <div className="min-w-0 space-y-1">
-                <p className="text-[14px] font-semibold leading-snug text-foreground">
+              <div className="min-w-0 space-y-0.5">
+                <p className="text-[13px] font-semibold leading-snug text-foreground">
                   {item.title}
                 </p>
-                <p className="text-[14px] leading-[1.45] text-text-secondary">
+                <p className="text-[13px] leading-[1.4] text-text-secondary">
                   {item.body}
                 </p>
               </div>

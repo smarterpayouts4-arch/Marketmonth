@@ -1,9 +1,6 @@
 import type { StrategyPreviewView } from "@/components/discovery/types";
 
-import type {
-  DiscoveryInvestments,
-  StrategyInfluence,
-} from "./types";
+import type { DiscoveryInvestments } from "./types";
 
 /**
  * Apply stored investments onto a strategy preview so user choices have
@@ -13,82 +10,51 @@ export function applyInvestmentsToStrategy(
   strategy: StrategyPreviewView,
   investments: DiscoveryInvestments
 ): StrategyPreviewView {
+  const pillarLabel = investments.pillarId?.replace(/-/g, " ") ?? "core topic";
   const thesisLine =
-    investments.growthThesis?.trim() ||
-    strategy.strategyThesis.headline;
-  const lead =
-    investments.leadOffer?.trim() || strategy.leadOffer.name;
-  const tension = investments.buyerTension?.trim();
-  const core = investments.brandCoreEdit?.trim();
-  const goal = investments.strategyGoal;
+    investments.contentDirectionEdit?.trim() ||
+    `Lead with ${pillarLabel} across a connected monthly content series.`;
+  const lead = pillarLabel.slice(0, 80) || strategy.leadOffer.name;
+
+  const postingRhythm =
+    investments.cadenceLevel === "light"
+      ? "2 organic posts per week across selected channels"
+      : investments.cadenceLevel === "active"
+        ? "4–5 organic posts per week across selected channels"
+        : investments.cadenceLevel === "daily"
+          ? "5–7 organic posts per week across selected channels"
+          : "3 organic posts per week (one every two to three days)";
+
+  const channelRoles =
+    investments.channels.length > 0
+      ? investments.channels.slice(0, 3).map((channel, i) => {
+          const prior = strategy.channelRoles[i]?.evidenceIds ?? [];
+          return {
+            channel,
+            role:
+              strategy.channelRoles[i]?.role ??
+              "Organic storytelling and offer awareness",
+            status: "detected" as const,
+            rationale: `Selected during discovery investment for ${channel}.`,
+            evidenceIds: prior.length > 0 ? prior : ["discovery-investment"],
+          };
+        })
+      : strategy.channelRoles;
 
   const pillars = strategy.contentPillars.map((pillar, index) => {
-    if (index === 0) {
-      if (goal === "awareness") {
-        return {
-          ...pillar,
-          name: "Clarify the choice",
-          purpose:
-            "Help buyers move from confusion to a confident decision among similar options.",
-          exampleTopics: [
-            "Why this option vs that one",
-            "What changes with your constraints",
-            ...(pillar.exampleTopics.slice(0, 1) || []),
-          ].slice(0, 3),
-        };
-      }
-      if (goal === "leads") {
-        return {
-          ...pillar,
-          name: "Fit to the person",
-          purpose:
-            "Show how recommendations change with goals, restrictions, and preferences.",
-          exampleTopics: [
-            "When constraints change the shortlist",
-            "Goals that reshape the recommendation",
-            ...(pillar.exampleTopics.slice(0, 1) || []),
-          ].slice(0, 3),
-        };
-      }
-      if (goal === "sales") {
-        return {
-          ...pillar,
-          name: "Value with context",
-          purpose:
-            "Teach suitability and price together—not price as the only signal.",
-          exampleTopics: [
-            "When a higher price is worth it",
-            "Comparing cost against fit",
-            ...(pillar.exampleTopics.slice(0, 1) || []),
-          ].slice(0, 3),
-        };
-      }
-    }
-    if (index === 1 && tension) {
+    if (index === 0 && investments.pillarId) {
       return {
         ...pillar,
-        purpose: `Address buyers facing: ${tension}.`,
-        exampleTopics: [tension, ...pillar.exampleTopics].slice(0, 3),
+        name: pillarLabel
+          .split(" ")
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" ")
+          .slice(0, 40),
+        purpose: `Anchor the month on ${pillarLabel}.`,
       };
     }
     return pillar;
   });
-
-  const audienceMessage = tension
-    ? {
-        ...strategy.audienceMessage,
-        message: `For people dealing with “${tension}”: ${
-          core || strategy.audienceMessage.message
-        }`.slice(0, 220),
-      }
-    : core
-      ? {
-          ...strategy.audienceMessage,
-          message: core.slice(0, 220),
-        }
-      : strategy.audienceMessage;
-
-  const angles = buildContentAngles(goal, tension, lead, thesisLine);
 
   return {
     ...strategy,
@@ -97,121 +63,32 @@ export function applyInvestmentsToStrategy(
       headline: thesisLine.slice(0, 160),
       explanation: [
         thesisLine,
-        core ? `Positioning locked as: ${core}` : null,
-        tension ? `Primary buyer tension: ${tension}.` : null,
-        `Lead offer: ${lead}.`,
+        `Cadence: ${investments.cadenceLevel}.`,
+        investments.channels.length
+          ? `Channels: ${investments.channels.join(", ")}.`
+          : null,
       ]
         .filter(Boolean)
         .join(" ")
         .slice(0, 400),
       rationale:
-        "Shaped by your discovery investments (direction, offer, and optional refinements).",
+        "Shaped by your discovery investments (cadence, channels, and content direction).",
     },
     leadOffer: {
       ...strategy.leadOffer,
       name: lead.slice(0, 80),
-      reason: `Selected as the first thing to promote from discovery investments.`,
+      reason: "Selected as the first theme to promote from discovery investments.",
     },
-    audienceMessage,
     contentPillars: pillars,
+    channelRoles,
+    postingRhythm,
     firstCampaign: {
       ...strategy.firstCampaign,
-      premise: `${thesisLine} Series leads with ${lead}.${
-        tension ? ` Tension: ${tension}.` : ""
-      }`.slice(0, 280),
-      formats: angles.map((angle, i) => ({
-        format: strategy.firstCampaign.formats[i]?.format ?? "Short video",
-        angle,
-      })),
+      premise: `${thesisLine} Series follows a ${investments.cadenceLevel} rhythm.`.slice(
+        0,
+        280
+      ),
     },
     keyOpportunity: thesisLine.slice(0, 220),
   };
-}
-
-function buildContentAngles(
-  goal: DiscoveryInvestments["strategyGoal"],
-  tension: string | undefined,
-  lead: string,
-  thesis: string
-): string[] {
-  const base =
-    goal === "awareness"
-      ? [
-          "Side-by-side: why this option fits",
-          "One misconception that blocks a clear choice",
-          "Decision checklist before you buy",
-        ]
-      : goal === "leads"
-        ? [
-            "How preferences change the shortlist",
-            "Same category, different constraints",
-            "Walkthrough: goals → recommendation",
-          ]
-        : goal === "sales"
-          ? [
-              "Suitability vs price—what actually matters",
-              "When paying more is rational",
-              "Compare cost against the outcome you need",
-            ]
-          : [
-              thesis.slice(0, 80),
-              `Lead with ${lead}`,
-              "Deepen the relationship after the first win",
-            ];
-
-  if (tension) {
-    return [`For “${tension}”: lead with ${lead}`, ...base].slice(0, 5);
-  }
-  return base;
-}
-
-/** Debug/QA trace: which investment fields touch which outputs. */
-export function buildStrategyInfluence(
-  investments: DiscoveryInvestments
-): StrategyInfluence[] {
-  const rows: StrategyInfluence[] = [
-    {
-      investmentField: "growthDirection",
-      selectedValue: investments.growthDirection,
-      affectedOutputs: [
-        "strategyThesis.headline",
-        "strategyThesis.explanation",
-        "contentPillars[0]",
-        "firstCampaign.premise",
-        "firstCampaign.formats",
-        "keyOpportunity",
-      ],
-    },
-  ];
-
-  if (investments.leadOffer?.trim()) {
-    rows.push({
-      investmentField: "leadOffer",
-      selectedValue: investments.leadOffer,
-      affectedOutputs: ["leadOffer.name", "leadOffer.reason", "firstCampaign.premise"],
-    });
-  }
-  if (investments.buyerTension?.trim()) {
-    rows.push({
-      investmentField: "buyerTension",
-      selectedValue: investments.buyerTension,
-      affectedOutputs: [
-        "audienceMessage.message",
-        "contentPillars[1]",
-        "firstCampaign.formats",
-      ],
-    });
-  }
-  if (investments.brandCoreEdit?.trim()) {
-    rows.push({
-      investmentField: "brandCoreEdit",
-      selectedValue: investments.brandCoreEdit,
-      affectedOutputs: [
-        "audienceMessage.message",
-        "strategyThesis.explanation",
-      ],
-    });
-  }
-
-  return rows;
 }

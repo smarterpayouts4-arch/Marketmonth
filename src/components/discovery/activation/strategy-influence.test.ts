@@ -4,10 +4,7 @@ import { describe, it } from "node:test";
 import type { StrategyPreviewView } from "@/components/discovery/types";
 import { groundedOnlineMarketingStrategySchema } from "@/lib/discovery/strategy.schema";
 
-import {
-  applyInvestmentsToStrategy,
-  buildStrategyInfluence,
-} from "./strategy-influence";
+import { applyInvestmentsToStrategy } from "./strategy-influence";
 
 function baseStrategy(): StrategyPreviewView {
   return {
@@ -80,77 +77,42 @@ function baseStrategy(): StrategyPreviewView {
 }
 
 describe("strategy influence from DiscoveryInvestments", () => {
-  it("changes thesis, pillars, and angles from grounded investments", () => {
+  it("changes thesis, pillars, cadence, and channels from investments", () => {
     const next = applyInvestmentsToStrategy(baseStrategy(), {
-      growthDirection: "growth-fit",
-      growthThesis: "Show personal fit around Schedule Board.",
-      strategyGoal: "leads",
-      leadOffer: "Schedule Board",
-      buyerTension: "Coordinating appointments across locations",
-      brandCoreEdit: "Customers buy schedule clarity",
+      cadenceLevel: "consistent",
+      channels: ["facebook", "youtube"],
+      pillarId: "personalize-the-choice",
+      contentDirectionEdit: "Show personal fit around Schedule Board.",
     });
 
     assert.match(next.strategyThesis.headline, /personal fit/i);
-    assert.equal(next.leadOffer.name, "Schedule Board");
-    assert.match(
-      next.audienceMessage.message,
-      /Coordinating appointments across locations/
-    );
-    assert.match(next.audienceMessage.message, /schedule clarity/);
-    assert.equal(next.contentPillars[0]?.name, "Fit to the person");
-    assert.match(
-      next.contentPillars[1]?.purpose ?? "",
-      /Coordinating appointments/
-    );
-    assert.ok(next.firstCampaign.formats.length >= 3);
+    assert.match(next.leadOffer.name, /personalize/i);
+    assert.match(next.postingRhythm, /3 organic posts/i);
+    assert.equal(next.channelRoles.length, 2);
     assert.match(next.firstCampaign.premise, /personal fit/i);
-
-    const influence = buildStrategyInfluence({
-      growthDirection: "growth-fit",
-      growthThesis: "Show personal fit around Schedule Board.",
-      strategyGoal: "leads",
-      leadOffer: "Schedule Board",
-      buyerTension: "Coordinating appointments across locations",
-      brandCoreEdit: "Customers buy schedule clarity",
-    });
-    assert.ok(influence.some((row) => row.investmentField === "growthDirection"));
-    assert.ok(influence.some((row) => row.investmentField === "leadOffer"));
-    assert.ok(influence.some((row) => row.investmentField === "buyerTension"));
-    assert.ok(influence.some((row) => row.investmentField === "brandCoreEdit"));
   });
 
-  it("maps different strategy goals to different pillar names", () => {
-    const awareness = applyInvestmentsToStrategy(baseStrategy(), {
-      growthDirection: "growth-a",
-      growthThesis: "Clarify the decision for buyers.",
-      strategyGoal: "awareness",
+  it("maps different cadence levels to different posting rhythms", () => {
+    const light = applyInvestmentsToStrategy(baseStrategy(), {
+      cadenceLevel: "light",
+      channels: ["facebook"],
+      pillarId: "build-trust",
     });
-    const sales = applyInvestmentsToStrategy(baseStrategy(), {
-      growthDirection: "growth-b",
-      growthThesis: "Explain value in context.",
-      strategyGoal: "sales",
+    const active = applyInvestmentsToStrategy(baseStrategy(), {
+      cadenceLevel: "active",
+      channels: ["facebook"],
+      pillarId: "compare-clearly",
     });
-    assert.equal(awareness.contentPillars[0]?.name, "Clarify the choice");
-    assert.equal(sales.contentPillars[0]?.name, "Value with context");
-    assert.notEqual(
-      awareness.strategyThesis.headline,
-      sales.strategyThesis.headline
-    );
+    assert.match(light.postingRhythm, /2 organic posts/i);
+    assert.match(active.postingRhythm, /4–5 organic posts/i);
   });
 
   it("keeps investment-mutated strategy valid for create-plan schema", () => {
-    const longTension = "x".repeat(200);
-    const longCore = "y".repeat(280);
-    const longLead =
-      "Lead offer with a deliberately long promotional name for the first campaign";
-
     const next = applyInvestmentsToStrategy(baseStrategy(), {
-      growthDirection: "growth-fit",
-      growthThesis: "Show personal fit for the lead offer.",
-      strategyGoal: "leads",
-      leadOffer: longLead,
-      buyerTension: longTension,
-      brandCoreEdit: longCore,
+      cadenceLevel: "consistent",
+      channels: ["linkedin", "youtube"],
+      pillarId: "decode-the-decision",
+      contentDirectionEdit: "y".repeat(280),
     });
 
     const parsed = groundedOnlineMarketingStrategySchema.safeParse(next);

@@ -61,13 +61,13 @@ function extractNoteField(notes: string | undefined, key: string): string {
 }
 
 function guessCategoryAnchor(context: ContentBrainContext): string {
-  const blob = [
-    context.description ?? "",
-    ...context.contentOpportunities,
-  ]
-    .join(" ")
-    .toLowerCase();
-  if (blob.includes("supplement")) return "supplements";
-  if (blob.includes("vitamin")) return "vitamins";
-  return context.marketingOpportunity?.trim() || "shopping";
+  const fromCatalog = context.indexedProducts?.[0]?.name?.trim();
+  if (fromCatalog) return fromCatalog;
+  const fromProducts = context.products?.[0]?.trim();
+  if (fromProducts) return fromProducts;
+  return (
+    context.marketingOpportunity?.trim() ||
+    context.domain?.trim() ||
+    "the category"
+  );
 }

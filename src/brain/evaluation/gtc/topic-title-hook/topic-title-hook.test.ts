@@ -188,7 +188,7 @@ describe("topic-title-hook (Hooked Trigger v2)", () => {
     );
     assert.match(
       hooked.title,
-      /Price per serving can change which supplement looks cheaper/i
+      /Price per serving can change how two options compare/i
     );
   });
 

@@ -1,20 +1,34 @@
-/** UI-facing discovery activation models — presentation only; no engine imports. */
+/** UI-facing discovery narrative models — presentation only; no engine imports. */
 
 import type {
-  ActivationConfidence,
-  ActivationEvidence,
-  DiscoveryActivationProfile,
-  DiscoveryOption,
-} from "@/lib/discovery/activation-profile";
+  CadenceLevel,
+  DiscoveryClassification,
+  DiscoveryConfidence,
+  SocialDiscoveryProfile,
+} from "@/lib/discovery/discovery-narrative.schema";
 
-export type DiscoveryEvidenceKind = ActivationEvidence["kind"];
-export type DiscoveryEvidence = ActivationEvidence;
+export type DiscoveryEvidenceKind = DiscoveryClassification;
+export type DiscoveryEvidence = {
+  text: string;
+  kind: DiscoveryClassification;
+  confidence?: DiscoveryConfidence;
+  sourceUrl?: string;
+};
 
-export type DiscoveryRevealId =
-  | "brand-core"
-  | "buyer-tension"
-  | "lead-offer"
-  | "growth-opening";
+/** Compact accordion row shaped from a grounded section bullet. */
+export type DiscoveryEvidenceItem = {
+  id: string;
+  title: string;
+  summary: string;
+  detail: string;
+  supportingPoints: string[];
+  sourceLabel: string;
+  sourceUrl?: string;
+  tag?: string;
+  kind: DiscoveryClassification;
+};
+
+export type DiscoveryRevealId = "doing-well" | "win" | "content-play";
 
 export type DiscoveryReveal = {
   id: DiscoveryRevealId;
@@ -23,60 +37,35 @@ export type DiscoveryReveal = {
   insight: string;
   insightEligible: boolean;
   evidence: DiscoveryEvidence[];
+  /** Compact accordion rows (preferred UI). */
+  evidenceItems: DiscoveryEvidenceItem[];
   evidenceLevel: "strong" | "moderate" | "low";
   clarification?: string;
+  socialMeaning?: string;
+  reveal: string;
+  transition?: string;
+  /** Concise takeaway for the pale strip (interpretation, not raw evidence). */
+  takeaway?: string;
 };
 
-/** Dynamic growth option id from grounded activation profile. */
-export type GrowthDirectionId = string;
-
-export type GrowthDirectionOption = {
-  id: GrowthDirectionId;
-  title: string;
-  description: string;
-  recommended?: boolean;
-  confidence: ActivationConfidence;
-  evidence: DiscoveryEvidence[];
-  strategyGoal: "awareness" | "leads" | "sales" | "loyalty";
-  thesis: string;
-};
-
-export type ChoiceOption = {
-  id: string;
-  label: string;
-  explanation: string;
-  confidence: ActivationConfidence;
-  evidence: DiscoveryEvidence[];
-  recommended?: boolean;
-};
-
+/** Investment after all three strategic rewards are shown. */
 export type DiscoveryInvestments = {
-  brandCoreEdit?: string;
-  buyerTension?: string;
-  leadOffer?: string;
-  growthDirection: GrowthDirectionId;
-  growthThesis: string;
-  strategyGoal: "awareness" | "leads" | "sales" | "loyalty";
-};
-
-export type StrategyInfluence = {
-  investmentField: keyof DiscoveryInvestments;
-  selectedValue: string;
-  affectedOutputs: string[];
+  cadenceLevel: CadenceLevel;
+  channels: string[];
+  pillarId?: string;
+  contentDirectionEdit?: string;
 };
 
 export const REVEAL_ORDER: DiscoveryRevealId[] = [
-  "brand-core",
-  "buyer-tension",
-  "lead-offer",
-  "growth-opening",
+  "doing-well",
+  "win",
+  "content-play",
 ];
 
 export const REVEAL_LABELS: Record<DiscoveryRevealId, string> = {
-  "brand-core": "Customer Value",
-  "buyer-tension": "Buyer Moment",
-  "lead-offer": "Lead Offer",
-  "growth-opening": "Growth Direction",
+  "doing-well": "What You’re Doing Well",
+  win: "Where You Can Win",
+  "content-play": "Your Content Play",
 };
 
-export type { DiscoveryActivationProfile, DiscoveryOption };
+export type { SocialDiscoveryProfile, CadenceLevel };

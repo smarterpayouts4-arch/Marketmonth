@@ -27,6 +27,17 @@ export async function testAllowlistDrift(): Promise<void> {
     "ideaLabTopicStrategy" in PROJECT_DOCS,
     "ideaLabTopicStrategy must be allowlisted"
   );
+  assert.ok(
+    "discoveryCsvQuality" in PROJECT_DOCS,
+    "discoveryCsvQuality must be allowlisted"
+  );
+  assert.ok("adr0001" in PROJECT_DOCS, "adr0001 must be allowlisted");
+  assert.ok("adr0002" in PROJECT_DOCS, "adr0002 must be allowlisted");
+  assert.ok("adr0003" in PROJECT_DOCS, "adr0003 must be allowlisted");
+  assert.ok(
+    "agentBootstrap" in PROJECT_DOCS,
+    "agentBootstrap must be allowlisted"
+  );
 
   for (const [id, rel] of Object.entries(PROJECT_DOCS)) {
     assert.ok(!rel.includes(".."), `${id} path traversal`);

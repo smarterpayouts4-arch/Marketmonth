@@ -24,6 +24,8 @@ compatible_with:
   - review-security-and-privacy
 required_context:
   - PROJECT.md
+  - PRODUCT.md
+  - CURRENT_STATE.md
   - ARCHITECTURE.md
   - PROTECTED-AREAS.md
   - KNOWN-RISKS.md

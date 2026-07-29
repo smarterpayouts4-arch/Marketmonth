@@ -30,5 +30,11 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "Refrence folder", "reference-library", "mcp"]
+  "exclude": [
+    "node_modules",
+    "Refrence folder",
+    "reference-library",
+    "mcp",
+    "scripts/_tmp*"
+  ]
 }

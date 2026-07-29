@@ -19,6 +19,7 @@ export async function llmStrategy(input: {
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const completion = await client.chat.completions.create({
     model: process.env.OPENAI_DISCOVERY_MODEL || "gpt-5.4-nano",
+    temperature: 0,
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: STRATEGY_SYSTEM },

@@ -71,7 +71,7 @@ function allowedFactsFromContext(
   if (context.valueProposition) facts.push(context.valueProposition);
   if (context.audience) facts.push(context.audience);
   for (const p of context.products.slice(0, 6)) facts.push(p);
-  for (const c of (context.catalogProducts ?? []).slice(0, 4)) {
+  for (const c of (context.indexedProducts ?? []).slice(0, 4)) {
     facts.push(c.name);
   }
   for (const o of context.contentOpportunities.slice(0, 6)) facts.push(o);
@@ -157,7 +157,7 @@ export async function enrichSixDirectionHooks(
       audienceLabel:
         input.selectedTopicContext?.audience?.trim() ||
         input.context.audience?.trim() ||
-        "shoppers",
+        "buyers",
       originalHook: variation.punchline,
     };
 

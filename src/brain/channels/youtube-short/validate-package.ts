@@ -10,7 +10,8 @@ export type PackageValidation =
 
 const BANNED_PATTERNS = [
   /\bcure[sd]?\b/i,
-  /\bguaranteed?\b/i,
+  // Outcome claims only. Negations ("does not guarantee outcomes") must pass.
+  /(?<!not\s)(?<!does\snot\s)(?<!do\snot\s)(?<!cannot\s)(?<!can't\s)\bguaranteed?\s+(results?|outcomes?|roi|growth)\b/i,
   /\bwill (fix|eliminate|prevent)\b/i,
   /\bmiracle\b/i,
 ];

@@ -1,0 +1,69 @@
+{
+  "fixture": "data/companies/clearflow-plumbing/approved.csv",
+  "brandName": "ClearFlow Plumbing",
+  "subjectKinds": {
+    "catalog_product": 6,
+    "faq_topic": 4
+  },
+  "byObjective": {
+    "brand_awareness": {
+      "status": "insufficient_context",
+      "candidateCount": 0,
+      "titles": [],
+      "leaks": []
+    },
+    "value_proposition": {
+      "status": "insufficient_context",
+      "candidateCount": 0,
+      "titles": [],
+      "leaks": []
+    },
+    "product_education": {
+      "status": "success",
+      "completeness": "limited",
+      "candidateCount": 5,
+      "titles": [
+        "Why comparing slab leak detection gets more confusing the longer you shop",
+        "Why comparing garbage disposal replacement gets more confusing the longer you shop",
+        "Before comparing tankless water heater install, make one label check",
+        "emergency drain clearing can look straightforward—until you compare options carefully",
+        "Before comparing main line hydro jetting, make one label check"
+      ],
+      "leaks": []
+    },
+    "decision_support": {
+      "status": "insufficient_context",
+      "candidateCount": 0,
+      "titles": [],
+      "leaks": []
+    },
+    "trust_authority": {
+      "status": "success",
+      "completeness": "limited",
+      "candidateCount": 4,
+      "titles": [
+        "Before comparing Do you offer same-day emergency service?, make one label check",
+        "The Are your quotes flat-rate? label check that can change your comparison",
+        "The Do you install tankless water heaters? label check that can change your comparison",
+        "Why comparing areas do you serve? gets more confusing the longer you shop"
+      ],
+      "leaks": []
+    }
+  },
+  "totalLeaks": 0,
+  "measuredAt": "2026-07-29T02:43:36.301Z",
+  "discoveryContentOpportunities": [
+    "Tankless water heater install",
+    "Emergency drain clearing",
+    "Slab leak detection",
+    "Garbage disposal replacement",
+    "Main line hydro jetting",
+    "Fixture repair visit"
+  ],
+  "discoveryLeaks": [],
+  "findings": {
+    "brainPathCleanOnSanitizedCsv": true,
+    "discoveryInjectsIndustryLanguage": false,
+    "note": "No discovery injection detected for this catalog."
+  }
+}

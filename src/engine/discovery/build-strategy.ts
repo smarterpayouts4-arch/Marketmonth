@@ -59,17 +59,3 @@ export async function buildStrategyWithIntent(input: {
     return safeStrategy(input.brandProfile, input.intent, evidence);
   }
 }
-
-/** @deprecated use buildBrandProfile + buildStrategyWithIntent */
-export async function buildBrandProfileAndStrategy(args: ProfileArgs) {
-  const brandProfile = await buildBrandProfile(args);
-  return {
-    brandProfile,
-    strategyPreview: fallbackStrategy(brandProfile, {
-      goal: "awareness",
-      promoteFirst:
-        [...brandProfile.services, ...brandProfile.products][0] || "Core offer",
-      reach: "online_broad",
-    }),
-  };
-}

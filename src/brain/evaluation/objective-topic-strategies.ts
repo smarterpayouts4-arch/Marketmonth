@@ -157,6 +157,10 @@ export const buildTrustAuthoritySeeds: ObjectiveTopicStrategy = (
     seeds.push(seedFrom(s, "transparency", need));
     seeds.push(seedFrom(s, "method_limits", need));
   }
+  for (const s of ofKind(subjects, ["faq_topic"]).slice(0, 4)) {
+    seeds.push(seedFrom(s, "faq_education", need));
+    seeds.push(seedFrom(s, "transparency", need));
+  }
   for (const s of ofKind(subjects, ["brand_position"]).slice(0, 2)) {
     seeds.push(seedFrom(s, "credibility_position", need));
   }

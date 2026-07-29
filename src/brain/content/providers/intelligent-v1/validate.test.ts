@@ -16,7 +16,7 @@ import { validateIntelligentDirections } from "./validate";
 
 function loadZynavaSlice() {
   const text = readFileSync(
-    path.join(process.cwd(), "data/fixtures/zynava-discovery.csv"),
+    path.join(process.cwd(), "data/companies/zynava.com/approved.csv"),
     "utf8"
   );
   const context = parseFixtureCsv(text);

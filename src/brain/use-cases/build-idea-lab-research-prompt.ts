@@ -1,15 +1,10 @@
-import { readFileSync } from "node:fs";
-
-import { defaultFixtureAbsolute } from "@/brain/content/repository/default-fixture";
-import { parseFixtureCsv } from "@/brain/content/repository/parse-fixture-csv";
 import { parseMarketingFocus } from "@/brain/content/marketing-focus";
+import { getBrandCoreRepository } from "@/brain/core";
 import {
   buildPersonalizedResearchPrompt,
   promptContextFromBrain,
 } from "@/brain/evaluation/company-research-assist";
 import { TOPIC_OBJECTIVE_REQUIRED } from "@/brain/evaluation/topic-candidate-types";
-
-const DEFAULT_FIXTURE = defaultFixtureAbsolute();
 
 export type BuildIdeaLabResearchPromptResult =
   | { ok: true; prompt: string; companyName: string }
@@ -21,10 +16,11 @@ export type BuildIdeaLabResearchPromptResult =
     };
 
 /**
- * Build the thin Research Assist copy/paste prompt from allowlisted fixture fields.
+ * Build the thin Research Assist copy/paste prompt from Brand Core repository.
  */
 export function buildIdeaLabResearchPrompt(input: {
   marketingFocus?: unknown;
+  companyId?: string;
   fixturePath?: string;
 }): BuildIdeaLabResearchPromptResult {
   if (process.env.NODE_ENV === "production") {
@@ -43,34 +39,36 @@ export function buildIdeaLabResearchPrompt(input: {
     };
   }
   const objective = parsed.value;
+  const companyId = input.companyId?.trim();
+  if (!companyId && !input.fixturePath) {
+    return {
+      ok: false,
+      code: "FIXTURE_ERROR",
+      error:
+        "companyId or fixturePath is required (no silent default brand)",
+      status: 400,
+    };
+  }
 
-  const fixturePath = input.fixturePath ?? DEFAULT_FIXTURE;
-  let text: string;
+  let loaded;
   try {
-    text = readFileSync(fixturePath, "utf8");
+    loaded = getBrandCoreRepository().getBrandCore(
+      companyId || "ad-hoc",
+      input.fixturePath ? { absolutePath: input.fixturePath } : undefined
+    );
   } catch (err) {
     return {
       ok: false,
       code: "FIXTURE_ERROR",
-      error: err instanceof Error ? err.message : "Fixture read failed",
+      error: err instanceof Error ? err.message : "Brand Core load failed",
       status: 400,
     };
   }
 
-  const context = parseFixtureCsv(text);
-  if (!context) {
-    return {
-      ok: false,
-      code: "FIXTURE_ERROR",
-      error: "parseFixtureCsv returned null",
-      status: 400,
-    };
-  }
-
-  const promptCtx = promptContextFromBrain(context, objective);
+  const promptCtx = promptContextFromBrain(loaded.context, objective);
   return {
     ok: true,
     prompt: buildPersonalizedResearchPrompt(promptCtx),
-    companyName: context.brandName,
+    companyName: loaded.context.brandName,
   };
 }

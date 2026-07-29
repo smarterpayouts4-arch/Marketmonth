@@ -13,7 +13,7 @@ const sampleContext = {
   websiteUrl: "https://zynava.com",
   selectedObjective: "product_education",
   knownCategories: ["supplements"],
-  knownCatalogProducts: ["Magnesium glycinate"],
+  knownIndexedProducts: ["Magnesium glycinate"],
   knownCapabilities: ["Supplement search"],
   knownAudiences: [],
   knownCustomerProblems: [],
@@ -29,7 +29,7 @@ describe("company-research-assist v1", () => {
     assert.match(prompt, /https:\/\/zynava\.com/);
     assert.match(prompt, /product_education/);
     assert.match(prompt, /price per serving/);
-    assert.equal(/zynava-discovery\.csv/i.test(prompt), false);
+    assert.equal(/data\/companies\/[^\s"']*approved\.csv/i.test(prompt), false);
     assert.match(prompt, new RegExp(COMPANY_RESEARCH_IMPORT_VERSION));
     assert.match(prompt, /Do not write topic titles/i);
   });
@@ -80,7 +80,7 @@ describe("company-research-assist v1", () => {
       website: "https://zynava.com",
       products: ["Supplement search"],
       services: [],
-      catalogProducts: [],
+      indexedProducts: [],
       contentOpportunities: ["Existing opportunity"],
       evidenceById: {},
       contextVersion: "test",
@@ -113,7 +113,7 @@ describe("company-research-assist v1", () => {
     assert.ok(
       merged.contentOpportunities.some((o) => /serving size/i.test(o))
     );
-    assert.equal(merged.catalogProducts.length, 0);
+    assert.equal(merged.indexedProducts.length, 0);
     assert.ok(
       Object.values(merged.evidenceById).every(
         (e) => e.recordType === "user_research_import"

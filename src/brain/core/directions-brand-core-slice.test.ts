@@ -15,7 +15,7 @@ import {
 describe("toDirectionsBrandCoreSlice", () => {
   it("builds stable hash IDs from Zynava Brand Core (not positional)", () => {
     const text = readFileSync(
-      path.join(process.cwd(), "data/fixtures/zynava-discovery.csv"),
+      path.join(process.cwd(), "data/companies/zynava.com/approved.csv"),
       "utf8"
     );
     const context = parseFixtureCsv(text);
@@ -24,7 +24,7 @@ describe("toDirectionsBrandCoreSlice", () => {
     const identity = resolveBrandCoreIdentity(core);
     const slice = toDirectionsBrandCoreSlice(core, identity);
 
-    assert.equal(slice.company.name, "Zynava");
+    assert.match(slice.company.name, /zynava/i);
     assert.equal(slice.company.id, identity.company_id);
     assert.equal(slice.brand_core_hash, identity.brand_core_hash);
 

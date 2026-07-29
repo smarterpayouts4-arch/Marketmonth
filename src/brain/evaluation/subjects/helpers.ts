@@ -49,8 +49,8 @@ export function evidenceForField(
     })
     .map(([id]) => id)
     .slice(0, 3);
-  if (ids.length > 0) return ids;
-  return Object.keys(context.evidenceById).slice(0, 2);
+  // No arbitrary backfill — unlinked subjects get empty evidence and may be dropped.
+  return ids;
 }
 
 export function pushUnique(out: TopicSubject[], subject: TopicSubject): void {
@@ -59,6 +59,8 @@ export function pushUnique(out: TopicSubject[], subject: TopicSubject): void {
   if (!subject.label || isMetaInstructionalPhrase(subject.label)) return;
   // Defense in depth — malformed labels never enter the ranked list
   if (isMalformedSubjectLabel(subject.label)) return;
+  // No evidence-free subjects — empty backfill was removed from evidenceForField
+  if (!subject.evidenceIds?.length) return;
   out.push(subject);
 }
 

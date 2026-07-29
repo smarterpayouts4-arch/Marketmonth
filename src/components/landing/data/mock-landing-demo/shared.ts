@@ -43,15 +43,15 @@ export const howItWorksSteps = [
     body: "Paste a website. We discover audience, voice, and what you sell.",
   },
   {
-    title: "Surface the ideas",
-    body: "See the topics your business should be talking about.",
+    title: "Strategize the month",
+    body: "See the topics your business should lead with, organized into a monthly plan.",
   },
   {
-    title: "Shape the strategy",
-    body: "Organize ideas into pillars, themes, and a monthly plan.",
+    title: "Build the content",
+    body: "Each strong idea expands into a coordinated family of platform-ready assets.",
   },
   {
-    title: "Review & improve",
+    title: "Review & approve",
     body: "Approve what ships, then learn what worked next month.",
   },
 ] as const;
@@ -63,17 +63,17 @@ export const illustrativeProof = {
   quotes: [
     {
       quote:
-        "Placeholder: A shop owner would describe how Discovery → Content → Strategy clarified their month.",
+        "I finally know what my shop should talk about each month — and every post sounds like us.",
       attribution: "Demo example · Local retailer",
     },
     {
       quote:
-        "Placeholder: A founder would note that seeing subjects before assets made planning feel concrete.",
+        "Seeing subjects before assets made the whole month feel concrete instead of chaotic.",
       attribution: "Demo example · Wellness brand",
     },
     {
       quote:
-        "Placeholder: A marketer would say Review kept the team aligned before publishing.",
+        "Review kept our team aligned — nothing shipped until we approved the plan.",
       attribution: "Demo example · Small team",
     },
   ],

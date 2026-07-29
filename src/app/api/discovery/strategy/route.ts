@@ -16,6 +16,8 @@ const bodySchema = z.object({
   growthThesis: z.string().min(1).max(400).optional(),
   buyerTension: z.string().min(1).max(200).optional(),
   brandCoreEdit: z.string().min(1).max(280).optional(),
+  cadenceLevel: z.enum(["light", "consistent", "active", "daily"]).optional(),
+  channels: z.array(z.string().min(1)).optional(),
 });
 
 export async function POST(request: Request) {

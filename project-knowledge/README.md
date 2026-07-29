@@ -94,6 +94,23 @@ Scripts write **only** under `generated/`. Never hand-edit generated files.
 
 Do **not** read every document for every task.
 
+## Freshness vocabulary (`last_verified`)
+
+| Label | Meaning for agents |
+|-------|-------------------|
+| **current** | Safe to rely on for decisions (recently verified) |
+| **stale** | Re-check against code / regenerate maps before broad work |
+| **historical** | Context only — not current-state authority |
+| **superseded** | Do not use for current-state decisions |
+
+Treat area `last_verified` dates in [`CURRENT_STATE.md`](./CURRENT_STATE.md) with this vocabulary. Prefer code + generated maps when a stamp is clearly stale relative to active work.
+
+### Change-based freshness pilot (warn-only)
+
+On **CURRENT_STATE.md** and **PRODUCT.md** only: optional `verified_against_commit` + **narrow** `related_paths` (no `**` globs). Guardian emits `PK-WARN-008` if a listed path changed after that commit. **Never fails CI.** Broad globs are skipped. False positives expected (format-only, tests, semantic-preserving refactors). Do not expand to CONTENT_BRAIN until the signal proves useful.
+
+Generated cold-start pointers: [`generated/indexes/agent-bootstrap.json`](./generated/indexes/agent-bootstrap.json) (from `knowledge:update`).
+
 ## Commands
 
 Verified against root `package.json`. None of these rewrite canonical doctrine.

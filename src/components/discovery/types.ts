@@ -2,7 +2,6 @@ export type DiscoveryStatus =
   | "empty"
   | "loading"
   | "result"
-  | "intent"
   | "generating_strategy"
   | "strategy"
   | "error";
@@ -162,6 +161,10 @@ export type StrategyIntentAnswers = {
   growthThesis?: string;
   buyerTension?: string;
   brandCoreEdit?: string;
+  /** Additive: Market Month cadence recommendation chosen by the owner. */
+  cadenceLevel?: "light" | "consistent" | "active" | "daily";
+  /** Additive: selected publishing channels. */
+  channels?: string[];
 };
 
 export type StrategyMoveView = {

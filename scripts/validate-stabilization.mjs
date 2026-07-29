@@ -21,8 +21,9 @@ run("typecheck", "npm", ["run", "typecheck"]);
 run("lint", "npm", ["run", "lint"]);
 run("unit+integration tests", "npm", ["test"]);
 run("brain cycles", "node", ["scripts/check-brain-cycles.mjs"]);
-run("mcp:test", "npm", ["run", "mcp:test"]);
+run("validate:cursor-context", "npm", ["run", "validate:cursor-context"]);
 run("knowledge:update", "npm", ["run", "knowledge:update"]);
+run("mcp:test", "npm", ["run", "mcp:test"]);
 run("knowledge:check", "npm", ["run", "knowledge:check"]);
 
 console.log("\nPASS validate:stabilization");

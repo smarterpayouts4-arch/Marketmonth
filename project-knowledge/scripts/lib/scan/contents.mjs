@@ -75,6 +75,41 @@ export function buildGeneratedContents(root) {
       "\n"
   );
 
+  const agentBootstrap = {
+    schemaVersion: 1,
+    generated: true,
+    currentState: "project-knowledge/CURRENT_STATE.md",
+    productDoctrine: "project-knowledge/PRODUCT.md",
+    knowledgeReadme: "project-knowledge/README.md",
+    docsIndex: "project-knowledge/generated/indexes/docs-index.json",
+    structureWarnings:
+      "project-knowledge/generated/reports/STRUCTURE_WARNINGS.md",
+    statusVocabulary: [
+      "Live",
+      "Partial",
+      "Prototype",
+      "Mocked",
+      "Planned",
+      "Blocked",
+      "Deprecated",
+    ],
+    freshnessVocabulary: ["current", "stale", "historical", "superseded"],
+    readOnlyRoots: ["project-knowledge", "src", "agent-prompt-system"],
+    requiredFirstReads: [
+      "AGENTS.md",
+      "project-knowledge/README.md",
+      "project-knowledge/CURRENT_STATE.md",
+    ],
+    stabilityGate: "npm run validate:stabilization",
+    mcpDiscovery: {
+      listDocs: "mm_list_project_docs",
+      findDoc: "mm_find_project_doc",
+      readDoc: "mm_read_project_doc",
+      bootstrap: "mm_get_agent_bootstrap",
+    },
+    nextJsDocs: "node_modules/next/dist/docs/",
+  };
+
   const files = {
     "maps/ROUTE_MAP.md": GENERATED_HEADER + routeMd,
     "maps/API_MAP.md": GENERATED_HEADER + apiMd,
@@ -83,6 +118,9 @@ export function buildGeneratedContents(root) {
     "indexes/manifest.json": normalizeText(JSON.stringify(b.manifest, null, 2)),
     "indexes/docs-index.json": normalizeText(
       JSON.stringify(b.docsIndex, null, 2)
+    ),
+    "indexes/agent-bootstrap.json": normalizeText(
+      JSON.stringify(agentBootstrap, null, 2)
     ),
   };
 

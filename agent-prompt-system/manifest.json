@@ -15,6 +15,7 @@
     "PROJECT.md",
     "ARCHITECTURE.md",
     "PRODUCT.md",
+    "CURRENT_STATE.md",
     "COMMANDS.md",
     "DESIGN-SYSTEM.md",
     "DATA-FLOWS.md",
@@ -26,6 +27,8 @@
     "cursor": {
       "template": "adapters/cursor/agent-prompt-router.mdc",
       "installTarget": ".cursor/rules/agent-prompt-router.mdc",
+      "bootstrapTemplate": "adapters/cursor/agent-bootstrap.mdc",
+      "bootstrapInstallTarget": ".cursor/rules/agent-bootstrap.mdc",
       "skillTemplate": "adapters/cursor/skills/aps-router/SKILL.md",
       "skillInstallTarget": ".cursor/skills/aps-router/SKILL.md"
     }
@@ -299,6 +302,8 @@
       ],
       "required_context": [
         "PROJECT.md",
+        "PRODUCT.md",
+        "CURRENT_STATE.md",
         "ARCHITECTURE.md",
         "PROTECTED-AREAS.md",
         "KNOWN-RISKS.md"

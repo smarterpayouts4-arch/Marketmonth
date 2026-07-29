@@ -6,7 +6,6 @@ import {
 } from "@/components/discovery/activation";
 import { DiscoveryForm } from "@/components/discovery/discovery-form";
 import { DiscoveryGeneratingStrategy } from "@/components/discovery/discovery-generating-strategy";
-import { DiscoveryIntent } from "@/components/discovery/discovery-intent";
 import { DiscoveryLoading } from "@/components/discovery/discovery-loading";
 import { DiscoveryProgress } from "@/components/discovery/discovery-progress";
 import { DiscoveryResults } from "@/components/discovery/discovery-results";
@@ -29,16 +28,12 @@ export function DiscoveryCard({ onPreviewBrandChange }: DiscoveryCardProps) {
     error,
     stages,
     brandProfile,
-    activationProfile,
+    discoveryNarrative,
     strategyPreview,
     pageCount,
-    detectedLocations,
     intentAnswers,
     ids,
     defaultPromoteFirst,
-    foundAudience,
-    foundOffer,
-    foundPresence,
     analyze,
     goToResult,
     submitIntent,
@@ -46,26 +41,33 @@ export function DiscoveryCard({ onPreviewBrandChange }: DiscoveryCardProps) {
   } = useDiscovery({ onPreviewBrandChange });
 
   function handleActivationContinue(investments: DiscoveryInvestments) {
+    const pillarLabel = discoveryNarrative?.contentPillars.find(
+      (p) => p.id === investments.pillarId
+    )?.name;
     const answers = toStrategyIntentAnswers(investments, {
       reach: "online_broad",
       fallbackPromoteFirst: defaultPromoteFirst,
+      pillarLabel,
     });
     void submitIntent(answers, investments);
   }
 
+  const isResultFlow = status === "result";
+
   return (
     <article
       className={cn(
-        "discovery-card-shell w-full rounded-[1.35rem] border border-border/90 bg-card shadow-lift ring-1 ring-foreground/5"
+        "discovery-card-shell w-full rounded-[1.4rem] border border-border/90 bg-card shadow-discovery ring-1 ring-foreground/5",
+        isResultFlow && "discovery-card-shell--grow"
       )}
     >
-      {status !== "result" ? (
+      {status !== "result" && status !== "empty" && status !== "error" ? (
         <header className="shrink-0">
           <DiscoveryProgress status={status} />
         </header>
       ) : null}
 
-      <div className="discovery-card-body flex min-h-0 flex-1 flex-col px-4 py-4 sm:px-5 sm:pb-5">
+      <div className="discovery-card-body flex min-h-0 flex-1 flex-col px-5 py-5 sm:px-6 sm:py-6">
         {(status === "empty" || status === "error") && (
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             <DiscoveryForm
@@ -87,35 +89,16 @@ export function DiscoveryCard({ onPreviewBrandChange }: DiscoveryCardProps) {
           </div>
         )}
 
-        {status === "result" && brandProfile && activationProfile && (
-          <div className="flex min-h-0 flex-1 flex-col">
+        {status === "result" && brandProfile && discoveryNarrative && (
+          <div className="flex flex-1 flex-col">
             <DiscoveryResults
               key={ids?.brandProfileId ?? brandProfile.website}
               profile={brandProfile}
-              activationProfile={activationProfile}
+              discoveryNarrative={discoveryNarrative}
               onContinue={handleActivationContinue}
               onTryAnother={reset}
               voice="you"
             />
-          </div>
-        )}
-
-        {status === "intent" && brandProfile && (
-          <div className="flex min-h-0 flex-1 flex-col">
-            <DiscoveryIntent
-              defaultPromoteFirst={defaultPromoteFirst}
-              foundAudience={foundAudience}
-              foundOffer={foundOffer}
-              foundPresence={foundPresence}
-              detectedLocations={detectedLocations}
-              onContinue={submitIntent}
-              onBack={goToResult}
-            />
-            {error ? (
-              <p className="mt-3 shrink-0 text-sm text-danger" role="alert">
-                {error}
-              </p>
-            ) : null}
           </div>
         )}
 

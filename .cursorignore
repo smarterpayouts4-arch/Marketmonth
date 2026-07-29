@@ -1,3 +1,47 @@
-﻿# Noncanonical research library — deliberate reads only via explicit path.
-# Prevent nested host agent OS / skills from auto-loading into Cursor.
-reference-library/**
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# Dependencies, builds, caches, coverage, and logs
+# /**/* allows narrow re-include of Next docs without indexing all packages
+node_modules/**/*
+!node_modules/next/
+!node_modules/next/dist/
+!node_modules/next/dist/docs/
+!node_modules/next/dist/docs/**/*
+# Root-only build outputs (/ prefix) — bare "dist/" would re-ignore next/dist/docs
+/.next/
+/out/
+/dist/
+/build/
+/coverage/
+.cache/
+tmp/
+temp/
+*.log
+*.tsbuildinfo
+
+# Runtime artifacts - evidence/history, not doctrine
+data/runtime/
+data/seo/*.json
+
+# Optional noncanonical research - explicit human opt-in only
+reference-library/
+Refrence folder/
+
+# Generated report noise
+project-knowledge/generated/reports/**
+!project-knowledge/generated/reports/STRUCTURE_WARNINGS.md
+
+# Cursor session and backup debris
+.cursor/hooks/.aps-session.json
+.cursor/hooks/.aps-routed-ack.json
+.cursor/**/*.bak-*
+
+# Non-runtime binary references currently inside source
+src/app/dev/brain/idea-lab/Flow Refernce/**
+
+# Backup files
+**/*.bak
+**/*.bak-*

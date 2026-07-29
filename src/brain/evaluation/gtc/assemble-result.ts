@@ -130,6 +130,7 @@ export function assembleCandidateResult(args: {
       "ingredient_or_component",
       "product_category",
       "comparison_attribute",
+      "faq_topic",
     ]);
     const approvedFromSeeds = seeds.filter((s) =>
       educationKinds.has(s.subjectType)

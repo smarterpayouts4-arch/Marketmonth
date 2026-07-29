@@ -1,6 +1,7 @@
 import { loadOwnershipRules, repoRoot } from "../lib/scan.mjs";
 import { checkApsProductStub, checkManifestDuplicates, checkProductAuthority } from "./hard.mjs";
 import { checkDependencyRules } from "./imports.mjs";
+import { checkFreshnessPilot } from "./freshness-pilot.mjs";
 import {
   checkExpiredExceptions,
   checkFeatureDocs,
@@ -32,6 +33,7 @@ export function runGuardian(root = repoRoot()) {
   checkFeatureDocs(root, rules.qualifyingFeatureRoots, emit);
   checkExpiredExceptions(rules.exceptions, today, emit);
   checkDependencyRules(root, rules.dependencyRules, emit);
+  checkFreshnessPilot(root, emit);
 
   return { hard, soft };
 }

@@ -1,16 +1,12 @@
 import * as cheerio from "cheerio";
 
+import { mainContentText } from "@/lib/discovery/html-clean";
+
 import type { CollectedPage } from "./types";
 
 const FETCH_TIMEOUT_MS = 12_000;
 const USER_AGENT =
   "MarketingAI-Discovery/1.0 (+https://localhost; brand discovery bot)";
-
-function visibleText(html: string): string {
-  const $ = cheerio.load(html);
-  $("script, style, noscript, svg, iframe").remove();
-  return $("body").text().replace(/\s+/g, " ").trim();
-}
 
 export async function fetchStaticPage(input: {
   url: string;
@@ -49,7 +45,7 @@ export async function fetchStaticPage(input: {
       pageType: input.pageType,
       title,
       html,
-      text: visibleText(html),
+      text: mainContentText(html),
       collectionMethod: "fetch",
       status: res.status,
     };

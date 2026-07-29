@@ -92,7 +92,10 @@
     "src/engine/discovery",
     "src/components/discovery",
     "src/components/landing",
-    "src/seo"
+    "src/seo",
+    "src/brain/content",
+    "src/app/dev/brain/idea-lab",
+    "src/lib/auth"
   ],
   "dependencyRules": [
     {

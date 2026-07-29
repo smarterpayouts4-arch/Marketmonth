@@ -5,6 +5,7 @@ import { extractBrandPosition } from "./extract-brand";
 import { extractComparisonAttributes } from "./extract-comparison";
 import { extractProductCategories } from "./extract-categories";
 import { extractDecisionCriteria } from "./extract-decision";
+import { extractFaqSubjects } from "./extract-faq-subjects";
 import { extractPlatformCapabilities } from "./extract-platform";
 import { extractProductSubjects } from "./extract-products";
 import { extractTrustMethods } from "./extract-trust";
@@ -23,6 +24,7 @@ export function classifyContextSubjects(
     ...extractBrandPosition(context),
     ...extractDecisionCriteria(context),
     ...extractTrustMethods(context),
+    ...extractFaqSubjects(context),
   ];
 }
 

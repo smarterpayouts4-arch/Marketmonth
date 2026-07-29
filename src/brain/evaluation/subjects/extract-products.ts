@@ -26,14 +26,14 @@ export function extractProductSubjects(
     }
   });
 
-  for (const [i, product] of (context.catalogProducts ?? []).entries()) {
+  for (const [i, product] of (context.indexedProducts ?? []).entries()) {
     const name = product.name?.trim();
     if (!name || !isSemanticallyValidCatalogName(name)) continue;
     if (looksLikeIngredientLabel(name)) {
       pushUnique(out, {
         label: clampLabel(name, 48),
         kind: "ingredient_or_component",
-        sourceField: `catalogProducts[${i}]`,
+        sourceField: `indexedProducts[${i}]`,
         evidenceIds: evidenceForField(context, name),
         classificationReason:
           "Typed catalog record with positive ingredient/form evidence",
@@ -44,16 +44,16 @@ export function extractProductSubjects(
     pushUnique(out, {
       label: clampLabel(name, 48),
       kind: "catalog_product",
-      sourceField: `catalogProducts[${i}]`,
+      sourceField: `indexedProducts[${i}]`,
       evidenceIds: evidenceForField(context, name),
       classificationReason:
-        "Typed catalogProducts record with semantically valid product name",
+        "Typed indexedProducts record with semantically valid product name",
       classificationConfidence: "high",
     });
   }
 
   for (const ev of Object.values(context.evidenceById)) {
-    if (ev.field !== "catalogProduct") continue;
+    if (ev.field !== "indexedProduct") continue;
     const name = ev.value.trim();
     if (!name || !isSemanticallyValidCatalogName(name)) continue;
     pushUnique(out, {
@@ -61,10 +61,10 @@ export function extractProductSubjects(
       kind: looksLikeIngredientLabel(name)
         ? "ingredient_or_component"
         : "catalog_product",
-      sourceField: "evidence.catalogProduct",
+      sourceField: "evidence.indexedProduct",
       evidenceIds: [ev.id],
       classificationReason:
-        "Evidence-backed catalogProduct with semantic validation",
+        "Evidence-backed indexedProduct with semantic validation",
       classificationConfidence: "medium",
     });
   }
@@ -78,7 +78,7 @@ export function extractProductSubjects(
     const inProducts = context.products.some((p) =>
       p.toLowerCase().includes(token.toLowerCase())
     );
-    const inCatalog = (context.catalogProducts ?? []).some((p) =>
+    const inCatalog = (context.indexedProducts ?? []).some((p) =>
       p.name.toLowerCase().includes(token.toLowerCase())
     );
     if (!inProducts && !inCatalog && mentions < 2) continue;

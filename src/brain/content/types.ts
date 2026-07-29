@@ -108,8 +108,8 @@ export type OwnerConfirmedContext = {
   filenames: string[];
 };
 
-/** Structured catalog / SKU from discovery — distinct from products[]. */
-export type ContentCatalogProduct = {
+/** Indexed/compared third-party product — distinct from platform products[]. */
+export type ContentIndexedProduct = {
   name: string;
   price?: string;
   sourceUrl?: string;
@@ -121,14 +121,14 @@ export type ContentBrainContext = {
   website: string;
   description?: string;
   audience?: string;
-  /** Platform capabilities / offer positioning — not catalog SKUs. */
+  /** Platform capabilities / offer positioning — not indexed third-party products. */
   products: string[];
   services: string[];
   /**
-   * First-class catalog products. Never merge FAQ/capabilities into this list
-   * via products[] heuristics — only typed catalog / catalogProduct evidence.
+   * First-class indexed products. Never merge FAQ/capabilities into this list
+   * via products[] heuristics — only typed indexedProduct evidence.
    */
-  catalogProducts: ContentCatalogProduct[];
+  indexedProducts: ContentIndexedProduct[];
   valueProposition?: string;
   brandVoice?: string;
   marketingOpportunity?: string;

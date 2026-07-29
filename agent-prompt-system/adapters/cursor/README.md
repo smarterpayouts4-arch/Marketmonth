@@ -5,6 +5,7 @@ Layers (honest reliability model):
 | Layer | Path | Role |
 |-------|------|------|
 | Bridge rule | `agent-prompt-router.mdc` → `.cursor/rules/` | **Advisory** — `alwaysApply` MUST checklist |
+| Bootstrap rule | `agent-bootstrap.mdc` → `.cursor/rules/` | **Advisory** — ≤15-line cold-start routing (no doctrine) |
 | Hooks | `hooks/` + `hooks.json` → `.cursor/` | **Soft enforcement** — remind / soft-warn; fail-open |
 | Skill | `skills/aps-router/` → `.cursor/skills/` | On-demand walkthrough |
 
@@ -19,6 +20,7 @@ node agent-prompt-system/scripts/install.mjs
 Copies:
 
 - `.cursor/rules/agent-prompt-router.mdc`
+- `.cursor/rules/agent-bootstrap.mdc`
 - `.cursor/skills/aps-router/SKILL.md`
 - `.cursor/hooks.json`
 - `.cursor/hooks/**` (including `lib/substantial-prompt.mjs`)

@@ -87,8 +87,9 @@
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #343b37;
   --sidebar-ring: #31695a;
-  /* Measured empty-state Discovery card height at lg (~1291×748). */
-  --discovery-card-height: 528px;
+  /* Discovery card: ~20% tighter than the large editorial shell. */
+  --discovery-card-min-height: 500px;
+  --discovery-card-max-width: 520px;
 }
 
 @layer base {
@@ -125,12 +126,24 @@
     font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
   }
 
+  .text-hero-serif {
+    font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    font-weight: 600;
+  }
+
   .text-page-hero {
     font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
     font-size: clamp(2.75rem, 5.2vw, 4.25rem);
     line-height: 1.05;
     letter-spacing: -0.04em;
     font-weight: 700;
+  }
+
+  .shadow-discovery {
+    box-shadow: 0 16px 40px rgb(25 45 38 / 0.08);
   }
 
   .text-page-title {
@@ -173,12 +186,22 @@
     animation: soft-pulse 2.2s ease-in-out infinite;
   }
 
-  .cu-tree .cu-node-in {
-    animation: cu-node-in 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  .content-flow-dash {
+    animation: content-flow-dash 1.6s linear infinite;
   }
 
-  .cu-tree .cu-metric-tick {
-    animation: cu-views-pulse 2s ease-in-out infinite;
+  .content-flow-ring {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: content-flow-ring 2.6s ease-in-out infinite;
+  }
+
+  .content-flow-node {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation-name: content-flow-node;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
   }
 }
 
@@ -229,24 +252,39 @@
   }
 }
 
-@keyframes cu-node-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
+@keyframes content-flow-dash {
   to {
-    opacity: 1;
-    transform: translateY(0);
+    stroke-dashoffset: -20;
   }
 }
 
-@keyframes cu-views-pulse {
+@keyframes content-flow-ring {
   0%,
   100% {
-    opacity: 0.72;
+    transform: scale(1);
+    opacity: 0.5;
   }
   50% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+@keyframes content-flow-node {
+  0%,
+  14% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  19%,
+  23% {
     opacity: 1;
+    transform: scale(1.5);
+  }
+  32%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
   }
 }
 
@@ -257,37 +295,39 @@
   .animate-rise-delay,
   .animate-rise-delay-2,
   .animate-soft-pulse,
-  .cu-tree .cu-node-in,
-  .cu-tree .cu-metric-tick {
+  .content-flow-dash,
+  .content-flow-ring,
+  .content-flow-node {
     animation: none;
   }
 
-  .cu-tree .cu-metric-tick {
-    opacity: 1;
+  .content-flow-node {
+    opacity: 0.7;
   }
 }
 
-/* Discovery shell: fixed desktop height; body scrolls separately. */
+/* Discovery shell: min-height floor; result state grows with content (page scroll). */
 .discovery-card-shell {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  width: 100%;
+  max-width: var(--discovery-card-max-width);
+  overflow: visible;
 }
 
 @media (min-width: 1024px) {
-  .discovery-card-shell {
-    height: var(--discovery-card-height);
+  .discovery-card-shell:not(.discovery-card-shell--grow) {
+    min-height: var(--discovery-card-min-height);
   }
-}
 
-/* Short viewport / heavy zoom: drop fixed shell height so CTAs stay reachable. */
-@media (min-width: 1024px) and (max-height: 720px) {
-  .discovery-card-shell {
+  .discovery-card-shell--grow {
+    /* Result content sets height — don't force a tall empty floor. */
+    min-height: 0;
     height: auto;
   }
 }
 
-/* Subtle premium scrollbar for Discovery body only. */
+/* Strategy / long fallback panels may still use a contained scroll region. */
 .discovery-scroll {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--muted-foreground) 28%, transparent)

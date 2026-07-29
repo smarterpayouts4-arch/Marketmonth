@@ -6,7 +6,7 @@ import { brandProfiles, brands } from "@/db/schema";
 import { brandProfileSchema } from "@/engine/discovery/brand-profile";
 import { isDevelopmentAuthBypassEnabled } from "@/lib/auth/auth-mode";
 import { readActiveBrandCookie } from "@/lib/dev/active-brand-cookie";
-import { tryLoadZynavaFixture } from "@/lib/dev/load-zynava-fixture";
+import { tryLoadCompanyBrand } from "@/lib/company-profile/load-company-brand";
 import { toDashboardBrand } from "@/lib/dev/to-dashboard-brand";
 import {
   DEV_USER_NAME,
@@ -33,7 +33,7 @@ export async function GET() {
       audience: "Primary audience",
       products: [],
       services: [],
-      catalogProducts: [],
+      indexedProducts: [],
       valueProposition: "",
       brandVoice: "",
       marketingOpportunity: "",
@@ -98,7 +98,7 @@ export async function GET() {
     });
   }
 
-  const fixture = tryLoadZynavaFixture();
+  const fixture = tryLoadCompanyBrand("zynava.com");
   if (fixture) {
     const dashboardBrand = toDashboardBrand(fixture.brandProfile);
     return NextResponse.json({

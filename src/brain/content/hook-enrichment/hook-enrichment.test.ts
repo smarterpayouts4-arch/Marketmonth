@@ -71,7 +71,7 @@ describe("hook-enrichment-v1", () => {
         website: "https://zynava.com",
         products: ["comparison search"],
         services: [],
-        catalogProducts: [],
+        indexedProducts: [],
         contentOpportunities: ["What to check on a supplement label"],
         evidenceById: {},
         contextVersion: "test",

@@ -14,7 +14,7 @@ import { createTopicGenerationRepository } from "./create-topic-generation-repos
 
 const FIXTURE = path.join(
   process.cwd(),
-  "data/fixtures/zynava-discovery.csv"
+  "data/companies/zynava.com/approved.csv"
 );
 
 function loadContext() {

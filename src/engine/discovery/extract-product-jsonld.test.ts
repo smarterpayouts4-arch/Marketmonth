@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { extractCatalogProducts } from "./extract-product-jsonld";
+import { extractIndexedProducts } from "./extract-product-jsonld";
 import type { CrawlCorpus } from "./types";
 
-describe("extractCatalogProducts", () => {
+describe("extractIndexedProducts", () => {
   it("reads Product JSON-LD names without treating them as junk text", () => {
     const html = `
       <html><body>
@@ -27,7 +27,7 @@ describe("extractCatalogProducts", () => {
         },
       ],
     };
-    const products = extractCatalogProducts(corpus);
+    const products = extractIndexedProducts(corpus);
     assert.equal(products.length, 1);
     assert.equal(products[0]!.name, "Magnesium Glycinate 200mg");
     assert.match(products[0]!.price ?? "", /19\.99/);

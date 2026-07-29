@@ -24,6 +24,8 @@ There is **no Knowledge MCP** in v1. Cursor can read files directly; `npm run kn
 2. Reload MCP servers in Cursor.
 3. Smoke: `npm run mcp:test`
 
+**Classification (2026-07-28):** The tracked example is safe/portable (stdio only; no tokens). Live `.cursor/mcp.json` matches the example and is **not** listed in `.cursorignore` (gitignored only). If a local copy ever gains secrets or personal paths, move those to env references and refresh the example — do not commit secrets. A `mcp.local.json` split is **DEFERRED** until Cursor + this repo verify support.
+
 ```bash
 npm run mcp:server   # stdio server (protocol on stdout)
 npm run mcp:test     # protocol + security smoke
@@ -37,7 +39,10 @@ npm run mcp:test     # protocol + security smoke
 | `mm_architecture_map` | Parse ARCHITECTURE.md |
 | `mm_route_inventory` | Live `src/app/**/page.tsx` routes |
 | `mm_stage_for_request` | Stage **recommendation** with rationale (guide, not authority; may return ENGINEERING/CROSS_STAGE) |
-| `mm_read_project_doc` | Allowlisted document by id (when/when-not descriptions on tools) |
+| `mm_list_project_docs` | List allowlisted document ids + metadata |
+| `mm_get_agent_bootstrap` | Generated cold-start pointers (`agent-bootstrap.json`) |
+| `mm_find_project_doc` | Query → candidate document ids |
+| `mm_read_project_doc` | Allowlisted document by id (`DOCUMENT_NOT_REGISTERED` + alternatives when unknown) |
 | `mm_crawl_website` | Bounded crawl |
 | `mm_extract_brand` | Brand signals |
 | `mm_analyze_seo` | SEO summary |

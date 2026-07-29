@@ -17,7 +17,7 @@ import {
   websiteAnalyses,
 } from "@/db/schema";
 import type { CreatePlanRequest } from "@/lib/dev/create-plan-request";
-import { tryLoadZynavaFixture } from "@/lib/dev/load-zynava-fixture";
+import { tryLoadCompanyBrand } from "@/lib/company-profile/load-company-brand";
 import { toDashboardBrand } from "@/lib/dev/to-dashboard-brand";
 import {
   DEV_USER_EMAIL,
@@ -440,7 +440,7 @@ function resolveLocalOnly(
 ): DevWorkspaceHandoff {
   let next = resolved ?? resolveFromPayload(data);
   if (!next?.brandProfile) {
-    const fixture = tryLoadZynavaFixture();
+    const fixture = tryLoadCompanyBrand("zynava.com");
     if (fixture) {
       next = {
         brandProfile: fixture.brandProfile,
@@ -451,7 +451,7 @@ function resolveLocalOnly(
   }
   if (!next?.brandProfile) {
     throw new Error(
-      "No Zynava research found. Analyze https://zynava.com first, or ensure data/fixtures/zynava-discovery.csv exists."
+      "No Zynava research found. Analyze https://zynava.com first, or ensure data/companies/zynava.com/approved.csv exists."
     );
   }
   return handoffFrom(
@@ -491,7 +491,7 @@ export async function bootstrapDevWorkspace(
     }
 
     if (!resolved?.brandProfile) {
-      const fixture = tryLoadZynavaFixture();
+      const fixture = tryLoadCompanyBrand("zynava.com");
       if (fixture) {
         resolved = {
           brandProfile: fixture.brandProfile,
@@ -503,7 +503,7 @@ export async function bootstrapDevWorkspace(
 
     if (!resolved?.brandProfile) {
       throw new Error(
-        "No Zynava research found. Analyze https://zynava.com first, or run npm run seed:zynava-dev."
+        "No Zynava research found. Analyze https://zynava.com first, or run npm run seed:dev-company -- --company zynava.com."
       );
     }
 

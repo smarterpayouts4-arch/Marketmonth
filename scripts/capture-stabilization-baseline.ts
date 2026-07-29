@@ -12,7 +12,7 @@ import type { MarketingFocus } from "../src/brain/content/marketing-focus";
 const ROOT = process.cwd();
 const FIXTURE_DIR = path.join(ROOT, "data/fixtures/stabilization");
 const OUT_DIR = path.join(FIXTURE_DIR, "baseline-outputs");
-const CSV = path.join(ROOT, "data/fixtures/zynava-discovery.csv");
+const CSV = path.join(ROOT, "data/companies/zynava.com/approved.csv");
 
 const SCENARIOS = [
   "normal-zynava-topic",
@@ -26,7 +26,7 @@ const SCENARIOS = [
 async function main() {
   const csvText = readFileSync(CSV, "utf8");
   const context = parseFixtureCsv(csvText);
-  if (!context) throw new Error("Failed to parse zynava-discovery.csv");
+  if (!context) throw new Error(`Failed to parse ${CSV}`);
 
   mkdirSync(OUT_DIR, { recursive: true });
   const summary: Record<string, unknown>[] = [];
@@ -75,7 +75,7 @@ async function main() {
       {
         capturedAt: new Date().toISOString(),
         provider: "deterministic-v1",
-        fixture: "data/fixtures/zynava-discovery.csv",
+        fixture: "data/companies/zynava.com/approved.csv",
         scenarios: summary,
       },
       null,

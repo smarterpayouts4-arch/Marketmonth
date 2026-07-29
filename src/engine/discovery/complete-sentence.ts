@@ -5,8 +5,86 @@
 
 const MAX_WORDS_DISPLAY = 28;
 
+/** Below this a trimmed embed carries no useful meaning — omit it instead. */
+const MIN_EMBED_CHARS = 24;
+
+/** Words that must not end an embed — they signal a cut mid-clause. */
+const DANGLING_RE =
+  /\b(of|the|a|an|and|or|to|for|with|by|in|on|at|from|is|are|was|were|that|which|as|but|if|than|then|when|while|into|over|under|about)$/i;
+
 export function wordCount(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function dropDanglingTail(text: string): string {
+  let out = text.trim().replace(/[,;:]+$/, "").trim();
+  while (out.length >= MIN_EMBED_CHARS && DANGLING_RE.test(out)) {
+    const cut = out.lastIndexOf(" ");
+    if (cut < 0) return "";
+    out = out.slice(0, cut).replace(/[,;:]+$/, "").trim();
+  }
+  return out;
+}
+
+/**
+ * Boundary-safe text for embedding inside a generated sentence.
+ * Prefers a complete sentence, then a sentence boundary, then a word boundary —
+ * and returns null rather than emitting a fragment. Replaces hard `.slice(0, n)`
+ * clips, which produced tails like "…across participating retailers a.".
+ */
+export function truncateForEmbed(
+  text: string,
+  maxChars = 160
+): string | null {
+  const t = text.replace(/\s+/g, " ").trim();
+  if (!t) return null;
+  if (/[{}[\]]|schema\.org|application\/ld/i.test(t)) return null;
+
+  const sentence = extractCompleteSentence(t);
+  if (sentence && sentence.length <= maxChars) {
+    return /[.!?]$/.test(sentence) ? sentence : `${sentence}.`;
+  }
+
+  const window = t.length <= maxChars ? t : t.slice(0, maxChars);
+  const lastStop = Math.max(
+    window.lastIndexOf(". "),
+    window.lastIndexOf("! "),
+    window.lastIndexOf("? ")
+  );
+  if (lastStop >= MIN_EMBED_CHARS) {
+    return window.slice(0, lastStop + 1).trim();
+  }
+
+  let clipped = window;
+  if (t.length > maxChars) {
+    const lastSpace = clipped.lastIndexOf(" ");
+    if (lastSpace < MIN_EMBED_CHARS) return null;
+    clipped = clipped.slice(0, lastSpace);
+  }
+  clipped = dropDanglingTail(clipped);
+  if (clipped.length < MIN_EMBED_CHARS) return null;
+  return /[.!?]$/.test(clipped) ? clipped : `${clipped}.`;
+}
+
+/**
+ * Word-boundary trim for a noun phrase embedded mid-sentence.
+ * Never appends terminal punctuation — the caller's sentence supplies it.
+ */
+export function truncatePhrase(text: string, maxChars = 80): string | null {
+  const t = text
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/[.!?]+$/, "")
+    .trim();
+  if (!t) return null;
+  if (/[{}[\]]|schema\.org|application\/ld/i.test(t)) return null;
+  if (t.length <= maxChars) return dropDanglingTail(t) || null;
+
+  const window = t.slice(0, maxChars);
+  const lastSpace = window.lastIndexOf(" ");
+  if (lastSpace < 3) return null;
+  const trimmed = dropDanglingTail(window.slice(0, lastSpace));
+  return trimmed.length >= 3 ? trimmed : null;
 }
 
 export function isCompleteSentence(text: string): boolean {

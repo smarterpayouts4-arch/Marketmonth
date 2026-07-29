@@ -61,25 +61,31 @@ export function compileBrandCore(context: ContentBrainContext): BrandCore {
     source_ref: ev.sourceUrl || undefined,
   }));
 
-  const platformOffers = [
-    ...context.products.map((p) => clamp(p, 160)),
-    ...context.services.map((s) => clamp(s, 160)),
-  ].filter(Boolean);
-
-  const catalogOffers = (context.catalogProducts ?? [])
-    .map((p) => clamp(p.name, 160))
+  const platform_capabilities = context.products
+    .map((p) => clamp(p, 160))
     .filter(Boolean);
+  const services = context.services.map((s) => clamp(s, 160)).filter(Boolean);
 
-  // Platform capabilities first, then catalog SKUs (deduped, case-insensitive)
+  const indexed_products = (context.indexedProducts ?? [])
+    .map((p) => ({
+      name: clamp(p.name, 160),
+      source_url: p.sourceUrl || undefined,
+      relationship: "indexed" as const,
+    }))
+    .filter((p) => p.name);
+
+  // offers = company offerings only (capabilities + services), never indexed products
   const seen = new Set<string>();
   const offers: string[] = [];
-  for (const name of [...platformOffers, ...catalogOffers]) {
+  for (const name of [...platform_capabilities, ...services]) {
     const key = name.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
     offers.push(name);
     if (offers.length >= 24) break;
   }
+
+  const market_subjects = indexed_products.map((p) => p.name).slice(0, 48);
 
   const core: BrandCore = {
     version: `bc_${context.contextVersion}`,
@@ -112,6 +118,10 @@ export function compileBrandCore(context: ContentBrainContext): BrandCore {
       offers.length > 0
         ? offers
         : [clamp(context.marketingOpportunity || "Lead offer", 160)],
+    platform_capabilities,
+    services,
+    indexed_products,
+    market_subjects,
     proof_library,
     banned_claims: [
       "guaranteed results",
@@ -169,6 +179,7 @@ function mapProofType(
   field: string
 ): BrandProofItem["type"] {
   const key = `${recordType}:${field}`.toLowerCase();
+  if (field.toLowerCase() === "faq" || key.includes(":faq")) return "faq";
   if (key.includes("testimonial") || key.includes("quote")) return "quote";
   if (key.includes("metric") || key.includes("stat")) return "metric";
   if (key.includes("case")) return "case_study";

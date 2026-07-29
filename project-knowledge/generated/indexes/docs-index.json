@@ -258,10 +258,74 @@
       "generated": false
     },
     {
+      "id": "auth",
+      "path": "project-knowledge/FEATURES/auth.md",
+      "title": "Auth",
+      "description": "Auth.js session layer for MarketMonth app surfaces, with Neon-backed persistence when `DATABASE_URL` is set. Not a completed multi-tenant security product — Par",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "content-brain",
+      "path": "project-knowledge/FEATURES/content-brain.md",
+      "title": "Content Brain",
+      "description": "Canonical Content Brain pipeline: Brand Core → editorial directions → Content Atom → channel production (YouTube Short first). Doctrine SoT is [`CONTENT_BRAIN.m",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "discovery-csv-quality",
+      "path": "project-knowledge/FEATURES/discovery-csv-quality.md",
+      "title": "Discovery CSV quality (Zynava)",
+      "description": "Status:** Strong path (2026-07-28)",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
       "id": "discovery-engine",
       "path": "project-knowledge/FEATURES/discovery-engine.md",
       "title": "Discovery Engine",
-      "description": "LEARN-stage pipeline: website → crawl → brand/SEO/social/competitor signals → Brand Profile + strategy draft.",
+      "description": "LEARN-stage pipeline: website → crawl → brand/SEO/social/competitor signals → Brand Profile + evidence-grounded social discovery narrative + strategy draft.",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "idea-lab",
+      "path": "project-knowledge/FEATURES/idea-lab.md",
+      "title": "Idea Lab",
+      "description": "Dev / Marketing Topic surface for generating and selecting editorial directions from approved Brand Core / Zynava fixture data. Topic strategy and direction har",
       "kind": "supporting",
       "authority": "supporting",
       "status": "active",
@@ -281,6 +345,22 @@
       "kind": "supporting",
       "authority": "supporting",
       "status": "active",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
+      "id": "website-best-practice-auditor",
+      "path": "project-knowledge/FEATURES/website-best-practice-auditor.md",
+      "title": "Website best-practice auditor (deferred)",
+      "description": "Not shipped.** Product track for a versioned customer-site auditor that scores against an explicit 2026 marketing/SEO/a11y/performance rubric with evidence coll",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "planned",
       "owner": "engineering",
       "audience": [
         "human",

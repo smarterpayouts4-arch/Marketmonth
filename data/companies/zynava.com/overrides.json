@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "2",
+  "notes": "Explicit human-approved fields with provenance. Social URLs and legal name confirmed from prior live crawl; frozen Layer-1 cleanedText does not retain link hrefs/JSON-LD.",
+  "entries": [
+    {
+      "field": "legalName",
+      "value": "DR.B WELLNESS & CARE LLC",
+      "reason": "Organization legal name from prior live crawl / public filings",
+      "approvalStatus": "approved",
+      "approvedAt": "2026-07-20T00:00:00.000Z"
+    },
+    {
+      "field": "socialProfiles",
+      "value": [
+        { "platform": "instagram", "status": "missing" },
+        {
+          "platform": "facebook",
+          "status": "present",
+          "url": "https://www.facebook.com/zynava"
+        },
+        {
+          "platform": "linkedin",
+          "status": "present",
+          "url": "https://www.linkedin.com/company/zynava"
+        },
+        { "platform": "tiktok", "status": "missing" },
+        {
+          "platform": "youtube",
+          "status": "present",
+          "url": "https://www.youtube.com/@zynava"
+        },
+        { "platform": "x", "status": "missing" }
+      ],
+      "reason": "Confirmed social presence from site footer / prior crawl",
+      "approvalStatus": "approved",
+      "approvedAt": "2026-07-20T00:00:00.000Z"
+    },
+    {
+      "field": "competitors",
+      "value": [
+        {
+          "name": "Retailer-native supplement search",
+          "reason": "Shoppers often compare inside Amazon or retailer sites — on-site language positions Zynava against that habit."
+        },
+        {
+          "name": "Sponsored supplement ranking blogs",
+          "reason": "Site emphasizes non-sponsored comparison and education."
+        }
+      ],
+      "reason": "Positioning competitors from site messaging",
+      "approvalStatus": "approved",
+      "approvedAt": "2026-07-20T00:00:00.000Z"
+    },
+    {
+      "field": "products",
+      "value": [
+        "Supplement search",
+        "Price comparison",
+        "Supplement plan builder",
+        "AI supplement advisor"
+      ],
+      "reason": "Approved platform capabilities (not indexed third-party products)",
+      "approvalStatus": "approved",
+      "approvedAt": "2026-07-28T00:00:00.000Z"
+    }
+  ],
+  "fields": {
+    "legalName": "DR.B WELLNESS & CARE LLC",
+    "products": [
+      "Supplement search",
+      "Price comparison",
+      "Supplement plan builder",
+      "AI supplement advisor"
+    ],
+    "socialProfiles": [
+      { "platform": "instagram", "status": "missing" },
+      {
+        "platform": "facebook",
+        "status": "present",
+        "url": "https://www.facebook.com/zynava"
+      },
+      {
+        "platform": "linkedin",
+        "status": "present",
+        "url": "https://www.linkedin.com/company/zynava"
+      },
+      { "platform": "tiktok", "status": "missing" },
+      {
+        "platform": "youtube",
+        "status": "present",
+        "url": "https://www.youtube.com/@zynava"
+      },
+      { "platform": "x", "status": "missing" }
+    ],
+    "competitors": [
+      {
+        "name": "Retailer-native supplement search",
+        "reason": "Shoppers often compare inside Amazon or retailer sites — on-site language positions Zynava against that habit."
+      },
+      {
+        "name": "Sponsored supplement ranking blogs",
+        "reason": "Site emphasizes non-sponsored comparison and education."
+      }
+    ]
+  }
+}

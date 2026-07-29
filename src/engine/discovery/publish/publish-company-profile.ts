@@ -3,19 +3,11 @@
  * → temp CSV → Brand Core → CompanyPublication pending → promote CSV → pointer → complete.
  */
 import { createHash } from "node:crypto";
-import {
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  renameSync,
-  unlinkSync,
-  writeFileSync,
-} from "node:fs";
-import { dirname } from "node:path";
+import { existsSync, readFileSync, unlinkSync } from "node:fs";
 
 import { and, desc, eq } from "drizzle-orm";
 
-import { getBrandCore } from "@/brain/core/get-brand-core";
+import { getBrandCoreFromCsvText } from "@/brain/core/get-brand-core";
 import { withWriteLock } from "@/brain/store/write-lock";
 import { getDb } from "@/db";
 import {
@@ -44,10 +36,12 @@ import {
   ensureMarketingOpportunity,
   normalizeDiscoveryEvidence,
 } from "@/engine/discovery/persist/ensure";
+import { writeArtifact } from "@/lib/company-profile/artifact-store";
 import {
   buildDiscoveryCsvDocument,
   DISCOVERY_CSV_SCHEMA_VERSION,
-} from "@/lib/dev/discovery-csv-rows";
+} from "@/lib/company-profile/csv-contract";
+import { recordProvenance } from "@/lib/provenance";
 
 export type PublishCompanyProfileInput = {
   brandId: string;
@@ -271,17 +265,9 @@ export async function publishCompanyProfile(
   });
 
   // Validate CSV parses + Brand Core compiles before touching SoT pointer
-  mkdirSync(dirname(input.approvedCsvPath), { recursive: true });
-  const tmpCsv = `${input.approvedCsvPath}.tmp-publish-${process.pid}`;
-  writeFileSync(tmpCsv, csv, "utf8");
   try {
-    getBrandCore(input.companyId, { absolutePath: tmpCsv });
+    getBrandCoreFromCsvText(input.companyId, csv);
   } catch (e) {
-    try {
-      unlinkSync(tmpCsv);
-    } catch {
-      /* ignore */
-    }
     throw new Error(
       `Brand Core compile failed on candidate CSV: ${
         e instanceof Error ? e.message : e
@@ -327,7 +313,19 @@ export async function publishCompanyProfile(
 
   try {
     await withWriteLock(async () => {
-      renameSync(tmpCsv, input.approvedCsvPath);
+      const written = writeArtifact(input.companyId, "approved", csv);
+      recordProvenance({
+        branch: "publish",
+        step: "publish:writeArtifact",
+        companyId: input.companyId,
+        source: "crawl",
+        artifactHash: written.artifactHash,
+        detail: {
+          path: written.path,
+          wroteDisk: written.wroteDisk,
+          knowledgeHash,
+        },
+      });
 
       await publishBrandProfile({
         brandId: input.brandId,
@@ -347,7 +345,7 @@ export async function publishCompanyProfile(
     // Restore CSV + pointer
     try {
       if (previousCsv !== null) {
-        writeFileSync(input.approvedCsvPath, previousCsv, "utf8");
+        writeArtifact(input.companyId, "approved", previousCsv);
       } else if (existsSync(input.approvedCsvPath)) {
         unlinkSync(input.approvedCsvPath);
       }
@@ -365,14 +363,6 @@ export async function publishCompanyProfile(
       .set({ status: "failed", completedAt: new Date() })
       .where(eq(companyPublications.publicationId, pending.publicationId));
     throw err;
-  } finally {
-    if (existsSync(tmpCsv)) {
-      try {
-        unlinkSync(tmpCsv);
-      } catch {
-        /* ignore */
-      }
-    }
   }
 
   return {

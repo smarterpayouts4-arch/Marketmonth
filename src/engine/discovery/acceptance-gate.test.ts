@@ -13,7 +13,7 @@ function minimalProfile(over: Partial<BrandProfile> = {}): BrandProfile {
     audience: "People comparing supplement labels",
     products: ["Supplement search"],
     services: [],
-    catalogProducts: [{ name: "Magnesium glycinate", sourceUrl: "https://zynava.com/" }],
+    indexedProducts: [{ name: "Magnesium glycinate", sourceUrl: "https://zynava.com/" }],
     valueProposition: "Compare prices",
     brandVoice: "Clear",
     marketingOpportunity: "Label education",
@@ -106,7 +106,7 @@ describe("evaluateDiscoveryAcceptance", () => {
     const report = evaluateDiscoveryAcceptance({
       profile: minimalProfile({
         audience: "Decision-makers evaluating clearer marketing systems",
-        catalogProducts: [],
+        indexedProducts: [],
         products: [],
         services: [],
       }),

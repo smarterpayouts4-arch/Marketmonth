@@ -131,7 +131,7 @@ export type IdeaLabRun = {
     audiences: string[];
     proofCount: number;
     /** Honest: compiled for identity; not primary Directions idea input. */
-    usedAsPrimaryIdeaInput: false;
+    usedAsPrimaryIdeaInput: boolean;
   };
 
   generation: {

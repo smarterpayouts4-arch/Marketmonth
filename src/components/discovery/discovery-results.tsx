@@ -1,123 +1,81 @@
 "use client";
 
 /**
- * Discovery activation Hook — guided stepper with four reveals.
- * Formats grounded activation only; does not invent options.
- * Navigation ≠ investment: checkmarks only after real selection.
+ * Discovery narrative Hook — three strategic rewards, then investment.
+ * Formats grounded narrative only; does not invent options.
  */
 import { useMemo, useState } from "react";
+import { Sparkles } from "lucide-react";
 
 import {
   REVEAL_ORDER,
-  growthFooterRightKind,
-  isUseDirectionDisabled,
-  nextCommittedAfterSelect,
   shouldSuppressInsight,
   toDiscoveryActivation,
-  type ChoiceOption,
-  type DiscoveryEvidence,
   type DiscoveryInvestments,
   type DiscoveryRevealId,
-  type GrowthDirectionId,
 } from "@/components/discovery/activation";
-import { DiscoveryScrollRegion } from "@/components/discovery/discovery-scroll-region";
-import { ChannelFooter } from "@/components/discovery/discovery-results/channels";
-import { EvidenceGroups } from "@/components/discovery/discovery-results/evidence-groups";
+import { CadencePicker, CadenceRecommendationCard } from "@/components/discovery/discovery-results/cadence-picker";
+import { ChannelPicker, PlatformAdaptationsList } from "@/components/discovery/discovery-results/channel-picker";
+import { ContentUniversePreview } from "@/components/discovery/discovery-results/content-universe-preview";
+import { DiscoveryEvidenceAccordion } from "@/components/discovery/discovery-results/discovery-evidence-accordion";
+import { DiscoveryTakeaway } from "@/components/discovery/discovery-results/discovery-takeaway";
+import { PillarsList } from "@/components/discovery/discovery-results/pillars";
 import type { DiscoveryResultsProps } from "@/components/discovery/discovery-results/types";
-import { toCardSummary } from "@/components/discovery/to-card-summary";
+import type { CadenceLevel } from "@/lib/discovery/discovery-narrative.schema";
 import { cn } from "@/lib/utils";
 
 export function DiscoveryResults({
   profile,
-  activationProfile,
+  discoveryNarrative,
   onContinue,
   onTryAnother,
   voice = "you",
 }: DiscoveryResultsProps) {
   const activation = useMemo(
     () =>
-      toDiscoveryActivation(activationProfile, {
+      toDiscoveryActivation(discoveryNarrative, {
         voice,
         businessName: profile.businessName,
       }),
-    [activationProfile, voice, profile.businessName]
+    [discoveryNarrative, voice, profile.businessName]
   );
-  const summary = useMemo(() => toCardSummary(profile), [profile]);
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [buyerTension, setBuyerTension] = useState<string | undefined>();
-  const [leadOffer, setLeadOffer] = useState<string | undefined>();
-  const [selectedGrowthDirection, setSelectedGrowthDirection] = useState<
-    GrowthDirectionId | undefined
-  >();
-  const [committedGrowthDirection, setCommittedGrowthDirection] = useState<
-    GrowthDirectionId | undefined
-  >();
+  const [viewed, setViewed] = useState<Record<DiscoveryRevealId, boolean>>({
+    "doing-well": true,
+    win: false,
+    "content-play": false,
+  });
+  const [cadenceLevel, setCadenceLevel] = useState<CadenceLevel | undefined>();
+  const [channels, setChannels] = useState<string[]>(() =>
+    discoveryNarrative.detectedChannels
+      .filter((c) => c.status === "link-detected")
+      .map((c) => c.platform)
+  );
+  const [pillarId, setPillarId] = useState<string | undefined>(
+    discoveryNarrative.contentPillars[0]?.id
+  );
 
   const activeId = REVEAL_ORDER[activeIndex]!;
   const reveal = activation.reveals[activeIndex]!;
-  const stepLabel = `YOUR DISCOVERY · ${activeIndex + 1} OF 4`;
+  const stepLabel = `YOUR DISCOVERY · ${activeIndex + 1} OF 3`;
   const lowEvidenceHeader =
     activation.headerEvidenceLevel === "low" ||
     activation.evidenceQuality === "low";
-  const onGrowth = activeId === "growth-opening";
-  const growthRight = growthFooterRightKind({
-    selected: selectedGrowthDirection,
-    committed: committedGrowthDirection,
-  });
-  const growthCommitted = growthRight === "build";
+  const onContentPlay = activeId === "content-play";
+  const allRewardsViewed =
+    viewed["doing-well"] && viewed.win && viewed["content-play"];
 
-  const committedGrowth = activation.growthDirections.find(
-    (d) => d.id === committedGrowthDirection
-  );
-
-  const selectedTension = activation.buyerTensionOptions.find(
-    (o) => o.label === buyerTension
-  );
-  const selectedLead = activation.leadOfferOptions.find(
-    (o) => o.label === leadOffer
-  );
-  const selectedGrowthOpt = activation.growthDirections.find(
-    (d) => d.id === (selectedGrowthDirection ?? committedGrowthDirection)
-  );
-
-  const stepEvidence: DiscoveryEvidence[] = useMemo(() => {
-    if (activeId === "buyer-tension") {
-      return (
-        selectedTension?.evidence ??
-        activation.buyerTensionOptions[0]?.evidence ??
-        reveal.evidence
-      );
-    }
-    if (activeId === "lead-offer") {
-      return (
-        selectedLead?.evidence ??
-        activation.leadOfferOptions[0]?.evidence ??
-        reveal.evidence
-      );
-    }
-    if (activeId === "growth-opening") {
-      return selectedGrowthOpt?.evidence ?? reveal.evidence;
-    }
-    return reveal.evidence;
-  }, [
-    activeId,
-    selectedTension,
-    selectedLead,
-    selectedGrowthOpt,
-    activation.buyerTensionOptions,
-    activation.leadOfferOptions,
-    reveal.evidence,
-  ]);
-
-  const firstObserved = stepEvidence.find((e) => e.kind === "observed")?.text;
+  const firstObserved = reveal.evidence.find((e) => e.kind === "observed")?.text;
   const showInsight =
     Boolean(reveal.insight.trim()) &&
     !shouldSuppressInsight(reveal.insight, firstObserved);
 
   function goTo(index: number) {
     const next = Math.max(0, Math.min(REVEAL_ORDER.length - 1, index));
+    const id = REVEAL_ORDER[next]!;
     setActiveIndex(next);
+    setViewed((prev) => ({ ...prev, [id]: true }));
   }
 
   function markVisitedAndNext() {
@@ -126,105 +84,82 @@ export function DiscoveryResults({
     }
   }
 
-  function selectGrowthDirection(id: GrowthDirectionId) {
-    setSelectedGrowthDirection(id);
-    setCommittedGrowthDirection((prev) => nextCommittedAfterSelect(id, prev));
+  function toggleChannel(platform: string) {
+    setChannels((prev) =>
+      prev.includes(platform)
+        ? prev.filter((p) => p !== platform)
+        : [...prev, platform]
+    );
   }
 
-  function commitGrowthDirection() {
-    if (!selectedGrowthDirection) return;
-    setCommittedGrowthDirection(selectedGrowthDirection);
-  }
+  const investmentsReady =
+    allRewardsViewed &&
+    Boolean(cadenceLevel) &&
+    channels.length > 0 &&
+    Boolean(pillarId);
 
-  const investments: DiscoveryInvestments | null =
-    committedGrowthDirection && committedGrowth
-      ? {
-          growthDirection: committedGrowthDirection,
-          growthThesis: committedGrowth.thesis,
-          strategyGoal: committedGrowth.strategyGoal,
-          buyerTension: buyerTension?.trim() || undefined,
-          leadOffer:
-            leadOffer?.trim() ||
-            activation.leadOfferOptions[0]?.label ||
-            undefined,
-          // brandCoreEdit intentionally omitted unless user edits later
-        }
-      : null;
-
-  const invested = {
-    "brand-core": false,
-    "buyer-tension": Boolean(buyerTension?.trim()),
-    "lead-offer": Boolean(leadOffer?.trim()),
-    "growth-opening": Boolean(committedGrowthDirection),
-  } as const;
-
-  type FooterRight =
-    | { kind: "continue" }
-    | { kind: "use-direction" }
-    | { kind: "build" };
-
-  const footerRight: FooterRight = !onGrowth
-    ? { kind: "continue" }
-    : { kind: growthRight };
-
-  const rightDisabled =
-    footerRight.kind === "use-direction"
-      ? isUseDirectionDisabled(selectedGrowthDirection)
-      : footerRight.kind === "build"
-        ? !investments
-        : false;
+  const investments: DiscoveryInvestments | null = investmentsReady
+    ? {
+        cadenceLevel: cadenceLevel!,
+        channels,
+        pillarId,
+      }
+    : null;
 
   function onFooterRight() {
-    if (footerRight.kind === "continue") {
+    if (!onContentPlay) {
       markVisitedAndNext();
-      return;
-    }
-    if (footerRight.kind === "use-direction") {
-      commitGrowthDirection();
       return;
     }
     if (investments) onContinue(investments);
   }
 
-  const rightLabel =
-    footerRight.kind === "continue"
-      ? "Continue"
-      : footerRight.kind === "use-direction"
-        ? "Use this direction"
-        : "Build my month around this →";
+  const rightDisabled = onContentPlay ? !investments : false;
+  const rightLabel = !onContentPlay
+    ? "Continue →"
+    : discoveryNarrative.primaryCta || "Build my content month";
+
+  const transitionTeaser =
+    !onContentPlay && reveal.transition
+      ? reveal.transition
+      : !onContentPlay
+        ? "Next, we’ll show where consistent publishing can help you win."
+        : null;
 
   return (
-    <div className="flex h-full min-h-0 flex-col animate-fade-in">
-      <header className="shrink-0 space-y-1 px-0.5">
-        <p className="text-[11px] font-semibold tracking-[0.12em] text-primary uppercase">
+    <div className="flex flex-col animate-fade-in">
+      <header className="shrink-0 space-y-1">
+        <p className="text-[10px] font-semibold tracking-[0.12em] text-primary uppercase">
           {stepLabel}
         </p>
         {activeIndex === 0 ? (
           <>
-            <p className="font-display text-[1.05rem] font-semibold tracking-[-0.02em] text-foreground sm:text-[1.1rem]">
-              {lowEvidenceHeader
-                ? "Your website gives us a starting point."
-                : "Your website gives us a strong foundation."}
-            </p>
-            <p className="text-xs leading-snug text-text-secondary">
-              {lowEvidenceHeader
-                ? "Help us sharpen the decisions that will shape what you publish this month."
-                : "Review the four decisions that will shape what you publish this month."}
-            </p>
-            <p className="text-[11px] leading-snug text-text-muted">
-              Based on your public website. Review before building your plan.
+            <h2 className="font-serif text-[1.2rem] font-semibold leading-snug tracking-[-0.02em] text-foreground sm:text-[1.3rem]">
+              {activation.introHeadline ||
+                (lowEvidenceHeader
+                  ? "Your website gives us a starting point."
+                  : "Your website gives us a strong foundation.")}
+            </h2>
+            <p className="max-w-[48ch] text-[13px] leading-snug text-text-secondary">
+              {activation.introDescription ||
+                (lowEvidenceHeader
+                  ? "Help us sharpen the decisions that will shape what you publish this month."
+                  : "We studied your business and found the strongest social-media story already inside it.")}
             </p>
           </>
-        ) : null}
+        ) : (
+          <h2 className="font-serif text-[1.15rem] font-semibold leading-snug tracking-[-0.02em] text-foreground sm:text-[1.25rem]">
+            {reveal.label}
+          </h2>
+        )}
       </header>
 
       <nav
-        aria-label="Discovery reveals"
-        className="mt-2.5 flex shrink-0 gap-1 overflow-x-auto pb-px"
+        aria-label="Discovery sections"
+        className="mt-3 flex flex-wrap gap-1.5"
       >
         {activation.reveals.map((r, index) => {
           const selected = index === activeIndex;
-          const hasInvestment = invested[r.id];
           return (
             <button
               key={r.id}
@@ -232,18 +167,13 @@ export function DiscoveryResults({
               onClick={() => goTo(index)}
               aria-current={selected ? "step" : undefined}
               className={cn(
-                "relative z-10 shrink-0 rounded-t-lg border px-2.5 py-2 text-left transition-colors sm:px-3",
+                "relative z-10 min-h-8 rounded-full border px-2.5 py-1.5 text-left transition-colors sm:px-3",
                 selected
-                  ? "border-primary bg-primary text-primary-foreground shadow-soft"
-                  : "border-transparent bg-subtle/70 text-text-secondary hover:text-foreground"
+                  ? "border-primary bg-primary/12 font-semibold text-primary shadow-[inset_0_0_0_1px_rgba(49,105,90,0.12)]"
+                  : "border-border/80 bg-subtle/70 text-text-secondary hover:border-border hover:text-foreground"
               )}
             >
-              <span className="flex items-center gap-1.5 text-xs font-semibold sm:text-[13px]">
-                {hasInvestment ? (
-                  <span aria-hidden className="text-[11px] opacity-90">
-                    ✓
-                  </span>
-                ) : null}
+              <span className="text-[11px] font-semibold sm:text-xs">
                 {r.label}
               </span>
             </button>
@@ -251,224 +181,132 @@ export function DiscoveryResults({
         })}
       </nav>
 
-      <div className="relative z-0 flex min-h-0 flex-1 flex-col overflow-hidden rounded-b-xl rounded-tr-xl border border-border bg-card">
-        <DiscoveryScrollRegion
-          aria-label={`${reveal.label} discovery`}
-          className="min-h-0"
-          scrollKey={`${reveal.id}-${buyerTension ?? ""}-${leadOffer ?? ""}-${selectedGrowthDirection ?? ""}`}
-        >
-          <div className="space-y-2.5 px-4 py-2.5 pr-5 sm:px-5">
-            <div className="space-y-2 animate-fade-in">
-              <p className="text-sm font-medium text-text-secondary">
-                {reveal.question}
+      <div className="mt-3 space-y-2.5">
+        <p className="text-[13px] font-medium leading-snug text-foreground">
+          {reveal.question}
+        </p>
+
+        {showInsight ? (
+          <div className="flex items-start gap-2.5 rounded-xl border border-primary/15 bg-primary/[0.08] px-3 py-2.5">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+              <Sparkles className="size-3.5" aria-hidden />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[14px] leading-snug font-semibold text-foreground sm:text-[15px]">
+                {reveal.insight}
               </p>
-              {showInsight ? (
-                <p className="text-sm leading-snug text-foreground">
-                  {reveal.insight}
-                </p>
-              ) : null}
-              {reveal.clarification || !reveal.insightEligible ? (
-                <p className="rounded-lg bg-subtle/80 px-3 py-1.5 text-xs text-text-secondary">
-                  {reveal.clarification ||
-                    "Low-evidence read — continue if this still matches the business, or try another website."}
-                </p>
-              ) : null}
-
-              <EvidenceGroups evidence={stepEvidence} />
-
-              {activeId === "buyer-tension" ? (
-                <ChoiceList
-                  options={activation.buyerTensionOptions}
-                  selectedLabel={buyerTension}
-                  onSelect={setBuyerTension}
-                />
-              ) : null}
-
-              {activeId === "lead-offer" ? (
-                activation.leadOfferOptions.length === 0 ? (
-                  <p className="text-xs text-text-secondary">
-                    No product or service was detected confidently. Continue and
-                    name the lead offer when you build your plan.
-                  </p>
-                ) : (
-                  <ChoiceList
-                    options={activation.leadOfferOptions}
-                    selectedLabel={leadOffer}
-                    onSelect={setLeadOffer}
-                  />
-                )
-              ) : null}
-
-              {activeId === "growth-opening" ? (
-                <div className="space-y-2">
-                  <p className="text-[11px] text-text-muted">Pick one.</p>
-                  <div className="flex flex-col gap-1.5">
-                    {activation.growthDirections.map((opt) => (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        onClick={() => selectGrowthDirection(opt.id)}
-                        aria-pressed={selectedGrowthDirection === opt.id}
-                        className={cn(
-                          "rounded-lg border px-3 py-2 text-left transition-colors",
-                          selectedGrowthDirection === opt.id
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:border-border"
-                        )}
-                      >
-                        <span className="flex items-center justify-between gap-2">
-                          <span className="text-sm font-semibold text-foreground">
-                            {opt.title}
-                          </span>
-                          {opt.recommended && opt.confidence !== "low" ? (
-                            <span className="shrink-0 text-[10px] font-semibold tracking-wide text-primary uppercase">
-                              Recommended from your website
-                            </span>
-                          ) : opt.confidence === "low" ? (
-                            <span className="shrink-0 text-[10px] font-semibold tracking-wide text-text-muted uppercase">
-                              Low evidence
-                            </span>
-                          ) : null}
-                        </span>
-                        <span className="mt-0.5 block text-xs leading-snug text-text-secondary">
-                          {opt.description}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                  {growthCommitted && committedGrowth ? (
-                    <p className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs leading-relaxed text-foreground">
-                      Direction saved. Your plan will{" "}
-                      {committedGrowth.thesis.charAt(0).toLowerCase() +
-                        committedGrowth.thesis.slice(1)}
-                    </p>
-                  ) : null}
-                  <ChannelFooter summary={summary} />
-                </div>
-              ) : null}
+              <p className="mt-1 text-[10px] font-semibold tracking-[0.1em] text-text-muted uppercase">
+                Insight
+              </p>
             </div>
           </div>
-        </DiscoveryScrollRegion>
+        ) : null}
+
+        {reveal.clarification ? (
+          <p className="rounded-lg bg-subtle/80 px-3 py-2 text-xs text-text-secondary">
+            {reveal.clarification}
+          </p>
+        ) : null}
+
+        <DiscoveryEvidenceAccordion items={reveal.evidenceItems} />
+
+        {reveal.takeaway ? (
+          <DiscoveryTakeaway text={reveal.takeaway} />
+        ) : null}
+
+        {onContentPlay ? (
+          <div className="space-y-3 pt-0.5">
+            <PillarsList
+              pillars={discoveryNarrative.contentPillars}
+              selectedId={pillarId}
+              onSelect={setPillarId}
+              selectable={allRewardsViewed}
+            />
+            <PlatformAdaptationsList
+              adaptations={discoveryNarrative.platformAdaptations}
+            />
+            <CadenceRecommendationCard
+              cadence={discoveryNarrative.cadence}
+            />
+            <ContentUniversePreview
+              universe={discoveryNarrative.contentUniversePreview}
+            />
+            <p className="text-[13px] font-medium leading-snug text-foreground">
+              {discoveryNarrative.finalDirection}
+            </p>
+            {allRewardsViewed ? (
+              <div className="space-y-3 rounded-xl border border-border/80 bg-background/70 p-3">
+                <p className="text-[10px] font-semibold tracking-[0.08em] text-primary uppercase">
+                  Your investment
+                </p>
+                <CadencePicker
+                  recommended={discoveryNarrative.cadence.level}
+                  selected={cadenceLevel}
+                  onSelect={setCadenceLevel}
+                />
+                <ChannelPicker
+                  channels={discoveryNarrative.detectedChannels}
+                  selected={channels}
+                  onToggle={toggleChannel}
+                />
+                <p className="text-xs text-text-muted">
+                  {discoveryNarrative.investmentQuestion}
+                </p>
+              </div>
+            ) : (
+              <p className="text-xs text-text-muted">
+                Review all three sections before choosing cadence and channels.
+              </p>
+            )}
+          </div>
+        ) : null}
+
+        {transitionTeaser ? (
+          <p className="text-[11px] leading-snug text-text-muted">
+            {transitionTeaser}
+          </p>
+        ) : null}
       </div>
 
-      <div className="mt-3 flex shrink-0 flex-col-reverse items-stretch gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-3.5 flex flex-col-reverse items-stretch gap-2 border-t border-border/70 pt-3.5 sm:flex-row sm:items-center sm:justify-between">
         {activeIndex === 0 ? (
           <button
             type="button"
             onClick={onTryAnother}
-            className="inline-flex h-10 items-center justify-center rounded-lg px-2 text-sm font-medium text-text-muted transition-colors hover:text-text-secondary"
+            className="inline-flex h-10 items-center justify-center rounded-lg px-2 text-[13px] font-medium text-text-muted transition-colors hover:text-text-secondary"
           >
-            Try another website
+            {discoveryNarrative.secondaryCta || "Try another website"}
           </button>
         ) : (
           <button
             type="button"
             onClick={() => goTo(activeIndex - 1)}
-            className="inline-flex h-10 items-center justify-center rounded-lg px-2 text-sm font-medium text-text-muted transition-colors hover:text-text-secondary"
+            className="inline-flex h-10 items-center justify-center rounded-lg px-2 text-[13px] font-medium text-text-muted transition-colors hover:text-text-secondary"
           >
             Back
           </button>
         )}
-        <button
-          type="button"
-          disabled={rightDisabled}
-          aria-disabled={rightDisabled}
-          onClick={onFooterRight}
-          className="inline-flex h-10 w-full items-center justify-center rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-soft transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
-        >
-          {rightLabel}
-        </button>
+        <div className="flex w-full flex-col items-stretch gap-1 sm:w-auto sm:items-end">
+          <button
+            type="button"
+            disabled={rightDisabled}
+            aria-disabled={rightDisabled}
+            onClick={onFooterRight}
+            className={cn(
+              "inline-flex h-10 w-full items-center justify-center rounded-xl bg-primary px-5 text-[13px] font-semibold text-primary-foreground shadow-soft transition-colors hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-ring/40 disabled:cursor-not-allowed sm:min-w-[9.5rem] sm:w-auto",
+              rightDisabled ? "bg-primary/35 text-primary-foreground" : null
+            )}
+          >
+            {rightLabel}
+          </button>
+          {rightDisabled && onContentPlay ? (
+            <p className="text-[11px] text-text-muted">
+              Choose cadence and at least one channel to continue
+            </p>
+          ) : null}
+        </div>
       </div>
     </div>
-  );
-}
-
-function ChoiceList({
-  options,
-  selectedLabel,
-  onSelect,
-}: {
-  options: ChoiceOption[];
-  selectedLabel?: string;
-  onSelect: (label: string) => void;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <p className="text-[11px] text-text-muted">Pick one.</p>
-      <div className="flex flex-col gap-1.5">
-        {options.map((option) => (
-          <ChoiceButton
-            key={option.id}
-            selected={selectedLabel === option.label}
-            onClick={() => onSelect(option.label)}
-            label={option.label}
-            explanation={option.explanation}
-            hint={
-              option.recommended && option.confidence !== "low"
-                ? "Recommended from your website"
-                : option.confidence === "low"
-                  ? "Low evidence — clarify if needed"
-                  : undefined
-            }
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ChoiceButton({
-  selected,
-  onClick,
-  label,
-  explanation,
-  hint,
-}: {
-  selected: boolean;
-  onClick: () => void;
-  label: string;
-  explanation?: string;
-  hint?: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={selected}
-      className={cn(
-        "flex items-start gap-2 rounded-md border px-2.5 py-2 text-left text-sm transition-colors",
-        selected
-          ? "border-primary bg-primary/5 font-medium text-foreground"
-          : "border-border text-text-secondary hover:text-foreground"
-      )}
-    >
-      <span
-        aria-hidden
-        className={cn(
-          "mt-0.5 flex size-3.5 shrink-0 items-center justify-center rounded-full border",
-          selected
-            ? "border-primary bg-primary"
-            : "border-border bg-background"
-        )}
-      >
-        {selected ? (
-          <span className="size-1.5 rounded-full bg-primary-foreground" />
-        ) : null}
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block font-medium text-foreground">{label}</span>
-        {explanation ? (
-          <span className="mt-0.5 block text-xs font-normal leading-snug text-text-secondary">
-            {explanation}
-          </span>
-        ) : null}
-        {hint ? (
-          <span className="mt-0.5 block text-[10px] font-semibold tracking-wide text-primary uppercase">
-            {hint}
-          </span>
-        ) : null}
-      </span>
-    </button>
   );
 }
 

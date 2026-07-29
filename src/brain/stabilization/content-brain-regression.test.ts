@@ -27,7 +27,7 @@ const REQUIRED_ANGLES = [
 
 function loadContext() {
   const text = readFileSync(
-    path.join(ROOT, "data/fixtures/zynava-discovery.csv"),
+    path.join(ROOT, "data/companies/zynava.com/approved.csv"),
     "utf8"
   );
   const ctx = parseFixtureCsv(text);

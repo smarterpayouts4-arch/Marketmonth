@@ -5,8 +5,8 @@ import {
   cleanCatalogHeading,
   contentOpportunitiesForCatalog,
   isRejectedCatalogName,
-  mergeAndScrubCatalogProducts,
-  scrubCatalogProducts,
+  mergeAndScrubIndexedProducts,
+  scrubIndexedProducts,
 } from "./extract-catalog-names";
 import type { CrawlCorpus } from "./types";
 
@@ -48,6 +48,8 @@ describe("extract-catalog-names", () => {
         <h3>MagnesiumThe Energy Mineral</h3>
         <h3>ZincThe Immune Mineral</h3>
         <h3>CalciumThe Bone Mineral</h3>
+        <h3>Omega-3The Essential Fatty Acid</h3>
+        <h3>CreatineThe Performance Compound</h3>
         <a>Supplement plan builder</a>
       </main></body></html>
     `;
@@ -55,6 +57,13 @@ describe("extract-catalog-names", () => {
       <html><body><main>
         <p>Not all ingredients are equal. Methylcobalamin vs Cyanocobalamin.
         D3 vs D2. Glycinate vs Oxide. The form matters.</p>
+      </main></body></html>
+    `;
+    const explorerHtml = `
+      <html><body><main>
+        <button>Calcium</button>
+        <button>Omega-3</button>
+        <button>Creatine</button>
       </main></body></html>
     `;
     const corpus: CrawlCorpus = {
@@ -75,10 +84,17 @@ describe("extract-catalog-names", () => {
           title: "Catalog",
           kind: "products",
         },
+        {
+          url: "https://zynava.com/tools/ingredient-explorer",
+          status: 200,
+          html: explorerHtml,
+          title: "Explorer",
+          kind: "other",
+        },
       ],
     };
 
-    const catalog = mergeAndScrubCatalogProducts({
+    const catalog = mergeAndScrubIndexedProducts({
       jsonLdProducts: [
         { name: "AI supplement advisor", sourceUrl: "https://zynava.com/" },
       ],
@@ -94,13 +110,50 @@ describe("extract-catalog-names", () => {
     assert.ok(names.includes("Zinc"));
     assert.ok(names.includes("Magnesium glycinate"));
     assert.ok(names.includes("Vitamin D3"));
+    assert.ok(names.includes("Calcium"), "Calcium must survive catalog mine");
+    assert.ok(names.includes("Omega-3"), "Omega-3 must survive catalog mine");
+    assert.ok(names.includes("Creatine"), "Creatine must survive catalog mine");
     assert.ok(!names.some((n) => /advisor|builder|search|engine/i.test(n)));
-    assert.ok(catalog.length <= 8);
+    assert.ok(catalog.length <= 10);
     assert.ok(catalog.length >= 6);
   });
 
-  it("scrubCatalogProducts drops platform nouns", () => {
-    const scrubbed = scrubCatalogProducts([
+  it("mines non-supplement service catalog without vitamin hard-filters", () => {
+    const corpus: CrawlCorpus = {
+      normalizedUrl: "https://clearflowplumbing.example/",
+      origin: "https://clearflowplumbing.example",
+      pages: [
+        {
+          url: "https://clearflowplumbing.example/services",
+          status: 200,
+          html: `
+            <html><body><main>
+              <h2>Our services</h2>
+              <h3>Tankless water heater install</h3>
+              <h3>Emergency drain clearing</h3>
+              <h3>Slab leak detection</h3>
+              <a>Price comparison tool</a>
+            </main></body></html>
+          `,
+          title: "Services",
+          kind: "products",
+        },
+      ],
+    };
+    const catalog = mergeAndScrubIndexedProducts({
+      jsonLdProducts: [],
+      corpus,
+    });
+    const names = catalog.map((p) => p.name);
+    assert.ok(names.includes("Tankless water heater install"));
+    assert.ok(names.includes("Emergency drain clearing"));
+    assert.ok(names.includes("Slab leak detection"));
+    assert.ok(!names.some((n) => /vitamin|magnesium|omega/i.test(n)));
+    assert.ok(!names.some((n) => /comparison|tool/i.test(n)));
+  });
+
+  it("scrubIndexedProducts drops platform nouns", () => {
+    const scrubbed = scrubIndexedProducts([
       { name: "Omega-3", sourceUrl: "https://zynava.com/tools/ingredient-explorer" },
       { name: "Price comparison tool", sourceUrl: "https://zynava.com/" },
     ]);
@@ -110,18 +163,26 @@ describe("extract-catalog-names", () => {
     );
   });
 
-  it("builds ingredient-named content opportunities", () => {
+  it("builds catalog-named content opportunities without industry templates", () => {
     const topics = contentOpportunitiesForCatalog([
       { name: "Magnesium glycinate", sourceUrl: "https://zynava.com/" },
       { name: "Vitamin C", sourceUrl: "https://zynava.com/supplements/catalog" },
       { name: "Vitamin D3", sourceUrl: "https://zynava.com/" },
-      { name: "Omega-3", sourceUrl: "https://zynava.com/tools/ingredient-explorer" },
-      { name: "Zinc", sourceUrl: "https://zynava.com/supplements/catalog" },
-      { name: "Vitamin B12", sourceUrl: "https://zynava.com/supplements/catalog" },
+      { name: "Tankless water heater install", sourceUrl: "https://clearflow.example/wh" },
+      { name: "Emergency drain clearing", sourceUrl: "https://clearflow.example/drains" },
+      { name: "Fixture repair visit", sourceUrl: "https://clearflow.example/repairs" },
     ]);
     assert.ok(topics.length >= 4 && topics.length <= 6);
-    assert.ok(topics.some((t) => /Magnesium glycinate/i.test(t)));
-    assert.ok(topics.some((t) => /Vitamin C/i.test(t)));
+    assert.ok(topics.some((t) => t === "Magnesium glycinate"));
+    assert.ok(topics.some((t) => t === "Tankless water heater install"));
+    assert.ok(
+      !topics.some((t) => /What to know about|How to evaluate|Questions to ask/i.test(t)),
+      "must not wrap catalog names in instructional templates"
+    );
     assert.ok(!topics.some((t) => /diagnose|treat|cure|disease/i.test(t)));
+    assert.ok(
+      !topics.some((t) => /price per serving|supplement labels/i.test(t)),
+      "must not inject supplement shopping templates"
+    );
   });
 });

@@ -26,7 +26,7 @@ describe("runtime eval matrix (topics vs hooks judged separately)", () => {
       audience: "Supplement shoppers comparing labels",
       products: ["comparison search"],
       services: [],
-      catalogProducts: [],
+      indexedProducts: [],
       contentOpportunities: [
         "What to check on a supplement label before buying",
         "Why price per serving matters when comparing brands",

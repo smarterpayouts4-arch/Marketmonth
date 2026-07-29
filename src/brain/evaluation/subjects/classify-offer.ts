@@ -11,7 +11,7 @@ import type { TopicSubject } from "./types";
 /**
  * Classify a products[] / services[] string as platform vs ingredient hint.
  * Source field never determines kind alone — semantic rules do.
- * Bare products[] nouns are NOT catalog_product (use catalogProducts for that).
+ * Bare products[] nouns are NOT catalog_product (use indexedProducts for that).
  */
 export function classifyOfferNoun(
   label: string,
@@ -26,7 +26,8 @@ export function classifyOfferNoun(
       label: clipped,
       kind: "platform_capability",
       sourceField,
-      evidenceIds: evidenceForField(context, sourceField),
+      // Link by offer text — sourceField path ("products[0]") is not in evidence values.
+      evidenceIds: evidenceForField(context, clipped),
       classificationReason:
         "Matches platform/tool phrasing (search, comparison, builder, filter, etc.)",
       classificationConfidence: "high",

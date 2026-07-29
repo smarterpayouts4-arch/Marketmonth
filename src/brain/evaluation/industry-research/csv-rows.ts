@@ -1,14 +1,14 @@
 import {
   serializeDiscoveryCsv,
   type DiscoveryCsvRow,
-} from "@/lib/dev/discovery-csv-rows";
+} from "@/lib/company-profile/csv-contract";
 
 import type { IndustryResearchOpportunity } from "./types";
 import { INDUSTRY_RESEARCH_SOURCE_TYPE } from "./types";
 
 /**
  * Append-only industry research CSV rows.
- * Never invents catalogProducts / brand_profile product fields.
+ * Never invents indexedProducts / brand_profile product fields.
  */
 export function buildIndustryResearchCsvRows(
   opportunities: IndustryResearchOpportunity[],

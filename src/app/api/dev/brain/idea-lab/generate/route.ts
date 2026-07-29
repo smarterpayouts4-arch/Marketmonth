@@ -63,6 +63,7 @@ export async function POST(request: Request) {
   try {
     if (parsed.stage === "research_prompt") {
       const outcome = buildIdeaLabResearchPrompt({
+        companyId: "zynava.com",
         marketingFocus: parsed.marketingFocus,
       });
       if (!outcome.ok) {
@@ -101,6 +102,7 @@ export async function POST(request: Request) {
 
     if (parsed.stage === "candidates") {
       const outcome = await runIdeaLabTopicCandidates({
+        companyId: "zynava.com",
         marketingFocus: parsed.marketingFocus,
         researchImport: parsed.researchImport,
       });
@@ -122,6 +124,7 @@ export async function POST(request: Request) {
     }
 
     const run = await runIdeaLabDirections({
+      companyId: "zynava.com",
       topicMode: "manual",
       marketingFocus: parsed.marketingFocus,
       selectedCandidateId: parsed.selectedCandidateId,

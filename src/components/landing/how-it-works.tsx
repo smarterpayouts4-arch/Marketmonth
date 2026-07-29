@@ -10,7 +10,7 @@ export function HowItWorks() {
             How it works
           </p>
           <h2 className="text-section mt-3 max-w-[20ch] text-foreground">
-            Learn brand → Ideas → Strategy → Review
+            Learn → Strategize → Build → Review
           </h2>
         </Reveal>
 

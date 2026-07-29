@@ -20,7 +20,7 @@ import type {
   StrategyIntentAnswers,
   StrategyPreviewView,
 } from "@/components/discovery/types";
-import type { DiscoveryActivationProfile } from "@/lib/discovery/activation-profile";
+import type { SocialDiscoveryProfile } from "@/lib/discovery/discovery-narrative.schema";
 import { DISCOVERY_STAGES } from "@/lib/discovery/stages";
 import { postAnalyzeStream, postStrategy } from "./use-discovery/api";
 import { persistIds } from "./use-discovery/ids-store";
@@ -58,8 +58,8 @@ export function useDiscovery(options?: {
   const [brandProfile, setBrandProfile] = useState<BrandProfileView | null>(
     null
   );
-  const [activationProfile, setActivationProfile] =
-    useState<DiscoveryActivationProfile | null>(null);
+  const [discoveryNarrative, setDiscoveryNarrative] =
+    useState<SocialDiscoveryProfile | null>(null);
   const [strategyPreview, setStrategyPreview] =
     useState<StrategyPreviewView | null>(null);
   const [pageCount, setPageCount] = useState(0);
@@ -84,7 +84,7 @@ export function useDiscovery(options?: {
     setError(null);
     setStages([]);
     setBrandProfile(null);
-    setActivationProfile(null);
+    setDiscoveryNarrative(null);
     setStrategyPreview(null);
     setPageCount(0);
     setDetectedLocations([]);
@@ -107,7 +107,7 @@ export function useDiscovery(options?: {
       setError(null);
       setStatus("loading");
       setBrandProfile(null);
-      setActivationProfile(null);
+      setDiscoveryNarrative(null);
       setStrategyPreview(null);
       setPageCount(0);
       setDetectedLocations([]);
@@ -139,7 +139,7 @@ export function useDiscovery(options?: {
               brandProfileId: event.brandProfileId,
             };
             setBrandProfile(profile);
-            setActivationProfile(event.activationProfile ?? null);
+            setDiscoveryNarrative(event.discoveryNarrative ?? null);
             setIds(nextIds);
             persistIds(nextIds);
             if (typeof event.pageCount === "number") {
@@ -158,10 +158,6 @@ export function useDiscovery(options?: {
     },
     [emitPreview]
   );
-
-  const goToIntent = useCallback(() => {
-    if (brandProfile) setStatus("intent");
-  }, [brandProfile]);
 
   const goToResult = useCallback(() => {
     if (brandProfile) setStatus("result");
@@ -188,14 +184,12 @@ export function useDiscovery(options?: {
 
         const preview = nextInvestments
           ? applyInvestmentsToStrategy(data.strategyPreview, nextInvestments)
-          : answers.growthDirection && answers.growthThesis
+          : answers.cadenceLevel
             ? applyInvestmentsToStrategy(data.strategyPreview, {
-                growthDirection: answers.growthDirection,
-                growthThesis: answers.growthThesis,
-                strategyGoal: answers.goal,
-                leadOffer: answers.promoteFirst,
-                buyerTension: answers.buyerTension,
-                brandCoreEdit: answers.brandCoreEdit,
+                cadenceLevel: answers.cadenceLevel,
+                channels: answers.channels ?? [],
+                pillarId: answers.growthDirection,
+                contentDirectionEdit: answers.brandCoreEdit,
               })
             : data.strategyPreview;
 
@@ -213,8 +207,7 @@ export function useDiscovery(options?: {
         setStatus("strategy");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Strategy failed");
-        // Return to results when activation path; intent when legacy path.
-        setStatus(nextInvestments ? "result" : "intent");
+        setStatus("result");
       }
     },
     [brandProfile, ids]
@@ -235,7 +228,7 @@ export function useDiscovery(options?: {
     error,
     stages,
     brandProfile,
-    activationProfile,
+    discoveryNarrative,
     strategyPreview,
     pageCount,
     detectedLocations,
@@ -249,7 +242,6 @@ export function useDiscovery(options?: {
     previewBrandName,
     coreIdeaHint: summary?.coreOffering,
     analyze,
-    goToIntent,
     goToResult,
     submitIntent,
     reset,

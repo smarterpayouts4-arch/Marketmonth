@@ -1,23 +1,15 @@
 export { REVEAL_LABELS, REVEAL_ORDER } from "./types";
 export type {
-  ChoiceOption,
-  DiscoveryActivationProfile,
+  CadenceLevel,
   DiscoveryEvidence,
+  DiscoveryEvidenceItem,
   DiscoveryEvidenceKind,
   DiscoveryInvestments,
-  DiscoveryOption,
   DiscoveryReveal,
   DiscoveryRevealId,
-  GrowthDirectionId,
-  GrowthDirectionOption,
-  StrategyInfluence,
+  SocialDiscoveryProfile,
 } from "./types";
 
-export {
-  failsFiveCompanyTest,
-  looksLikeUnsupportedClaim,
-  softenUnverifiedClaims,
-} from "./generic-rejection";
 export {
   toDiscoveryActivation,
   wordCount,
@@ -27,13 +19,5 @@ export {
   normalizeInsightCompare,
   shouldSuppressInsight,
 } from "./insight-display";
-export {
-  growthFooterRightKind,
-  isUseDirectionDisabled,
-  nextCommittedAfterSelect,
-} from "./growth-footer-state";
 export { toStrategyIntentAnswers } from "./to-strategy-intent";
-export {
-  applyInvestmentsToStrategy,
-  buildStrategyInfluence,
-} from "./strategy-influence";
+export { applyInvestmentsToStrategy } from "./strategy-influence";

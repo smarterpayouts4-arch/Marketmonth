@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
+import { mainContentText } from "@/lib/discovery/html-clean";
+
 import type { CrawlCorpus, CrawledPage } from "./types";
 
 export type PageSnapshotRecord = {
@@ -45,18 +47,12 @@ function companySlug(companyId: string): string {
 }
 
 function cleanedTextFromPage(page: CrawledPage): string {
-  // Prefer visible text fields if present on extended pages; else strip tags lightly
+  // Prefer already-cleaned visible text from fetchers; else main-content extract HTML
   const anyPage = page as CrawledPage & { text?: string; visibleText?: string };
-  const raw =
-    anyPage.visibleText?.trim() ||
-    anyPage.text?.trim() ||
-    page.html
-      .replace(/<script[\s\S]*?<\/script>/gi, " ")
-      .replace(/<style[\s\S]*?<\/style>/gi, " ")
-      .replace(/<[^>]+>/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-  return raw.slice(0, 120_000);
+  const fromField =
+    anyPage.visibleText?.trim() || anyPage.text?.trim() || "";
+  if (fromField.length >= 40) return fromField.slice(0, 120_000);
+  return mainContentText(page.html, 120_000);
 }
 
 export function hashPageContent(text: string): string {

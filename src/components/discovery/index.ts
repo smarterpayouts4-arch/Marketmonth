@@ -7,7 +7,6 @@ export {
   toDiscoveryActivation,
   toStrategyIntentAnswers,
   applyInvestmentsToStrategy,
-  buildStrategyInfluence,
 } from "./activation";
 export type {
   DiscoveryStatus,
@@ -17,5 +16,4 @@ export type {
 export type {
   DiscoveryInvestments,
   DiscoveryReveal,
-  StrategyInfluence,
 } from "./activation";

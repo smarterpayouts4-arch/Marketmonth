@@ -1,113 +1,91 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { Target } from "lucide-react";
 
-import {
-  FORMATS,
-  formatMetric,
-  type FormatItem,
-} from "@/components/landing/content-universe/formats";
-import { useCountUp } from "@/components/landing/content-universe/use-count-up";
+import { ContentFormatCard } from "@/components/landing/content-format-card";
+import { ContentFlowConnectors } from "@/components/landing/content-universe/connectors";
+import { FORMATS } from "@/components/landing/content-universe/formats";
+import { LiveDot } from "@/components/landing/content-universe/live-dot";
 
 const COUNT = FORMATS.length;
 
-/** Continuous trunk → bar → stems in viewBox 0 0 1000 120. */
-function connectorPath(): string {
-  const trunkX = 500;
-  const barY = 36;
-  const stemEnd = 108;
-  const xs = Array.from({ length: COUNT }, (_, i) => ((i + 0.5) / COUNT) * 1000);
-  const left = xs[0] ?? trunkX;
-  const stems = xs
-    .map(
-      (x, i) =>
-        `V ${stemEnd} V ${barY}${i < COUNT - 1 ? ` H ${xs[i + 1]}` : ""}`
-    )
-    .join("");
-  return `M ${trunkX} 0 V ${barY} H ${left} ${stems}`;
-}
-
-const CONNECTOR_D = connectorPath();
-
-function PlatformNode({
-  format,
-  index,
-}: {
-  format: FormatItem;
-  index: number;
-}) {
-  const value = useCountUp(format.target, 1800, 200 + index * 80);
-
-  return (
-    <li
-      className="cu-node-in flex min-w-0 flex-col items-center text-center"
-      style={{ animationDelay: `${100 + index * 40}ms` }}
-    >
-      <span
-        className={cn(
-          "flex size-7 items-center justify-center rounded-full sm:size-8",
-          format.tone
-        )}
-        title={format.label}
-        aria-hidden
-      >
-        <format.Icon className="size-3 sm:size-3.5" />
-      </span>
-      <span className="sr-only">
-        {format.label}: {format.metric}
-      </span>
-      <strong
-        className="cu-metric-tick mt-1.5 font-mono text-[10px] font-semibold leading-none tabular-nums tracking-tight text-foreground sm:text-[11px]"
-        aria-hidden
-      >
-        {formatMetric(value)}
-      </strong>
-      <span className="mt-0.5 text-[8px] font-semibold leading-none tracking-[0.06em] text-text-muted uppercase">
-        {format.metric}
-      </span>
-    </li>
-  );
-}
-
-/** One compact topic → formats diagram (HTML nodes + SVG lines only). */
+/**
+ * Full Content Flow diagram: one core strategy topic distributing through
+ * an animated network into five equal, illustrative output formats.
+ *
+ * Desktop/tablet (`md:` and up) render the true distribution network — a
+ * shared relative container drives both the CSS Grid columns and the SVG
+ * connector positions, so branches always land on a card's true center.
+ * Below `md`, a simplified single connector line sits above a horizontal
+ * snap-scroll row so five equal cards never have to cramp into a narrow
+ * column.
+ */
 export function ContentUniverseVisual() {
   return (
-    <div className="content-universe-diagram flex flex-col">
-      <p className="text-center text-xs font-semibold tracking-wide text-text-muted uppercase">
-        One topic · Multiple formats
-      </p>
-
-      <div className="mt-9 flex justify-center sm:mt-10">
-        <div className="rounded-xl border border-border/80 bg-background px-3.5 py-1.5 text-[13px] font-semibold text-primary">
-          Marketing topic
+    <div className="flex flex-col">
+      <div className="mx-auto flex w-full max-w-sm items-start gap-3 rounded-2xl border border-border bg-card px-4 py-3.5 shadow-soft sm:items-center">
+        <span
+          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
+          aria-hidden="true"
+        >
+          <Target className="size-4" />
+        </span>
+        <div className="min-w-0 text-left">
+          <p className="font-display text-[15px] font-semibold tracking-[-0.02em] text-foreground sm:text-base">
+            Core Strategy Topic
+          </p>
+          <p className="mt-0.5 text-[13px] leading-snug text-text-secondary">
+            One idea, expanded across formats.
+          </p>
+          <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
+            <LiveDot />
+            LIVE: Distributing now
+          </p>
         </div>
       </div>
 
-      {/* Short connector band — desktop/tablet only */}
-      <div className="relative mx-auto mt-1 hidden h-14 w-full max-w-none md:block">
-        <svg
-          aria-hidden
-          className="pointer-events-none absolute inset-0 h-full w-full text-border"
-          viewBox="0 0 1000 120"
-          fill="none"
-          preserveAspectRatio="none"
-        >
-          <path
-            d={CONNECTOR_D}
-            stroke="currentColor"
-            strokeWidth="1.25"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-          />
-        </svg>
+      {/* Distribution network + five equal outputs — md and up. */}
+      <div className="relative mx-auto mt-2 hidden w-full max-w-5xl md:block">
+        <div className="relative h-16">
+          <ContentFlowConnectors count={COUNT} />
+        </div>
+        <ul className="grid grid-cols-5 gap-[1.8%]">
+          {FORMATS.map((format) => (
+            <ContentFormatCard key={format.id} format={format} />
+          ))}
+        </ul>
       </div>
 
-      <ul className="mt-5 grid grid-cols-3 gap-x-2 gap-y-4 md:mt-0 md:grid-cols-6 md:gap-x-1">
-        {FORMATS.map((format, index) => (
-          <PlatformNode key={format.id} format={format} index={index} />
-        ))}
-      </ul>
+      {/* Simplified connector + horizontal snap row — below md. */}
+      <div className="mt-5 md:hidden">
+        <div
+          className="mx-auto flex flex-col items-center gap-1"
+          aria-hidden="true"
+        >
+          <span className="animate-soft-pulse size-2 rounded-full bg-primary" />
+          <span className="h-5 w-px bg-border" />
+        </div>
+        <ul className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-1">
+          {FORMATS.map((format) => (
+            <ContentFormatCard
+              key={format.id}
+              format={format}
+              className="w-[168px] shrink-0 snap-start"
+            />
+          ))}
+        </ul>
+      </div>
+
+      <p className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[12px] font-medium text-text-secondary">
+        <span className="inline-flex items-center gap-1.5">
+          <LiveDot />
+          Live distribution across all channels
+        </span>
+        <span className="text-text-muted" aria-hidden="true">
+          |
+        </span>
+        Updates in real time
+      </p>
     </div>
   );
 }

@@ -33,6 +33,9 @@ const FEATURE_DOC_BY_ROOT = {
   "src/engine/discovery": "discovery-engine",
   "src/components/discovery": "discovery-engine",
   "src/seo": "site-seo",
+  "src/brain/content": "content-brain",
+  "src/app/dev/brain/idea-lab": "idea-lab",
+  "src/lib/auth": "auth",
 };
 
 export function checkFeatureDocs(root, qualifyingFeatureRoots, { warn }) {

@@ -6,9 +6,18 @@ import { z } from "zod";
  */
 export const brandProofItemSchema = z.object({
   proof_id: z.string().min(1).max(64),
-  type: z.enum(["case_study", "quote", "metric", "fact", "testimonial"]),
+  type: z.enum(["case_study", "quote", "metric", "fact", "testimonial", "faq"]),
   summary: z.string().min(1).max(400),
   source_ref: z.string().max(200).optional(),
+});
+
+/** Third-party products the brand indexes/compares — never company inventory. */
+export const indexedProductCoreSchema = z.object({
+  name: z.string().min(1).max(160),
+  source_url: z.string().max(400).optional(),
+  relationship: z
+    .enum(["indexed", "compared", "researched", "referenced"])
+    .default("indexed"),
 });
 
 export const brandCoreSchema = z.object({
@@ -30,7 +39,12 @@ export const brandCoreSchema = z.object({
   }),
   positioning: z.string().min(1).max(600),
   voice: z.string().min(1).max(400),
+  /** Company offerings only (platform tools + services) — not indexed third-party products. */
   offers: z.array(z.string().min(1).max(160)).min(1).max(24),
+  platform_capabilities: z.array(z.string().min(1).max(160)).max(24).default([]),
+  services: z.array(z.string().min(1).max(160)).max(24).default([]),
+  indexed_products: z.array(indexedProductCoreSchema).max(48).default([]),
+  market_subjects: z.array(z.string().min(1).max(160)).max(48).default([]),
   proof_library: z.array(brandProofItemSchema).max(48),
   banned_claims: z.array(z.string().min(1).max(200)).max(48),
   visual_identity: z.object({

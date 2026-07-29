@@ -44,15 +44,18 @@ CSV / UI / Discovery (ingest)
 | Layer | What | Persist (dev) | Not |
 | ----- | ---- | ------------- | --- |
 | **Layer 1 — raw pages** | Cleaned page text + `contentHash` + final URL | `data/runtime/discovery-pages/` (ephemeral; not Brand Core) | Not product SoT; not dumped into prompts wholesale |
-| **Layer 2 — structured profile** | CSV / BrandProfile / evidence rows (ingest) | `data/fixtures/zynava-discovery.csv` today | Not runtime SoT; no peer doctrine |
+| **Layer 2 — structured profile** | BrandProfile + evidence (Neon draft → gate → published → materialized CSV) | Neon `brand_profiles` (durable); `data/companies/zynava.com/approved.csv` = Idea Lab **read cache** | Not runtime SoT; no peer doctrine |
 | **Layer 3 — passages** | Retrievable snippets keyed by page/hash for grounding | Keyword stub over Layer 1; RAG later | Not a second Brand Core |
 | **Brand Core** | Compiled via `getBrandCore(companyId)` / `compileBrandCore` | Runtime SoT for generation | Not raw crawl HTML |
 
 ```text
-Website crawl → Layer 1 pages → extract → Layer 2 CSV/profile
-        → compileBrandCore / getBrandCore → Brand Core
+Website crawl → Layer 1 pages → extract → Neon draft BrandProfile
+        → quality gate → publish pointer → materialize rich CSV
+        → compileBrandCore / getBrandCore → Brand Core → Idea Lab
         → (optional) Layer 3 passage retrieve for grounding
 ```
+
+**Storage policy:** Neon may store imperfect **drafts**. Only `approval_ready` profiles publish and materialize CSV. Idea Lab does **not** hit Neon per topic. Frozen/rules refresh is not the Idea Lab CSV writer.
 
 **Precedence (target):** owner-approved → approved manual edit → approved website discovery → proposed website discovery → model inference / Perplexity-derived → unknown. Perplexity and industry research stay **derived/proposed** — never silent company-fact SoT.
 

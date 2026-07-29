@@ -15,7 +15,7 @@ export function SocialProof() {
             </span>
           </div>
           <h2 className="text-section mt-3 max-w-[18ch] text-foreground">
-            Placeholder stories for layout only
+            What a month could feel like
           </h2>
           <p className="mt-4 max-w-[48ch] text-[1.02rem] leading-relaxed text-text-secondary">
             {illustrativeProof.disclaimer}

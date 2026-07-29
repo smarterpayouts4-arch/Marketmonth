@@ -39,22 +39,22 @@ export const demoTheater = {
   weeks: [
     {
       label: "Week 1",
-      items: ["Magnesium forms intro", "Glycinate vs citrate", "FAQ reel"],
+      items: ["Latte art reel", "Morning rush hook", "Bean origin teaser"],
       image: landingImagery.tiktok,
     },
     {
       label: "Week 2",
-      items: ["Price per serving", "Label education", "Vitamin D basics"],
+      items: ["Pour-over craft post", "Behind the bar", "Seasonal menu FAQ"],
       image: landingImagery.instagram,
     },
     {
       label: "Week 3",
-      items: ["Buying guide carousel", "Trust story", "Comparison short"],
+      items: ["Brew guide video", "Roaster trust story", "Coffee vs. matcha short"],
       image: landingImagery.youtube,
     },
     {
       label: "Week 4",
-      items: ["Month recap", "Shopper checklist", "Next-month teaser"],
+      items: ["Month recap", "Regulars checklist", "Next-month teaser"],
       image: landingImagery.month,
     },
   ],

@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull } from "drizzle-orm";
 
 import type { CrawlMeta, DiscoveryEvidence } from "@/lib/discovery/evidence.schema";
 import type { DetectedLocation } from "@/lib/discovery/location.schema";
@@ -10,6 +10,7 @@ import {
   websiteAnalyses,
 } from "../../../db/schema";
 import type { BrandProfile } from "../brand-profile";
+import { websiteUrlSlashAlternates } from "../normalize-url";
 import { ensureMarketingOpportunity } from "./ensure";
 import type { PersistedAnalysis } from "./types";
 
@@ -37,15 +38,71 @@ function locationsFromMeta(meta: unknown): DetectedLocation[] {
   return [];
 }
 
+/** Upsert brand by website (prefer existing row; avoid orphan inserts). */
+async function upsertBrandByWebsite(input: {
+  name: string;
+  website: string;
+}): Promise<{ id: string }> {
+  const db = getDb();
+  const keys = websiteUrlSlashAlternates(input.website);
+  const existing = await db
+    .select()
+    .from(brands)
+    .where(inArray(brands.website, keys))
+    .orderBy(desc(brands.updatedAt))
+    .limit(1);
+
+  if (existing[0]) {
+    await db
+      .update(brands)
+      .set({
+        name: input.name,
+        // Heal legacy slash variants onto the canonical key.
+        website: input.website,
+        updatedAt: new Date(),
+      })
+      .where(eq(brands.id, existing[0].id));
+    return { id: existing[0].id };
+  }
+
+  // Prefer orphan brand with same website and no user (legacy inserts)
+  const orphan = await db
+    .select()
+    .from(brands)
+    .where(and(inArray(brands.website, keys), isNull(brands.userId)))
+    .limit(1);
+  if (orphan[0]) {
+    await db
+      .update(brands)
+      .set({
+        name: input.name,
+        website: input.website,
+        updatedAt: new Date(),
+      })
+      .where(eq(brands.id, orphan[0].id));
+    return { id: orphan[0].id };
+  }
+
+  const [brand] = await db
+    .insert(brands)
+    .values({
+      name: input.name,
+      website: input.website,
+    })
+    .returning();
+  return { id: brand.id };
+}
+
 export async function findCachedAnalysis(
   normalizedUrl: string
 ): Promise<PersistedAnalysis | null> {
   try {
     const db = getDb();
+    const urlKeys = websiteUrlSlashAlternates(normalizedUrl);
     const [analysis] = await db
       .select()
       .from(websiteAnalyses)
-      .where(eq(websiteAnalyses.normalizedUrl, normalizedUrl))
+      .where(inArray(websiteAnalyses.normalizedUrl, urlKeys))
       .limit(1);
 
     if (!analysis) return null;
@@ -114,21 +171,21 @@ export async function persistAnalysis(input: {
   brandProfile: BrandProfile;
   crawlMeta: CrawlMeta | Record<string, unknown>;
   evidence: DiscoveryEvidence[];
+  /** Optional precomputed knowledge hash for the raw draft. */
+  knowledgeHash?: string;
 }): Promise<PersistedAnalysis> {
   const db = getDb();
 
-  const [brand] = await db
-    .insert(brands)
-    .values({
-      name: input.brandProfile.businessName,
-      website: input.normalizedUrl,
-    })
-    .returning();
+  const brand = await upsertBrandByWebsite({
+    name: input.brandProfile.businessName,
+    website: input.normalizedUrl,
+  });
 
+  const urlKeys = websiteUrlSlashAlternates(input.normalizedUrl);
   const existing = await db
     .select()
     .from(websiteAnalyses)
-    .where(eq(websiteAnalyses.normalizedUrl, input.normalizedUrl))
+    .where(inArray(websiteAnalyses.normalizedUrl, urlKeys))
     .limit(1);
 
   let analysisId: string;
@@ -138,6 +195,7 @@ export async function persistAnalysis(input: {
       .update(websiteAnalyses)
       .set({
         brandId: brand.id,
+        normalizedUrl: input.normalizedUrl,
         crawlMeta: input.crawlMeta,
       })
       .where(eq(websiteAnalyses.id, analysisId));
@@ -153,6 +211,36 @@ export async function persistAnalysis(input: {
     analysisId = analysis.id;
   }
 
+  // Idempotent draft: reuse latest draft when knowledge hash matches.
+  if (input.knowledgeHash) {
+    const [latestDraft] = await db
+      .select()
+      .from(brandProfiles)
+      .where(
+        and(
+          eq(brandProfiles.analysisId, analysisId),
+          eq(brandProfiles.status, "draft")
+        )
+      )
+      .orderBy(desc(brandProfiles.createdAt))
+      .limit(1);
+    if (
+      latestDraft &&
+      latestDraft.knowledgeHash &&
+      latestDraft.knowledgeHash === input.knowledgeHash
+    ) {
+      return {
+        analysisId,
+        brandProfileId: latestDraft.id,
+        brandProfile: input.brandProfile,
+        evidence: input.evidence,
+        pageCount: pageCountFromMeta(input.crawlMeta),
+        detectedLocations: locationsFromMeta(input.crawlMeta),
+        cached: true,
+      };
+    }
+  }
+
   const [profileRow] = await db
     .insert(brandProfiles)
     .values({
@@ -160,6 +248,8 @@ export async function persistAnalysis(input: {
       brandId: brand.id,
       profile: input.brandProfile,
       evidence: input.evidence,
+      status: "draft",
+      knowledgeHash: input.knowledgeHash ?? null,
     })
     .returning();
 
@@ -172,4 +262,45 @@ export async function persistAnalysis(input: {
     detectedLocations: locationsFromMeta(input.crawlMeta),
     cached: false,
   };
+}
+
+/** Mark a brand_profiles row as the published pointer for a brand. */
+export async function publishBrandProfile(input: {
+  brandId: string;
+  brandProfileId: string;
+}): Promise<void> {
+  const db = getDb();
+  await db
+    .update(brands)
+    .set({
+      publishedBrandProfileId: input.brandProfileId,
+      updatedAt: new Date(),
+    })
+    .where(eq(brands.id, input.brandId));
+}
+
+/** Insert an immutable publish_candidate or published profile (never mutates draft). */
+export async function insertProfileVersion(input: {
+  analysisId: string;
+  brandId: string;
+  profile: BrandProfile;
+  evidence: DiscoveryEvidence[];
+  status: "publish_candidate" | "published" | "rejected";
+  sourceDraftProfileId: string;
+  knowledgeHash: string;
+}): Promise<{ id: string }> {
+  const db = getDb();
+  const [row] = await db
+    .insert(brandProfiles)
+    .values({
+      analysisId: input.analysisId,
+      brandId: input.brandId,
+      profile: input.profile,
+      evidence: input.evidence,
+      status: input.status,
+      sourceDraftProfileId: input.sourceDraftProfileId,
+      knowledgeHash: input.knowledgeHash,
+    })
+    .returning();
+  return { id: row.id };
 }

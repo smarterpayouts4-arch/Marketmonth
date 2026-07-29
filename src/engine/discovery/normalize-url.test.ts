@@ -4,8 +4,19 @@ import { describe, it } from "node:test";
 import { getOrigin, normalizeWebsiteUrl } from "./normalize-url";
 
 describe("normalizeWebsiteUrl", () => {
-  it("accepts bare domains and forces https", () => {
-    assert.equal(normalizeWebsiteUrl("example.com"), "https://example.com/");
+  it("accepts bare domains and forces https without trailing slash", () => {
+    assert.equal(normalizeWebsiteUrl("example.com"), "https://example.com");
+  });
+
+  it("collapses origin trailing slash to the same brand key", () => {
+    assert.equal(
+      normalizeWebsiteUrl("https://zynava.com/"),
+      "https://zynava.com"
+    );
+    assert.equal(
+      normalizeWebsiteUrl("https://zynava.com"),
+      "https://zynava.com"
+    );
   });
 
   it("strips query, hash, and trailing slash on paths", () => {

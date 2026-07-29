@@ -26,7 +26,7 @@ export const MARKETING_FOCUS_HINTS: Record<MarketingFocus, string> = {
   value_proposition:
     "Explain why the offer is useful, different, or worth considering.",
   product_education:
-    "Educate shoppers about the products or categories they research — not platform feature tutorials.",
+    "Educate buyers about the products or categories they research — not platform feature tutorials.",
   decision_support:
     "Answer questions, reduce uncertainty, and help people choose.",
   trust_authority:

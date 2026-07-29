@@ -20,8 +20,8 @@ export type ResultEvent = {
   cached: boolean;
   pageCount?: number;
   detectedLocations?: import("@/lib/discovery/location.schema").DetectedLocation[];
-  /** Grounded activation options — UI formats only, does not invent. */
-  activationProfile: import("@/lib/discovery/activation-profile").DiscoveryActivationProfile;
+  /** Grounded 3-section social discovery narrative — UI formats only. */
+  discoveryNarrative: import("@/lib/discovery/discovery-narrative.schema").SocialDiscoveryProfile;
 };
 
 export type ErrorEvent = {
