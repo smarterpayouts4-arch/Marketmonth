@@ -138,6 +138,28 @@ export async function loadContentDirectionsHandoffAsync(
         }
       }
     } catch {
+      // fall through to durable topic-generation record
+    }
+
+    // Production reload: session store may be empty — rehydrate from history.
+    try {
+      const res = await fetch(
+        `/api/brain/topic-generation?generationId=${encodeURIComponent(ids.generationId)}`
+      );
+      if (res.ok) {
+        const data = (await res.json()) as {
+          ok?: boolean;
+          record?: { handoff?: ContentDirectionsHandoffV1 };
+        };
+        if (data.ok && data.record?.handoff) {
+          const validated = validateContentDirectionsHandoff(
+            data.record.handoff,
+            expectedDomain
+          );
+          if (validated.ok) return validated.handoff;
+        }
+      }
+    } catch {
       // fall through
     }
   }

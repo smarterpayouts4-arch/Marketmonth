@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 
+import { selectedTopicContextSchema } from "@/brain/content/direction-writing-context";
+import { validateContentDirectionsHandoff } from "@/brain/content/handoff";
+import type { ContentDirectionsHandoffV1 } from "@/brain/content/types";
 import { createTopicGenerationRepository } from "@/brain/store";
 import { requireCompanyAccess } from "@/lib/auth/company-access";
 import { requireApiSession } from "@/lib/auth/require-api-session";
 import { enforceRateLimit } from "@/lib/http/durable-rate-limit";
-import { rateLimitKeyFromRequest } from "@/lib/http/rate-limit";
+import { tenantScopedRateLimitKey } from "@/lib/http/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -13,6 +16,8 @@ type Body = {
   generationId?: string;
   selectedDirectionId?: string;
   expectedRevision?: number;
+  selectedTopicContext?: unknown;
+  handoff?: unknown;
 };
 
 /**
@@ -23,7 +28,7 @@ type Body = {
  * because the CSV store was production-impossible); access is gated by
  * session + tenant ownership of the record's company.
  */
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   const session = await requireApiSession();
   if (!session.ok) {
     return NextResponse.json(
@@ -32,9 +37,32 @@ export async function POST(request: Request) {
     );
   }
 
+  const generationId = new URL(request.url).searchParams
+    .get("generationId")
+    ?.trim();
+  if (!generationId) {
+    return NextResponse.json(
+      { ok: false, error: "generationId is required" },
+      { status: 400 }
+    );
+  }
+
+  const repo = createTopicGenerationRepository();
+  const existing = await repo.getById(generationId);
+  if (!existing) {
+    return NextResponse.json(
+      { ok: false, error: "generation not found" },
+      { status: 404 }
+    );
+  }
+
   const rate = await enforceRateLimit(
-    "brain.topic-generation",
-    rateLimitKeyFromRequest(request)
+    "brain.topic-generation.get",
+    tenantScopedRateLimitKey({
+      userId: session.userId,
+      companyId: existing.company_id,
+      request,
+    })
   );
   if (!rate.ok) {
     return NextResponse.json(
@@ -43,6 +71,29 @@ export async function POST(request: Request) {
         status: 429,
         headers: { "Retry-After": String(rate.retryAfterSec) },
       }
+    );
+  }
+
+  const access = await requireCompanyAccess(
+    session.userId,
+    existing.company_id
+  );
+  if (!access.ok) {
+    return NextResponse.json(
+      { ok: false, error: access.error },
+      { status: access.status }
+    );
+  }
+
+  return NextResponse.json({ ok: true, record: existing });
+}
+
+export async function POST(request: Request) {
+  const session = await requireApiSession();
+  if (!session.ok) {
+    return NextResponse.json(
+      { ok: false, error: session.error },
+      { status: session.status }
     );
   }
 
@@ -78,6 +129,24 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { ok: false, error: "generation not found" },
       { status: 404 }
+    );
+  }
+
+  const rate = await enforceRateLimit(
+    "brain.topic-generation",
+    tenantScopedRateLimitKey({
+      userId: session.userId,
+      companyId: existing.company_id,
+      request,
+    })
+  );
+  if (!rate.ok) {
+    return NextResponse.json(
+      { ok: false, error: "Rate limit exceeded" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rate.retryAfterSec) },
+      }
     );
   }
 
@@ -132,10 +201,49 @@ export async function POST(request: Request) {
   });
 
   if (action === "continue") {
+    let selectedTopicContext = undefined;
+    if (body.selectedTopicContext !== undefined) {
+      const parsed = selectedTopicContextSchema.safeParse(
+        body.selectedTopicContext
+      );
+      if (!parsed.success) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: "Invalid selectedTopicContext",
+            errors: parsed.error.issues.map((i) => i.message),
+          },
+          { status: 400 }
+        );
+      }
+      selectedTopicContext = parsed.data;
+    }
+
+    let handoff: ContentDirectionsHandoffV1 | undefined;
+    if (body.handoff !== undefined) {
+      const validated = validateContentDirectionsHandoff(
+        body.handoff,
+        existing.domain
+      );
+      if (!validated.ok) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: "Invalid handoff",
+            errors: validated.errors,
+          },
+          { status: 400 }
+        );
+      }
+      handoff = validated.handoff;
+    }
+
     record = await repo.updateStatus({
       generationId,
       status: "continued",
       expectedRevision: record.record_revision,
+      selectedTopicContext,
+      handoff,
     });
   }
 

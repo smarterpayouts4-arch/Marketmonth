@@ -5,6 +5,7 @@
 | path | sourceFile |
 | --- | --- |
 | /api/auth/[...nextauth] | `src/app/api/auth/[...nextauth]/route.ts` |
+| /api/brain/content-atom/review | `src/app/api/brain/content-atom/review/route.ts` |
 | /api/brain/content-atom | `src/app/api/brain/content-atom/route.ts` |
 | /api/brain/content-directions | `src/app/api/brain/content-directions/route.ts` |
 | /api/brain/content/production | `src/app/api/brain/content/production/route.ts` |

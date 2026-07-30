@@ -14,10 +14,6 @@ import {
 } from "@/brain/store/paths";
 
 import type { IdeaLabRun } from "./idea-lab.types";
-import {
-  ideaLabRunEvaluationSchema,
-  type IdeaLabRunEvaluation,
-} from "./idea-quality.schema";
 
 const MAX_RUNS = 5;
 
@@ -57,22 +53,6 @@ export async function appendIdeaLabRun(run: IdeaLabRun): Promise<IdeaLabRun> {
   );
   await writeJsonAtomic(ideaLabRunsJsonPath(), { runs: next });
   return run;
-}
-
-export async function updateIdeaLabEvaluation(
-  runId: string,
-  evaluation: IdeaLabRunEvaluation
-): Promise<IdeaLabRun> {
-  assertDev();
-  const parsed = ideaLabRunEvaluationSchema.parse(evaluation);
-  const existing = await listIdeaLabRuns();
-  const idx = existing.findIndex((r) => r.runId === runId);
-  if (idx < 0) throw new Error(`Idea Lab run not found: ${runId}`);
-  const updated: IdeaLabRun = { ...existing[idx], evaluation: parsed };
-  const next = [...existing];
-  next[idx] = updated;
-  await writeJsonAtomic(ideaLabRunsJsonPath(), { runs: next });
-  return updated;
 }
 
 /** Clears isolated Lab topic history only — never product history. */

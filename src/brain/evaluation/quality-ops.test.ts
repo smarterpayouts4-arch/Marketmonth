@@ -29,14 +29,14 @@ describe("prompt A/B by version (P3.1)", () => {
   it("defaults to control with the registry version", () => {
     const a = assignPromptVariant("topic.llm-candidates", "zynava.com");
     assert.equal(a.variant, "control");
-    assert.equal(a.version, "topic-llm-candidates-v1");
+    assert.equal(a.version, "topic-llm-candidates-v1+craft-dna-v1");
   });
 
   it("forced B arm suffixes the version for attribution", () => {
     process.env[TOPIC_ENV] = "b";
     const a = assignPromptVariant("topic.llm-candidates", "zynava.com");
     assert.equal(a.variant, "b");
-    assert.equal(a.version, "topic-llm-candidates-v1+exp-b");
+    assert.equal(a.version, "topic-llm-candidates-v1+craft-dna-v1+exp-b");
   });
 
   it("split mode is deterministic per unit key and actually splits", () => {

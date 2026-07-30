@@ -19,8 +19,41 @@ const STRUCTURED_FIELDS = new Set([
   "ownedTopics",
 ]);
 
+/** Fields that discovery often stores as separator-joined topic lists. */
+const TOPIC_LIST_FIELDS = new Set([
+  "educationalTopics",
+  "knowsAbout",
+  "ownedTopics",
+  "contentOpportunities",
+  "seo.contentOpportunities",
+]);
+
+const TOPIC_LIST_SEPARATOR_RE = /\s*[·|]\s*|\s+[—–]\s+/;
+
 export function isStructuredEvidenceField(field: string): boolean {
   return STRUCTURED_FIELDS.has(field);
+}
+
+function isTopicListField(field: string): boolean {
+  return TOPIC_LIST_FIELDS.has(field);
+}
+
+/** Split joined topic blobs into per-heading/topic segments. */
+export function splitTopicListSegments(text: string): string[] {
+  const t = text.trim().replace(/\s+/g, " ");
+  if (!t) return [];
+  if (!TOPIC_LIST_SEPARATOR_RE.test(t) && !t.includes(" · ")) {
+    return [t];
+  }
+  const parts = t
+    .split(TOPIC_LIST_SEPARATOR_RE)
+    .map((p) => p.trim())
+    .filter((p) => {
+      if (!p) return false;
+      const words = p.split(/\s+/).filter(Boolean);
+      return words.length >= 3 || (words.length >= 1 && p.length >= 8);
+    });
+  return parts.length > 0 ? parts : [t];
 }
 
 function parseJsonLike(value: string): unknown {
@@ -102,20 +135,30 @@ export function parseStructuredEvidenceValue(
 ): TopicEvidenceItem[] {
   const out: TopicEvidenceItem[] = [];
 
+  const pushPossiblySplit = (text: string, value: string) => {
+    const segments =
+      isTopicListField(field) && /[·|]|(?:\s[—–]\s)/.test(text)
+        ? splitTopicListSegments(text)
+        : [text];
+    for (const segment of segments) {
+      pushTextItem(out, {
+        recordType,
+        field,
+        value: segment,
+        text: segment,
+        sourceUrl,
+        evidenceType,
+        confidence,
+      });
+    }
+  };
+
   const flatten = (value: unknown) => {
     if (value == null) return;
     if (typeof value === "string") {
       const parsed = parseJsonLike(value);
       if (typeof parsed === "string") {
-        pushTextItem(out, {
-          recordType,
-          field,
-          value,
-          text: parsed,
-          sourceUrl,
-          evidenceType,
-          confidence,
-        });
+        pushPossiblySplit(parsed, value);
         return;
       }
       flatten(parsed);
@@ -125,15 +168,7 @@ export function parseStructuredEvidenceValue(
       if (value.length === 0) return;
       for (const item of value) {
         if (typeof item === "string") {
-          pushTextItem(out, {
-            recordType,
-            field,
-            value: item,
-            text: item,
-            sourceUrl,
-            evidenceType,
-            confidence,
-          });
+          pushPossiblySplit(item, item);
         } else if (item && typeof item === "object") {
           const obj = item as Record<string, unknown>;
           const name =

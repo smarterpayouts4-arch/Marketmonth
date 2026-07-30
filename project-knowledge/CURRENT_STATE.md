@@ -4,11 +4,13 @@ status: active
 authority: canonical
 owner: engineering
 last_verified: 2026-07-29
-verified_against_commit: 4a2dc0a
+verified_against_commit: ffaf395
 related_paths:
   - project-knowledge/CURRENT_STATE.md
   - project-knowledge/CONTENT_BRAIN.md
-  - project-knowledge/FEATURES/website-best-practice-auditor.md
+  - project-knowledge/FEATURES/content-brain.md
+  - project-knowledge/DECISIONS/0005-content-atom-v2.md
+  - docs/ai/content-brain-ownership-matrix.md
 ---
 
 # CURRENT_STATE
@@ -52,11 +54,11 @@ Discovery Phase 1 **Partial** (live crawl → brand profile → **3-section soci
 - Discovery MCP stdio (`mm_*` context + LEARN tools; allowlisted reads; no knowledge/code writes)
 - Docker MCP profile `marketmonth_development` (YouTube Transcripts, Playwright, Context7) for agent research/eng — see [`docs/ai/agent-toolchain.md`](../docs/ai/agent-toolchain.md)
 - Site SEO subsystem (`src/seo/`) Phase 1A foundation: identity-driven metadata, robots, sitemap, JSON-LD, generated `llms.txt`, brand-change map + verify scripts; Phase 1B intelligence (research/recommend) Partial
-- Content Brain (`src/brain/**` + policy/contracts/observability): **Brand Core** sole runtime brand SoT via `getBrandCore` / `getBrandCoreAsync` (disk-then-DB via `company_profile_artifacts`, hash-keyed cache). Lean contracts + prompt registry + `ContentRunTrace` / `RunContext` + draft-eval. Brain routes (`topic-candidates`, `content-directions`, `content-atom`, `topic-generation`): session + durable rate limit + tenant check (`requireCompanyAccess`). Shared OpenAI client: retry/backoff, circuit breaker, concurrency semaphore, per-tenant daily token caps (`llm_usage_daily`). `npm run validate:stabilization` is the health gate. Doctrine: [`CONTENT_BRAIN.md`](./CONTENT_BRAIN.md); audit record: [`docs/audits/topic-generator-architecture-health-audit.md`](../docs/audits/topic-generator-architecture-health-audit.md). Gate 2 remains **Partial**. Directions **`deterministic-v1`** default; product Atom `preferLlm: false`. **Two-generator policy (documented):** Idea Lab = LLM candidates + deterministic fallback; product Marketing Topic / `content-directions` = deterministic `generateTopicCandidates` only (honest provenance; not the same as Idea Lab).
-- **Idea Lab** (dev only, `/dev/brain/idea-lab`): Sandboxed Marketing Topic–style UI. Isolated Lab topic history CSV (never mutates product history). Production page + APIs return 404/403. Stage 1: four **TopicCategoryId** chips; LLM candidates (`topicLlmCandidates` / `gpt-5.4-nano`) with strict `json_schema`, repair retry, rejection taxonomy, field/number provenance; deterministic fallback; subject-kind-conditioned title-hook shells (no retail "check" shells on trust/FAQ/brand kinds); prompt A/B by version (`PROMPT_EXPERIMENT_TOPIC_LLM_CANDIDATES`); optional LLM-as-judge sampling (`BRAIN_JUDGE_SAMPLE_RATE`); quality-drop alerts. Golden harness (Zynava + ClearFlow × 4 categories) + baseline CI gate. See [`IDEA_LAB_TOPIC_STRATEGY.md`](./IDEA_LAB_TOPIC_STRATEGY.md), ADR 0003/0004, `SANDBOX.md`.
+- Content Brain (`src/brain/**` + policy/contracts/observability): **Brand Core** sole runtime brand SoT via `getBrandCore` / `getBrandCoreAsync` (disk-then-DB via `company_profile_artifacts`, hash-keyed cache). Lean contracts + prompt registry + `ContentRunTrace` / `RunContext` + draft-eval. Brain routes (`topic-candidates`, `content-directions`, `content-atom`, `content-atom/review`, `content/production`, `topic-generation`): session + durable rate limit + tenant check (`requireCompanyAccess`). Shared OpenAI client: retry/backoff, circuit breaker, concurrency semaphore, per-tenant daily token caps (`llm_usage_daily`). `npm run validate:stabilization` is the health gate. Doctrine: [`CONTENT_BRAIN.md`](./CONTENT_BRAIN.md); ADR 0005. Gate 2 remains **Partial**. Directions **`deterministic-v1`** default. **Content Atom v2 Live:** constrained LLM primary (`PRODUCT_ATOM_PREFER_LLM = true` in `provider-policy.ts`; generate via `atom/generate.ts`); select→atom Lab/Studio handoff; approve/lock before specialists; no human Idea Lab checklist. **Craft DNA (Partial/opt-in):** shared `src/brain/craft/` (`CRAFT_DNA_VERSION=craft-dna-v1`); atom **two-pass** polish (`ATOM_CRAFT_POLISH_PROVIDER` / `PROMPT_EXPERIMENT_ATOM_CORE_LLM=b`) fail-closed after grounded generate; framework-promise gate + craft scores + plain-language limited ack; token budgets centralized (`token-budgets.ts`, atom 40k). **Two-generator policy (documented):** Idea Lab = LLM candidates + deterministic fallback; product Marketing Topic / `content-directions` = deterministic `generateTopicCandidates` only (honest provenance; not the same as Idea Lab).
+- **Idea Lab** (dev only, `/dev/brain/idea-lab`): Sandboxed Marketing Topic–style UI. Isolated Lab topic history CSV (never mutates product history). Production page + APIs return 404/403. Stage 1: four **TopicCategoryId** chips; LLM candidates (`topicLlmCandidates` / `gpt-5.4-nano`) with strict `json_schema`, repair retry, rejection taxonomy, field/number provenance; deterministic fallback; subject-kind-conditioned title-hook shells (no retail "check" shells on trust/FAQ/brand kinds); prompt A/B by version (`PROMPT_EXPERIMENT_TOPIC_LLM_CANDIDATES`); craft clause on topic LLM + hook-enrichment; **LLM-as-judge always-on** for Lab runs (advisory); quality-drop alerts; atom stage after selection with Craft used card + Craft tab; approve forwards `limitationsAcknowledgement`; **Create YouTube Content** → `/content?atomId=`. Golden harness (Zynava + ClearFlow × 4 categories) + baseline CI gate. See [`IDEA_LAB_TOPIC_STRATEGY.md`](./IDEA_LAB_TOPIC_STRATEGY.md), ADR 0003/0004/0005, `SANDBOX.md`.
 - Discovery collection quality (Zynava): main-content cleaning; evidence-grounded narrative; FAQ glue rejection; acceptance gate. Clean-slate path: draft → publish → `company_publications` + approved CSV. Dual DB markers. Idea Lab loads via `BrandCoreRepository` only.
-- Unified content pipeline: Company CSV → `compileBrandCore()` → Directions → human selects ONE idea → Content Atom → channel specialists. Only **YouTube Short** enabled. Canonical identity **`generation_id` only**. Topic history: repository port — **production** uses Neon `topic_generations` (+ durable `content_run_traces`); **dev** defaults to CSV `data/runtime/topic-generation-history.csv` (`BRAIN_HISTORY_STORE=db` forces DB in non-prod). Optimistic concurrency via `record_revision`. Studio Prompt Inspector stages Directions | Atom | YouTube Short | Prompt (dev default); Overview no longer hardcodes fake provider labels.
-- Dashboard workflow: Marketing Topic → Content → Review → Results (Learn removed). Selecting a direction saves handoff and routes to `/content`; `/strategy` and legacy `?phase=strategy|learn` → `/dashboard?phase=marketing-topic`; `?phase=content` → `/content`
+- Unified content pipeline: Company CSV → `compileBrandCore()` → Directions → human selects ONE idea → **Content Atom v2** → approve/lock (MT or Idea Lab) → `/content?atomId=` → `produceContentBundle` (`src/brain/content-studio/`). **channelRegistry:** only YouTube Short `enabled` (`youtubeLong` `not_connected`). **content-studio format registry:** YouTube Short + Video packages Live; other platforms `coming_soon`. Canonical identity **`generation_id` only**. Topic history: repository port — **production** uses Neon `topic_generations` (+ durable `content_run_traces`); **dev** defaults to CSV `data/runtime/topic-generation-history.csv` (`BRAIN_HISTORY_STORE=db` forces DB in non-prod). Optimistic concurrency via `record_revision`. **Studio atomId-only:** bare `/content` = empty state (no localStorage handoff Studio). Production Inspector (dev). Acceptance: `npm run verify:select-to-atom`.
+- Dashboard workflow: Marketing Topic → Content → Review → Results (Learn removed). Selecting a direction builds atom on MT → approve/lock → `/content?atomId=`; Idea Lab same deep-link; `/strategy` and legacy `?phase=strategy|learn` → `/dashboard?phase=marketing-topic`; `?phase=content` → `/content`
 
 ## Mocked
 
@@ -68,13 +70,20 @@ Discovery Phase 1 **Partial** (live crawl → brand profile → **3-section soci
 
 - App-level automated tests for discovery
 - Server actions; live produce / publish / analytics backends
-- Hardened production auth gates on **non-brain** surfaces (brain topic/directions/atom/topic-generation routes are gated)
-- Production Neon apply of migrations `0006`/`0007` (`topic_generations`, `content_run_traces`, `rate_limit_windows`, `llm_usage_daily`) — code Live; deploy smoke **Not verified** in this session
+- Hardened production auth gates on **non-brain** surfaces (brain topic/directions/atom/review/production/topic-generation routes are gated)
+- Production Neon apply of migrations `0006`/`0007`/`0008` (`topic_generations`, `content_run_traces`, `rate_limit_windows`, `llm_usage_daily`, `content_atoms`) — code Live; **local Neon** apply of `0007`/`0008` verified 2026-07-29 (`db:assert-safety` probes OK); broader deploy smoke still **Not verified**
 - Product Marketing Topic UI still does not call the Idea Lab LLM candidate path (by policy; not a defect)
+- Content Studio full sanitize / Marketing Topic select→atom cutover (legacy handoff + bare `/content` dual path remains)
 
 ## Last verified
 
-- 2026-07-29 (Topic Generator P0–P3 remediation: auth/tenant, DB history+traces, resilience, classifier generalization, quality ops; typecheck/lint green; 536/537 tests — sole failure is unrelated landing `month-plan.test.ts`)
+- 2026-07-29 (Living docs sync: ownership matrix + CURRENT_STATE honesty for dual Studio paths / dual registries / `produceContentBundle`; `content/production` gated-route list)
+- 2026-07-29 (Craft DNA two-pass: `src/brain/craft/` + atom craft-polish fail-closed; framework-promise/craft scores/plain-language limited; topic+discovery craft clauses; token budgets 40k atom; Idea Lab Craft tab; targeted test slice green; polish default off unless `ATOM_CRAFT_POLISH_PROVIDER` or experiment arm B)
+- 2026-07-29 (LLM subject snap + atom store: split `educationalTopics`/`knowsAbout` joined blobs; LLM candidates snap subjects to `classifyContextSubjects` entities; strip separator edges; shared `src/db/pg-errors.ts` cause-chain classifier; `createAtomRepository` JSON fallback on missing table; content-atom route no longer leaks SQL; local Neon migrations `0007`/`0008` applied — `llm_usage_daily` + `content_atoms` probes OK)
+- 2026-07-29 (Content Atom repair: dual subject fields + multi-item guard + camel deglue + MM_PIPELINE_TRACE terminal pipeline + statusReasons + category_fidelity warn-only + full atom persist/readable doc + Studio findUnlocked try/catch + safe CSV resanitize; Phase 7 regenerates ClearFlow/Zynava — helper Short readiness still judged on regenerated atom, not plan completion)
+- 2026-07-29 (Content Atom rich contracts: evidence admission, claim capabilities, application-owned status, limited-ack approve, build-key idempotency, refs-only build trace, cost-cap reason split; ADR 0005)
+- 2026-07-29 (Content Atom v2 / select→atom Phase 1: constrained LLM primary, checklist removed, judge always-on Lab, industry corpus gates; ADR 0005)
+- 2026-07-29 (Topic Generator P0–P3 remediation: auth/tenant, DB history+traces, resilience, classifier generalization, quality ops)
 - 2026-07-28 (Discovery three-section narrative: approved-first artifact, SocialDiscoveryProfile, cadence/channel/pillar investment)
 
 ---
@@ -87,10 +96,10 @@ Status values: `Live` | `Partial` | `Prototype` | `Mocked` | `Planned` | `Blocke
 
 Status: Partial
 
-Implemented: crawl (extras seed + retry/delay/telemetry), extractors (structured FAQ + main-content clean), evidence-grounded `buildDiscoveryNarrative` → `SocialDiscoveryProfile` (3 sections + cadence + content universe + platform mapping), quality gate, strategy draft, streaming analyze API preferring approved.csv over draft + Layer-1 snapshots + gate diagnostics, Neon draft persist (brand upsert) + `publish:company-profile` materialize CSV, landing discovery card with 3-section stepper and gated investment, display-copy polish post-step (`gpt-5.4-nano`, card row title + summary only, fail-closed to deterministic copy, on when `OPENAI_API_KEY` is set)  
+Implemented: crawl (extras seed + retry/delay/telemetry), extractors (structured FAQ + main-content clean), evidence-grounded `buildDiscoveryNarrative` → `SocialDiscoveryProfile` (3 sections + cadence + content universe + platform mapping), quality gate, strategy draft (craft clause on strategy system; profile extraction stays temperature 0), streaming analyze API preferring approved.csv over draft + Layer-1 snapshots + gate diagnostics, Neon draft persist (brand upsert) + `publish:company-profile` materialize CSV, landing discovery card with 3-section stepper and gated investment, display-copy polish post-step (`gpt-5.4-nano`, card row title + summary only, fail-closed to deterministic copy, craft clause + token budget, on when `OPENAI_API_KEY` is set)  
 Mocked: persistent human approval for strategy; activation analytics not instrumented  
 Missing: production observability, habit-loop Hook, Dev UI publish button  
-Last verified: 2026-07-28
+Last verified: 2026-07-29 (craft clause on strategy + display-copy polish; profile still temp 0)
 
 ### Landing
 
@@ -104,13 +113,13 @@ Last verified: 2026-07-28 (reaffirmed Partial; intelligence still not Live)
 
 ### Content Brain
 
-Status: Partial — fixture-backed concrete directions; canonical Content Atom (`ready|invalid`); `channelRegistry` with **YouTube Short** enabled and other channels clean `not_connected` scaffolds; Studio honesty (no fake generation); semantic StrategyLock; MT fresh session + Topic Generation History (dev CSV default / prod `topic_generations`); Idea Lab LLM+fallback vs product deterministic-only (documented two-generator policy); ID-only localStorage pointers for Studio handoff  
-Last verified: 2026-07-29 (Topic Generator P0–P3 remediation; Gate 2 remains Partial)
+Status: Partial overall — **Live:** Content Atom v2; MT/Idea Lab approve/lock → `/content?atomId=` vision Studio; YouTube Short + Video via `produceContentBundle`; constrained LLM primary + deterministic thin fallback; idempotent bundles; Studio honesty (export stubbed); StrategyLock; Topic Generation History. `channelRegistry`: Short enabled, Long `not_connected` (Video = format registry). Legacy handoff Studio removed. **Partial:** Gate 2 multi-package review shells; Craft DNA polish opt-in; image/TTS/JSON2Video/export Mocked.  
+Last verified: 2026-07-29 (Content Studio full sanitize — atomId-only)
 
 ### Brand / Strategy / Content / Review / Calendar
 
-Status: Partial — Marketing Topic (empty until Generate/Auto-generate; Start over / Regenerate ideas) + Content Studio (YT Short first); review/calendar still shells  
-Last verified: 2026-07-28 (reaffirmed; review/calendar still shells)
+Status: Partial — Marketing Topic (atom review on MT) + Content Studio vision shell (`?atomId=` only; bare `/content` = empty state); other platforms Coming soon; review/calendar still shells  
+Last verified: 2026-07-29 (Content Studio full sanitize — atomId-only)
 
 ### Publish + Learn (Analytics)
 
@@ -119,5 +128,5 @@ Last verified: 2026-07-28 (reaffirmed Planned — not implemented)
 
 ### Auth + Data
 
-Status: Partial — Auth.js + Neon schema + discovery persist when `DATABASE_URL` set; brain topic/directions/atom/topic-generation routes session + durable rate limit + tenant check; schema migrations through `0007` (`MARKETMONTH_SCHEMA_VERSION=7`) in-repo — production Neon apply still Missing  
+Status: Partial — Auth.js + Neon schema + discovery persist when `DATABASE_URL` set; brain topic/directions/atom/review/production/topic-generation routes session + durable rate limit + tenant check; schema migrations through `0008` (`content_atoms`) in-repo. Local Neon has `llm_usage_daily` + `content_atoms` after migrate; atom store falls back to JSON when the table is missing. Production Neon apply still Missing for full deploy smoke.  
 Last verified: 2026-07-29

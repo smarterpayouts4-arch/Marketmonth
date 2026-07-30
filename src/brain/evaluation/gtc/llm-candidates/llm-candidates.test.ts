@@ -1,8 +1,14 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
+import type { ContentBrainContext } from "@/brain/content/types";
+
 import type { TopicEvidenceItem } from "../../evidence/types";
 import { fetchLlmTopicCandidates } from "./fetch";
+import {
+  mapLlmCandidatesToFramed,
+  __mapLlmSubjectTestables,
+} from "./map-llm-candidates";
 import { llmTopicCandidatesResponseSchema } from "./schema";
 import { validateLlmTopicCandidate, __testables } from "./validate";
 
@@ -298,6 +304,95 @@ describe("__testables", () => {
       ),
       false
     );
+  });
+});
+
+describe("mapLlmCandidatesToFramed subject resolution", () => {
+  function zynavaLikeContext(): ContentBrainContext {
+    return {
+      brandName: "ZYNAVA",
+      domain: "zynava.com",
+      website: "https://zynava.com",
+      description: "Compare supplement prices across retailers.",
+      valueProposition: "Choose your ingredient, form, dietary needs, and budget.",
+      brandVoice: "Clear and educational",
+      audience: "Supplement shoppers comparing options",
+      products: ["Supplement search and price comparison"],
+      services: [],
+      indexedProducts: [
+        { name: "Magnesium", sourceUrl: "https://zynava.com/magnesium" },
+        { name: "Vitamin C", sourceUrl: "https://zynava.com/vitamin-c" },
+        { name: "Vitamin D3", sourceUrl: "https://zynava.com/vitamin-d3" },
+      ],
+      contentOpportunities: ["Magnesium", "Vitamin C"],
+      evidenceById: {
+        ev_edu: {
+          id: "ev_edu",
+          recordType: "evidence",
+          field: "educationalTopics",
+          value:
+            "Compare Supplement Prices Based on Your Preferences · Why Zynava Exists · Smarter Choices Start Here",
+          sourceUrl: "https://zynava.com",
+          sourceSnippet: "Compare Supplement Prices Based on Your Preferences",
+          confidence: "high",
+          evidenceType: "observed",
+        },
+        ev_mg: {
+          id: "ev_mg",
+          recordType: "evidence",
+          field: "indexedProduct",
+          value: "Magnesium",
+          sourceUrl: "https://zynava.com/magnesium",
+          sourceSnippet: "Magnesium",
+          confidence: "high",
+          evidenceType: "observed",
+        },
+      },
+      contextVersion: "test-v1",
+      source: "fixture",
+    };
+  }
+
+  it("snaps LLM candidate subject to Magnesium and never keeps a · separator", () => {
+    const context = zynavaLikeContext();
+    const framed = mapLlmCandidatesToFramed({
+      candidates: [
+        {
+          title: "Why comparing Magnesium gets confusing before you buy",
+          strategicAngle: "Ingredient education",
+          whyItFits: "Grounded in indexed Magnesium evidence",
+          evidenceRefs: ["ev_edu"],
+          confidence: 0.8,
+        },
+      ],
+      context,
+      objective: "product_education",
+    });
+    assert.ok(framed.length >= 1);
+    const seed = framed[0]!.seed;
+    assert.equal(seed.subject.toLowerCase().includes("magnesium"), true);
+    assert.equal(seed.subject.includes("·"), false);
+    assert.equal(seed.subjectType, "ingredient_or_component");
+    assert.ok(seed.rawSubject);
+    assert.ok(seed.normalizedSubject);
+  });
+
+  it("does not classify educationalTopics as ingredient_or_component", () => {
+    assert.notEqual(
+      __mapLlmSubjectTestables.inferSubjectKind("educationalTopics"),
+      "ingredient_or_component"
+    );
+  });
+
+  it("takes only the first segment from a joined evidence blob", () => {
+    const first = __mapLlmSubjectTestables.firstEvidenceSegment(
+      "Compare Supplement Prices Based on Your Preferences · Why Zynava Exists"
+    );
+    assert.equal(
+      first,
+      "Compare Supplement Prices Based on Your Preferences"
+    );
+    assert.equal(first.includes("·"), false);
   });
 });
 

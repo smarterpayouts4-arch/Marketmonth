@@ -57,6 +57,13 @@
       "when": 1785600100000,
       "tag": "0007_rate_limit_usage",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1785600200000,
+      "tag": "0008_content_atoms",
+      "breakpoints": true
     }
   ]
 }

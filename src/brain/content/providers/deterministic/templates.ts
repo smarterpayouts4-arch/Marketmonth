@@ -1,3 +1,5 @@
+import { pipelineTrace } from "@/brain/debug/pipeline-trace";
+
 import type { DirectionWritingContext } from "../../direction-writing-context";
 import { shortHash } from "../../evidence";
 import type { TopicCategoryId } from "../../topic-category";
@@ -10,6 +12,9 @@ import type {
 } from "../../types";
 import { purposeFor } from "./purpose";
 import { clamp, padSummary } from "./text";
+
+const BAD_QUESTION_PUNCHLINE =
+  /\bto\s+(Do|Does|Did|Is|Are|Can|Could|Should|Would|Will)\b/;
 
 const ANGLE_SEQUENCE: ContentAngle[] = [
   "beginner_guide",
@@ -25,6 +30,12 @@ export function buildSixVariations(input: {
   masterTopic: MasterTopic;
   writing: DirectionWritingContext;
   topicCategory?: TopicCategoryId;
+  /**
+   * Proof-library IDs (from brandSlice.evidence). When provided, angles rotate
+   * through these instead of raw evidenceById keys (which include businessName,
+   * logoUrl, etc. that never resolve in proof_library).
+   */
+  proofLibraryIds?: string[];
 }): [
   ContentVariation,
   ContentVariation,
@@ -36,6 +47,17 @@ export function buildSixVariations(input: {
   const { context, masterTopic, writing } = input;
   const brand = context.brandName;
   const subject = writing.topicSubject;
+  if (BAD_QUESTION_PUNCHLINE.test(`to ${subject}`)) {
+    pipelineTrace(
+      "direction.punchline",
+      {
+        bad: `guide to ${subject}`,
+        template: "beginner_guide",
+        subject,
+      },
+      "fail"
+    );
+  }
   const audience = writing.audienceLabel.value;
   const offer = writing.offerLabel.value;
   const pain =
@@ -44,8 +66,21 @@ export function buildSixVariations(input: {
   const promise =
     writing.valuePromise?.value ||
     `${brand} helps with ${offer}`;
-  const evidenceIds = Object.keys(context.evidenceById).slice(0, 3);
+  const allEvidenceIds =
+    input.proofLibraryIds && input.proofLibraryIds.length > 0
+      ? input.proofLibraryIds
+      : Object.keys(context.evidenceById);
   const strategy = writing.framingStrategy;
+
+  /** Per-angle evidence selection — rotate through proof_library IDs. */
+  function evidenceForAngle(index: number): string[] {
+    if (allEvidenceIds.length === 0) return [];
+    const picked: string[] = [];
+    for (let offset = 0; offset < 3; offset++) {
+      picked.push(allEvidenceIds[(index + offset) % allEvidenceIds.length]!);
+    }
+    return [...new Set(picked)];
+  }
 
   type Template = {
     angle: ContentAngle;
@@ -235,7 +270,7 @@ export function buildSixVariations(input: {
       index,
       masterTopic,
       context,
-      evidenceIds,
+      evidenceIds: evidenceForAngle(index),
       destination: context.website,
     })
   ) as [

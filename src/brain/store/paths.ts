@@ -25,10 +25,6 @@ export function atomPath(atomId: string): string {
   return path.join(runtimeRoot(), "atoms", `${sanitize(atomId)}.json`);
 }
 
-export function packagePath(packageId: string): string {
-  return path.join(runtimeRoot(), "packages", `${sanitize(packageId)}.json`);
-}
-
 function sanitize(id: string): string {
   return id.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 120);
 }

@@ -76,6 +76,10 @@ function recordToRow(record: TopicGenerationRecord): string[] {
       ? JSON.stringify(record.intelligent_result)
       : "",
     record.validation ? JSON.stringify(record.validation) : "",
+    record.selected_topic_context
+      ? JSON.stringify(record.selected_topic_context)
+      : "",
+    record.handoff ? JSON.stringify(record.handoff) : "",
     String(record.record_revision),
     record.created_at,
     record.updated_at,
@@ -126,6 +130,10 @@ function rowToRecord(row: Record<string, string>): TopicGenerationRecord {
     validation: row.validation_json
       ? JSON.parse(row.validation_json)
       : undefined,
+    selected_topic_context: row.selected_topic_context_json
+      ? JSON.parse(row.selected_topic_context_json)
+      : undefined,
+    handoff: row.handoff_json ? JSON.parse(row.handoff_json) : undefined,
     record_revision: Number(row.record_revision || "1"),
     created_at: row.created_at,
     updated_at: row.updated_at,
@@ -282,6 +290,10 @@ export function createCsvTopicGenerationRepository(options?: {
         const next: TopicGenerationRecord = {
           ...current,
           status: input.status,
+          ...(input.selectedTopicContext
+            ? { selected_topic_context: input.selectedTopicContext }
+            : {}),
+          ...(input.handoff ? { handoff: input.handoff } : {}),
           record_revision: current.record_revision + 1,
           updated_at: new Date().toISOString(),
         };

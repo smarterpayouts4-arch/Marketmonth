@@ -214,6 +214,10 @@ export function createDbTopicGenerationRepository(): TopicGenerationRepository {
         (current) => ({
           ...current,
           status: input.status,
+          ...(input.selectedTopicContext
+            ? { selected_topic_context: input.selectedTopicContext }
+            : {}),
+          ...(input.handoff ? { handoff: input.handoff } : {}),
           record_revision: current.record_revision + 1,
           updated_at: new Date().toISOString(),
         })

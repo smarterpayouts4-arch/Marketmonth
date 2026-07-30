@@ -10,7 +10,7 @@ import {
 import { requireCompanyAccess } from "@/lib/auth/company-access";
 import { requireApiSession } from "@/lib/auth/require-api-session";
 import { enforceRateLimit } from "@/lib/http/durable-rate-limit";
-import { rateLimitKeyFromRequest } from "@/lib/http/rate-limit";
+import { tenantScopedRateLimitKey } from "@/lib/http/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -37,20 +37,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const rate = await enforceRateLimit(
-    "brain.topic-candidates",
-    rateLimitKeyFromRequest(request)
-  );
-  if (!rate.ok) {
-    return NextResponse.json(
-      { ok: false, error: "Rate limit exceeded" },
-      {
-        status: 429,
-        headers: { "Retry-After": String(rate.retryAfterSec) },
-      }
-    );
-  }
-
   let body: Body;
   try {
     body = (await request.json()) as Body;
@@ -74,6 +60,24 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { ok: false, error: access.error },
       { status: access.status }
+    );
+  }
+
+  const rate = await enforceRateLimit(
+    "brain.topic-candidates",
+    tenantScopedRateLimitKey({
+      userId: session.userId,
+      companyId: domain,
+      request,
+    })
+  );
+  if (!rate.ok) {
+    return NextResponse.json(
+      { ok: false, error: "Rate limit exceeded" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rate.retryAfterSec) },
+      }
     );
   }
 

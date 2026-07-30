@@ -122,6 +122,23 @@ export function parseCsv(text: string): string[][] {
   return rows;
 }
 
+/** Serialize rows with RFC4180 quoting (commas / quotes / newlines). */
+export function stringifyCsv(rows: string[][]): string {
+  return rows
+    .map((cells) =>
+      cells
+        .map((cell) => {
+          const v = cell ?? "";
+          if (/[",\n\r]/.test(v)) {
+            return `"${v.replace(/"/g, '""')}"`;
+          }
+          return v;
+        })
+        .join(",")
+    )
+    .join("\n");
+}
+
 /**
  * Header-name mapping. Validates rectangular shape first — never silent truncate.
  */

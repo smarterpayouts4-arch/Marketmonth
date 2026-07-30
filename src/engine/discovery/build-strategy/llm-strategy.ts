@@ -1,5 +1,7 @@
 import OpenAI from "openai";
 
+import { resolveModel } from "@/brain/policy/model-registry";
+import { tokenBudget } from "@/brain/policy/token-budgets";
 import type { DiscoveryEvidence } from "@/lib/discovery/evidence.schema";
 import {
   aiGroundedStrategyResultSchema,
@@ -18,8 +20,9 @@ export async function llmStrategy(input: {
   const { brandProfile, intent, evidence } = input;
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const completion = await client.chat.completions.create({
-    model: process.env.OPENAI_DISCOVERY_MODEL || "gpt-5.4-nano",
-    temperature: 0,
+    model: resolveModel("discovery"),
+    temperature: 0.3,
+    max_completion_tokens: tokenBudget("discoveryStrategy"),
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: STRATEGY_SYSTEM },

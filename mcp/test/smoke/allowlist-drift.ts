@@ -34,6 +34,8 @@ export async function testAllowlistDrift(): Promise<void> {
   assert.ok("adr0001" in PROJECT_DOCS, "adr0001 must be allowlisted");
   assert.ok("adr0002" in PROJECT_DOCS, "adr0002 must be allowlisted");
   assert.ok("adr0003" in PROJECT_DOCS, "adr0003 must be allowlisted");
+  assert.ok("adr0004" in PROJECT_DOCS, "adr0004 must be allowlisted");
+  assert.ok("adr0005" in PROJECT_DOCS, "adr0005 must be allowlisted");
   assert.ok(
     "agentBootstrap" in PROJECT_DOCS,
     "agentBootstrap must be allowlisted"

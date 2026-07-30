@@ -74,6 +74,10 @@
       "sourceFile": "src/app/api/auth/[...nextauth]/route.ts"
     },
     {
+      "path": "/api/brain/content-atom/review",
+      "sourceFile": "src/app/api/brain/content-atom/review/route.ts"
+    },
+    {
       "path": "/api/brain/content-atom",
       "sourceFile": "src/app/api/brain/content-atom/route.ts"
     },
@@ -136,6 +140,18 @@
   ],
   "envKeys": [
     {
+      "variable": "ALLOW_DEV_COMPANY_ALIASES",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
+      "variable": "ATOM_CRAFT_POLISH_PROVIDER",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
       "variable": "AUTH_SECRET",
       "inEnvExample": true,
       "referencedInSrc": true,
@@ -174,8 +190,8 @@
     {
       "variable": "DEV_AUTH_BYPASS",
       "inEnvExample": true,
-      "referencedInSrc": false,
-      "classification": "documented-unused"
+      "referencedInSrc": true,
+      "classification": "server-only"
     },
     {
       "variable": "DISCOVERY_COPY_POLISH_PROVIDER",
@@ -245,6 +261,12 @@
     },
     {
       "variable": "MM_IMAGE_RENDER",
+      "inEnvExample": false,
+      "referencedInSrc": true,
+      "classification": "undocumented"
+    },
+    {
+      "variable": "MM_PIPELINE_TRACE",
       "inEnvExample": false,
       "referencedInSrc": true,
       "classification": "undocumented"
@@ -348,7 +370,7 @@
   ],
   "duplicateRoutes": [],
   "ownership": {
-    "unownedCount": 30,
+    "unownedCount": 34,
     "qualifyingFeatureRoots": [
       "src/engine/discovery",
       "src/components/discovery",
@@ -361,7 +383,7 @@
   },
   "contentFingerprints": {
     "routes": "cfd0f9170564bd51",
-    "apis": "883b0df2f7a62ee0",
-    "env": "8cfb0995681a0efa"
+    "apis": "3c4106cbc78fb029",
+    "env": "cf9b6cc2f6029960"
   }
 }

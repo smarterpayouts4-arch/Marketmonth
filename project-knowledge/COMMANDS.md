@@ -3,7 +3,7 @@ title: MarketMonth Commands
 status: active
 authority: supporting
 owner: engineering
-last_verified: 2026-07-24
+last_verified: 2026-07-29
 ---
 
 # COMMANDS
@@ -32,6 +32,12 @@ npm run quality:check          # exact stale compare (requires complete probes)
 npm run ai:audit               # advisory OpenAI audit (does not change official score)
 npm run daily:closeout         # end-of-day gates + DAILY_LATEST report
 npm run project:audit          # knowledge:check && quality:check
+npm run validate:stabilization # Content Brain health gate (typecheck/lint/test/knowledge/mcp)
+npm run verify:select-to-atom  # select→atom acceptance gate (P0–P2 static checks)
+npm run inspect:content-atom   # live pipeline → atom readable dump (eng)
+npm run walkthrough:company-to-atom # company→topics→directions→atom walkthrough (eng)
+npm run spike:atom-depth       # throwaway LLM depth spike (not a product gate)
+npm run resanitize:company-csv # safe camel-glue CSV repair with backup (eng utility)
 npm run mcp:server             # Discovery MCP stdio
 npm run mcp:test               # MCP protocol smoke
 npm run seo:verify             # brand + crawl + metadata foundation checks

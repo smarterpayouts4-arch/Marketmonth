@@ -6,13 +6,19 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
+import { buildContentAtom } from "@/brain/atom/build-content-atom";
 import type { ContentBrainContext } from "@/brain/content/types";
+import { getBrandCore } from "@/brain/core/get-brand-core";
 
 import { frameTitle } from "./gtc/frame-title";
 import { deterministicHookedTitle } from "./gtc/topic-title-hook/templates";
 import type { TopicSeed } from "./objective-topic-strategies";
 import { classifyOfferNoun } from "./subjects/classify-offer";
 import { typedCommerceAttribute } from "./subjects/commerce-attributes";
+import {
+  corpusSupportsSupplementRetailHeuristics,
+  SUPPLEMENT_RETAIL_CORPUS_RE,
+} from "./subjects/corpus-industry";
 import {
   buildContextTokenIndex,
   sharesCatalogToken,
@@ -251,5 +257,56 @@ describe("subject-kind-conditioned shell families (P2.3)", () => {
     );
     assert.ok(hooked.title.length > 0);
     assert.notEqual(hooked.itchType, undefined);
+  });
+});
+
+describe("atom path industry neutrality (clearflow / thin)", () => {
+  it("clearflow corpus does not enable supplement/retail heuristics", () => {
+    const loaded = getBrandCore("clearflow-plumbing");
+    assert.equal(
+      corpusSupportsSupplementRetailHeuristics(loaded.context),
+      false
+    );
+  });
+
+  it("deterministic thin/limited atom for clearflow has no supplement vocabulary", async () => {
+    const loaded = getBrandCore("clearflow-plumbing");
+    const product = loaded.brandCore.indexed_products[0]?.name ?? "water heater";
+    const result = await buildContentAtom({
+      brandCore: loaded.brandCore,
+      preferLlm: false,
+      selected: {
+        masterTopic: {
+          id: "mt_clearflow",
+          source: "automatic",
+          punchline: `When to schedule ${product}`,
+          subheading: "",
+          rationale: "",
+          evidenceIds: [],
+          confidence: "medium",
+          safety: { status: "safe", reasons: [] },
+        },
+        variation: {
+          id: "var_clearflow_ps",
+          angle: "problem_solution",
+          punchline: `Why delaying ${product} costs more later`,
+          subheading: "Name the pain",
+          brief: `Homeowners delay ${product} until an emergency`,
+          audienceProblem: `Unclear timing for ${product}`,
+          strategicPurpose: "Make the next service call obvious",
+          evidenceIds: [],
+          assumptionIds: [],
+          confidence: "medium",
+          safety: { status: "safe", reasons: [] },
+        },
+      },
+    });
+    assert.ok(result.atom, "atom should be returned even when thin/limited");
+    const blob = JSON.stringify(result.atom);
+    assert.equal(
+      SUPPLEMENT_RETAIL_CORPUS_RE.test(blob),
+      false,
+      `clearflow atom must not contain supplement vocabulary: ${blob.slice(0, 400)}`
+    );
   });
 });

@@ -19,6 +19,10 @@ type IdeaLabCandidateListProps = {
   disabled?: boolean;
 };
 
+/**
+ * Idea Lab candidate list — presentational, Lab testids + title-hook badge.
+ * Product Marketing Topic uses the shared TopicCandidateList instead.
+ */
 export function IdeaLabCandidateList({
   candidates,
   completeness,

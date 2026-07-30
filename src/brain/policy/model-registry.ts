@@ -11,7 +11,7 @@ export const MODEL_REGISTRY = {
   contentAtomLlm: {
     env: "OPENAI_CONTENT_BRAIN_MODEL",
     fallbackEnv: "OPENAI_DISCOVERY_MODEL",
-    default: "gpt-4o-mini",
+    default: "gpt-5.4-nano",
   },
   hookEnrichment: {
     env: "OPENAI_HOOK_ENRICHMENT_MODEL",

@@ -19,6 +19,8 @@ export type ClassificationConfidence = "high" | "medium" | "low";
  */
 export type TopicSubjectSourceType = "brand_observed" | "industry_research";
 
+export type TopicSubjectShape = "question" | "noun" | "other";
+
 export type TopicSubject = {
   label: string;
   kind: TopicSubjectKind;
@@ -33,4 +35,10 @@ export type TopicSubject = {
    * must not unlock multiple distinct support keys via framing alone.
    */
   supportFamilyKey?: string;
+  /** Original wording (e.g. full FAQ question). Never discarded when set. */
+  rawSubject?: string;
+  /** Noun form for shells / beginner templates. */
+  normalizedSubject?: string;
+  /** Shape gate for title-hook / direction templates. */
+  subjectShape?: TopicSubjectShape;
 };

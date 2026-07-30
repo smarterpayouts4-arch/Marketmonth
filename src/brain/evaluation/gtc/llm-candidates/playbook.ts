@@ -3,6 +3,7 @@ import {
   topicCategoryPurposeLine,
   type TopicCategoryId,
 } from "@/brain/content/topic-category";
+import { buildCraftClause } from "@/brain/craft";
 import type { PromptVariant } from "@/brain/policy/prompt-experiments";
 
 const SHARED_RULES = [
@@ -21,9 +22,7 @@ const SHARED_RULES = [
   "- Never imply that research, studies, or science prove an effect.",
   "- You MAY deconstruct the brand's own label language and teach comparison mechanics grounded in evidence.",
   "",
-  "HOOK / ITCH",
-  "- Each candidate needs a hook that triggers curiosity (the itch) without inventing claims.",
-  "- audienceQuestion should name the reader's real uncertainty, grounded in the evidence.",
+  buildCraftClause("topic_title"),
   "",
   "PROHIBITED",
   "- No internal SEO or ops instructions.",

@@ -55,21 +55,21 @@ export const PROMPT_REGISTRY: readonly PromptRegistryEntry[] = [
   },
   {
     id: "atom.core-llm",
-    version: "core-content-brain-v1",
+    version: "content-atom-v2+craft-dna-v1",
     workflowStage: "content_atom",
-    promptModule: "src/brain/pipeline/prompts.ts",
+    promptModule: "src/brain/atom/generate.ts + src/brain/atom/craft-polish + src/brain/craft",
     providerPolicy: PRODUCT_ATOM_PREFER_LLM
-      ? "n/a"
+      ? "ask-openai"
       : "deterministic-atom",
     modelPolicy: "contentAtomLlm",
-    outputSchema: "contentAtomSchema",
-    fallback: "deterministic atom builder",
+    outputSchema: "contentAtomSchema (content-atom-v2)",
+    fallback: "deterministic skeleton → limited/insufficient",
   },
   {
     id: "channel.youtube-short",
     version: "youtube-short-specialist-v1",
     workflowStage: "youtube_short",
-    promptModule: "src/brain/channels/youtube-short/prompt.ts",
+    promptModule: "src/brain/channels/youtube-short/specialist.ts (deterministic — no LLM prompt)",
     providerPolicy: "deterministic-atom",
     modelPolicy: "none",
     outputSchema: "youtubeShortPackageSchema",
@@ -97,9 +97,9 @@ export const PROMPT_REGISTRY: readonly PromptRegistryEntry[] = [
   },
   {
     id: "topic.llm-candidates",
-    version: "topic-llm-candidates-v1",
+    version: "topic-llm-candidates-v1+craft-dna-v1",
     workflowStage: "idea_lab_topic_candidates",
-    promptModule: "src/brain/evaluation/gtc/llm-candidates/build-prompt.ts",
+    promptModule: "src/brain/evaluation/gtc/llm-candidates/playbook.ts + src/brain/craft",
     providerPolicy: "n/a",
     modelPolicy: "topicLlmCandidates",
     outputSchema: "llmTopicCandidatesResponseSchema",

@@ -3,11 +3,14 @@ title: Content Brain Ownership Matrix
 status: active
 authority: supporting
 owner: engineering
-last_verified: 2026-07-28
+last_verified: 2026-07-29
 related_paths:
   - src/brain/**
+  - src/brain/content-studio/**
+  - src/brain/craft/**
   - project-knowledge/CONTENT_BRAIN.md
   - project-knowledge/DOMAIN_GLOSSARY.md
+  - project-knowledge/DECISIONS/0005-content-atom-v2.md
   - docs/ai/content-brain-stabilization.md
   - mcp/src/security/docs-registry.ts
   - src/lib/project-knowledge/retrieve.ts
@@ -41,16 +44,19 @@ Supporting engineering map for Content Brain stabilization. Doctrine SoT remains
 | Selected topic context | Content Brain directions | `src/brain/content/direction-writing-context.ts` (`SelectedTopicContext` + Zod) | Idea Lab lineage embeds fields; GCU input in `use-cases/gcu/types.ts` | `gcd/build-master-topic.ts`, `assemble-bundle.ts`, `provider-stage.ts`, Idea Lab ILD | Ad-hoc `{ topic, title }` objects in UI | Pass Zod-validated `SelectedTopicContext` only; masterTitle never trim-mutated | Immediate regression |
 | Content direction | Content Brain directions | `src/brain/content/types.ts` (`ContentVariation` / `ContentDirectionCell`) | History projection `TopicGenerationDirection` in `topic-generation-record.schema.ts` | Marketing Topic UI, Idea Lab cards, handoff builder | UI redefining angle / summary rules | UI presentation only; brain owns fields + Six-Idea Contract | Present debt |
 | Six-direction bundle | Content Brain directions | `src/brain/content/types.ts` (`ContentDirectionResult`) + `gcd/assemble-bundle.ts` | Doctrine Six-Idea Contract in `CONTENT_BRAIN.md` | `generateAndRecordContentDirections`, product API `content-directions`, Idea Lab ILD | Parallel Lab-only bundle shapes | Shared use case; Lab provider locked `deterministic-v1` | Immediate regression |
-| Selected direction | Content Brain handoff | `src/brain/content/handoff.ts` + `ContentDirectionsHandoffV1` in `types.ts` / `schemas.ts` | Session store `src/brain/store/handoff-store.ts`; API `/api/brain/session` | Atom (`build-content-atom-from-handoff.ts`), production (`produce-content-from-handoff.ts`), Studio | Saving full six ideas as “selected” without Gate 1 | Gate 1 = human picks ONE `selectedVariationId` | Immediate regression |
-| Content Atom | Core Content Brain / atom | `src/brain/atom/content-atom.schema.ts` + `build-content-atom.ts` | Pipeline wrappers `pipeline/core-content-brain.ts`, `deterministic-atom.ts`, `llm-atom.ts` | Channel specialists, Studio, StrategyLock | LLM atom becoming product default | Product forces `PRODUCT_ATOM_PREFER_LLM = false` | Immediate regression |
-| Channel package | Channel specialists | Shared envelope `src/brain/channels/package-envelope.schema.ts`; YouTube Short `youtube-short/package.schema.ts` + `specialist.ts` | Studio DTO `youtube-short/to-studio-package.ts`; other channels `not_connected` scaffolds | Production use case, Studio preview | Fake generation on `not_connected` channels | Only YouTube Short enabled via `channel-registry.ts` | Maturity |
-| Evaluation result | Idea Lab evaluation | `src/brain/evaluation/idea-quality.schema.ts` (`IdeaLabRunEvaluation`) | Product history eval slice `TopicGenerationEvaluation` in topic-generation-record schema | Idea Lab evaluation drawer / store (`idea-lab-store.ts`); Lab UI | Product Gate 2 using Lab human scores as production approve | Keep Lab eval separate from product Gate 2 until product schema ships | Present debt |
+| Selected direction | Content Brain handoff | `src/brain/content/handoff.ts` + `ContentDirectionsHandoffV1` in `types.ts` / `schemas.ts` | Session store `src/brain/store/handoff-store.ts`; API `/api/brain/session` | Atom (`build-content-atom-from-handoff.ts`), Studio via locked `atomId` | Saving full six ideas as “selected” without Gate 1 | Gate 1 = human picks ONE `selectedVariationId` | Immediate regression |
+| Content Atom | Core Content Brain / atom | `src/brain/atom/content-atom.schema.ts` + `build-content-atom.ts` | Pipeline wrappers `pipeline/core-content-brain.ts`, `deterministic-atom.ts`; ADR 0005 | Channel specialists, Content Studio, StrategyLock, review route | Unconstrained LLM atom / hollow templates | Product constrained LLM via `atom/generate.ts` + `PRODUCT_ATOM_PREFER_LLM` in `provider-policy.ts`; deterministic thin fallback | Immediate regression |
+| Craft DNA | Shared craft clauses + atom polish | `src/brain/craft/` (`CRAFT_DNA_VERSION`) + `src/brain/atom/craft-polish/` | Topic LLM / hook-enrichment / Discovery display-copy craft clauses | Atom two-pass polish, Idea Lab Craft tab, inspectors | Treating polish as always-on product default | Opt-in fail-closed (`ATOM_CRAFT_POLISH_PROVIDER` or experiment arm B); grounding beats style | Maturity |
+| Channel package | Channel specialists + content-studio adapters | Shared envelope `src/brain/channels/package-envelope.schema.ts`; YouTube Short `youtube-short/`; formats in `src/brain/content-studio/` | Other channels `not_connected` scaffolds | `produce-content-bundle`, Short/Video adapters | Fake generation on `not_connected` channels | **channelRegistry:** only YouTube Short `enabled`; Video via format registry | Maturity |
+| Content Studio format package | Content Studio | `src/brain/content-studio/` (`platform-registry.ts`, `schemas/format-package.ts`, adapters) | Orchestration `produce-content-bundle.ts`; DTO `content-studio/to-studio-package.ts` | `/content?atomId=` Studio, production API | Confusing Studio Video with `youtubeLong` channel | YouTube Short + Video formats **Live** under format registry; other platforms `coming_soon` | Immediate regression |
+| Production bundle store | Content Studio persistence | `src/brain/content-studio/bundle-store.ts` → `data/runtime/production-bundles/` | Not Neon; schema in `format-package.ts` | Production GET/POST, atom Studio shell | Inventing a second durable package SoT in Neon without ADR | Idempotent JSON bundles keyed by atom; export/render remain stubs | Maturity |
+| Lab quality signal | Idea Lab judge + harness | `judgeTopicCandidates` (always-on Lab) + golden harness | Product history `TopicGenerationEvaluation` / `saveEvaluation` (separate system) | Idea Lab runs, quality-drop alerts | Product Gate 2 using Lab judge as production approve; resurrecting deleted `idea-quality.schema` / eval drawer | Judge advisory only; no human checklist UI (ADR 0005) | Present debt |
 | Review decision | Product Review (shell) | `src/app/(app)/review/page.tsx` + mock `src/data/mock-review` | Package envelope `status: draft \| validated \| rejected`; Studio Gate 2 Partial in content dashboard | Review page (placeholder), Studio continue-to-review | Claiming Gate 2 complete | Document honesty — full approve/reject-per-package not shipped | Present debt |
-| Run trace | Idea Lab evaluation | `src/brain/evaluation/build-idea-lab-trace.ts` + `BrainTraceStep` in `idea-lab.types.ts` | ILD stages in `use-cases/ild/*`; UI trace tab under Idea Lab | Idea Lab inspector / history | Product runtime inventing a second opaque trace format without contract | Lab-first; product RunContext deferred (see baseline gaps) | Deferral |
+| Run trace | Product observability + Lab inspector | `src/brain/observability/` (`RunContext` / `TraceRecorder` → `ContentRunTrace`); durable `content_run_traces` | Lab: `build-idea-lab-trace.ts` + `BrainTraceStep`; ILD stages | Directions route best-effort persist; Idea Lab inspector | Parallel opaque product formats without contract | Product RunContext Partial/Live best-effort; Lab keeps `BrainTraceStep` | Maturity |
 | Runtime history | Topic generation store | `src/brain/store/csv-topic-generation-repository.ts` → `data/runtime/topic-generation-history.csv` | Idea Lab history `data/runtime/idea-lab-topic-history.csv` (`IDEA_LAB_HISTORY_RELATIVE`); record shape `topic-generation-record.schema.ts` | Novelty, eval, Marketing Topic soft-notices, compare scripts | Writing product history from Idea Lab; dual JSON stores (removed — keep gone) | CSV only via repository; Lab never writes product CSV | Immediate regression |
 | Provider policy | Brain policy | `src/brain/policy/provider-policy.ts` | Resolver `content/providers/resolve-provider.ts`; ADR 0002 | Product directions API, Idea Lab ILD, atom preferLlm gate | Scattered `deterministic-v1` string literals / openai-stub language | Import policy constants; no stub provider | Immediate regression |
-| Model registry | Brain policy | `src/brain/policy/model-registry.ts` | Env fallbacks still read in some adapters historically | Intelligent directions, LLM atom, hook enrichment, title polish, Discovery | Hard-coding model ids in prompts/adapters | `resolveModel(key)` only | Present debt |
-| Prompt templates | Feature-local prompt modules | Directions: `content/providers/intelligent-v1/prompt.ts`; Atom: `pipeline/prompts.ts`; YT Short: `channels/youtube-short/prompt.ts`; Lab research / polish under `evaluation/**` | Discovery strategy prompts under `src/engine/discovery/**` (separate product surface) | Providers that call OpenAI | Central `PROMPTS.md` / dumping PK into prompts | Keep prompts colocated; never inject Project Knowledge wholesale | Maturity |
+| Model registry | Brain policy | `src/brain/policy/model-registry.ts` | Env fallbacks still read in some adapters historically | Intelligent directions, LLM atom, hook enrichment, Discovery | Hard-coding model ids in prompts/adapters | `resolveModel(key)` only | Present debt |
+| Prompt templates | Feature-local prompt modules | Directions: `content/providers/intelligent-v1/prompt.ts`; Atom: `atom/generate.ts` (re-export via `pipeline/prompts.ts`); YT Short: deterministic `specialist.ts` (no LLM prompt); Lab research / polish under `evaluation/**` | Discovery strategy prompts under `src/engine/discovery/**` (separate product surface) | Providers that call OpenAI | Central `PROMPTS.md` / dumping PK into prompts | Keep prompts colocated; never inject Project Knowledge wholesale | Maturity |
 | MCP document registry | Discovery MCP security | `mcp/src/security/docs-registry.ts` (`PROJECT_DOCS`) | Tool descriptions in `docs/ai/mcp.md` | `mm_read_project_doc` allowlist | Adding arbitrary paths or Refrence | Allowlist only; MCP does not orchestrate Content Brain | Immediate regression |
 | Project Knowledge retrieval seeds | Knowledge lib | `src/lib/project-knowledge/retrieve.ts` (`SEED_DOCS`) | Ask route `src/app/api/project-knowledge/ask`; docs-index | Agents / ask spanning reader | Seeding reference-library or `.env`; dumping retrieval into generation | Block prefixes include `reference-library/` + legacy `Refrence folder/`; CONTENT_BRAIN in seeds for doctrine Q&A only | Immediate regression |
 | reference-library | Noncanonical research library (non-product) | `reference-library/` (repo root) | README, `index.yaml`, `PROMOTION.md`, ignore lists | **None in production** — blocked by retrieve, MCP, tsconfig, ask, `.cursorignore` | Copy-paste into `src/` or doctrine | **KEEP** noncanonical; never import; promote only via rule below | Deferral |
@@ -111,17 +117,17 @@ Lean approach: formalize a named contract only when data crosses a real boundary
 
 ### Evaluation Result
 
-1. **Exchangers:** Idea Lab human evaluation UI ↔ `idea-lab-store` / `IdeaLabRunEvaluation` schema. Separately, product history may carry lightweight `TopicGenerationEvaluation` fields.
-2. **Persisted?** Yes in Lab runtime history; product draft-level eval metrics still P1 debt.
-3. **Cross-boundary?** Lab UI ↔ brain evaluation; must not cross into production Gate 2 approve without a product schema.
-4. **Inconsistent definitions?** Medium — Lab human scores vs product history eval vs future Gate 2.
-5. **Versioning value?** High for Lab schema (Zod already); product should get its own versioned type when Gate 2 lands.
-6. **Lean approach:** Keep `idea-quality.schema.ts` as Lab SoT; do not overload it for Studio Gate 2.
+1. **Exchangers:** Idea Lab LLM-as-judge (`judgeTopicCandidates`, always-on, advisory) + golden harness. Separately, product history may carry lightweight `TopicGenerationEvaluation` / `saveEvaluation` fields.
+2. **Persisted?** Lab run metadata under Lab runtime history; product draft-level eval metrics still debt.
+3. **Cross-boundary?** Lab judge must not become production Gate 2 approve without a product schema.
+4. **Inconsistent definitions?** Medium — Lab advisory judge vs product history eval vs future Gate 2.
+5. **Versioning value?** High for product Gate 2 when it lands; Lab judge stays advisory.
+6. **Lean approach:** Do **not** resurrect deleted `idea-quality.schema.ts` / evaluation drawer; keep Lab judge + harness as Lab quality signal; do not overload them for Studio Gate 2.
 
 ### Review Decision
 
-1. **Exchangers:** Intended: Studio / Review UI ↔ channel package / production workflow. **Today:** Review page uses `src/data/mock-review`; package envelope has `status` but full Gate 2 approve/reject is Partial.
-2. **Persisted?** Not as a real product decision store yet (mock queue).
+1. **Exchangers:** Intended: Studio / Review UI ↔ channel package / production workflow. **Today:** Review page uses `src/data/mock-review`; package envelope has `status` but full Gate 2 approve/reject is Partial. Atom approve/lock is a separate Gate-1-adjacent path (`content-atom/review`).
+2. **Persisted?** Not as a real product package-decision store yet (mock queue).
 3. **Cross-boundary?** Will be (UI ↔ API ↔ store) when Gate 2 completes.
 4. **Inconsistent definitions?** High if docs claim shipped approve/reject — honesty required.
 5. **Versioning value?** High when real — align with `packageEnvelopeSchema.status` + audit fields.
@@ -129,12 +135,12 @@ Lean approach: formalize a named contract only when data crosses a real boundary
 
 ### Content Run Trace
 
-1. **Exchangers:** Idea Lab orchestration (`ild/*`, `build-idea-lab-trace.ts`) ↔ Idea Lab inspector UI (trace tab).
-2. **Persisted?** With Idea Lab runs / history under `data/runtime/` (gitignored).
-3. **Cross-boundary?** Lab-only today; product production path has no first-class RunContext trace.
-4. **Inconsistent definitions?** Low inside Lab (`IDEA_LAB_TRACE_STAGES`); product gap is intentional deferral.
-5. **Versioning value?** Medium for Lab; high if product adopts shared stage ids for cost/debug telemetry.
-6. **Lean approach:** Keep Lab `BrainTraceStep`; defer product RunContext until draft-eval + cost telemetry work (stabilization P1).
+1. **Exchangers:** Product: `RunContext` / `TraceRecorder` → `ContentRunTrace` (best-effort persist to `content_run_traces` from directions and related brain routes). Lab: `build-idea-lab-trace.ts` + `BrainTraceStep` ↔ Idea Lab inspector.
+2. **Persisted?** Product durable table when DB available; Lab under `data/runtime/` (gitignored).
+3. **Cross-boundary?** Product Partial/Live best-effort; Lab inspector remains Lab-scoped.
+4. **Inconsistent definitions?** Low inside Lab (`IDEA_LAB_TRACE_STAGES`); product must keep the observability contract — not invent a second opaque format.
+5. **Versioning value?** Medium–high for shared stage ids / cost telemetry.
+6. **Lean approach:** Keep Lab `BrainTraceStep`; evolve product `RunContext` in place (not deferred as “absent”).
 
 ---
 
@@ -150,7 +156,9 @@ Lean approach: formalize a named contract only when data crosses a real boundary
 | `decision_set_id` identity | `generation_id` only | None (removed) | Handoff / record schemas | No reintroduction |
 | Content Context Packet (unnamed composition) | Documented composition → future versioned packet | Directions + Lab + Atom loaders | Versions: Brand Core + `WRITING_CONTEXT_VERSION` | After live Brand Core + product RunContext |
 | Review mock queue `src/data/mock-review` | Real Gate 2 decision store + package status | `src/app/(app)/review/page.tsx` | Keep mock until Gate 2 ships | Gate 2 approve/reject persisted |
-| Product RunContext / draft-eval envelope | Future product contract (not Lab `BrainTraceStep`) | Production API / Studio | Optional Lab-inspired stage names | After draft-eval + cost telemetry |
+| Product RunContext / draft-eval envelope | `observability/` + durable `content_run_traces` (best-effort); not Lab `BrainTraceStep` | Directions / brain routes / Studio | Keep Lab stages separate | Broaden persist coverage + cost telemetry |
+| Idea Lab human eval checklist / `idea-quality.schema.ts` | Always-on Lab judge + golden harness (ADR 0005) | None (deleted) | Verify gate asserts absence | Already deleted — do not reintroduce |
+| Bare `/content` + MT legacy handoff Studio | Atom deep-link `/content?atomId=` + `produceContentBundle` | Marketing Topic → bare `/content` still dual-path | Document Partial until sanitize/cutover | After MT select→atom parity + legacy delete |
 | `scripts/debug-title-polish-api.mjs` | N/A (deleted) | None | — | Already deleted |
 | `reference-library/` research shelf | Cold archive outside repo + in-repo curated map | Zero product consumers | Keep blocked in retrieve/MCP/tsconfig/`.cursorignore` | Full dump already in CP0 cold archive; in-repo tree is curated only |
 | Physical `domain/` vs `infrastructure/` package split | Logical layers under `src/brain/**` today | Entire brain tree | Defer move to avoid churn | Explicit refactor milestone |

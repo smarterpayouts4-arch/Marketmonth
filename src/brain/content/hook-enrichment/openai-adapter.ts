@@ -1,5 +1,7 @@
+import { buildCraftClause } from "@/brain/craft";
 import { callBrainLlm } from "@/brain/llm/openai-client";
 import { resolveModel } from "@/brain/policy/model-registry";
+import { tokenBudget } from "@/brain/policy/token-budgets";
 
 import type { HookEnrichmentRequest, HookEnrichmentResult } from "./types";
 import { HOOK_ENRICHMENT_VERSION } from "./types";
@@ -50,7 +52,8 @@ export async function enrichHookWithOpenAI(
     "Do NOT change the master topic, product names, ingredients, numbers, studies, certifications, or medical claims.",
     "Do NOT invent new facts. Use only allowedFacts and the grounded summary.",
     "Keep hook under 90 characters. Prefer scroll-stopping curiosity without clickbait lies.",
-  ].join(" ");
+    buildCraftClause("direction_hook"),
+  ].join("\n");
 
   const user = JSON.stringify({
     masterTitle: request.masterTitle,
@@ -69,6 +72,7 @@ export async function enrichHookWithOpenAI(
       system,
       user,
       temperature: 0.5,
+      maxOutputTokens: tokenBudget("hookEnrichment"),
       jsonSchema: HOOK_ENRICHMENT_JSON_SCHEMA,
     });
     if (!result.ok) return null;

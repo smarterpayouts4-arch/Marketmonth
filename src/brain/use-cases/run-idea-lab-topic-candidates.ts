@@ -30,10 +30,7 @@ import {
   TOPIC_OBJECTIVE_REQUIRED,
   type IdeaLabCandidatesResult,
 } from "@/brain/evaluation/topic-candidate-types";
-import {
-  judgeTopicCandidates,
-  shouldSampleJudge,
-} from "@/brain/evaluation/judge/llm-judge";
+import { judgeTopicCandidates } from "@/brain/evaluation/judge/llm-judge";
 import {
   emitQualityAlerts,
   evaluateTopicGenerationQuality,
@@ -212,9 +209,9 @@ export async function runIdeaLabTopicCandidates(
   const llmUsed = llmFetch.ok && llmFetch.candidates.length > 0;
   const deterministicFallbackUsed = !llmUsed;
 
-  // LLM-as-judge on sampled runs (P3.1) — advisory, never blocks the result.
+  // LLM-as-judge — always-on for Idea Lab candidates (advisory, never blocks).
   let judge: Awaited<ReturnType<typeof judgeTopicCandidates>> = null;
-  if (candidates.length > 0 && shouldSampleJudge()) {
+  if (candidates.length > 0) {
     try {
       judge = await judgeTopicCandidates({
         brandName: context.brandName,

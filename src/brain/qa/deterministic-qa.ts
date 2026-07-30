@@ -1,4 +1,7 @@
-import type { ContentAtom } from "@/brain/atom/content-atom.schema";
+import {
+  isAtomSpecialistReady,
+  type ContentAtom,
+} from "@/brain/atom";
 import type { YouTubeShortPackage } from "@/brain/channels/youtube-short";
 import type { BrandCore } from "@/brain/core/brand-core.schema";
 import { assertStrategyLock } from "@/brain/strategy-lock";
@@ -29,25 +32,26 @@ export function runDeterministicQa(input: {
   checks.push({
     id: "atom_schema_fields",
     pass: Boolean(
-      input.atom.hook_strategy?.planted_question &&
-        input.atom.hook_strategy?.opening_intent &&
-        input.atom.promised_payoff &&
-        input.atom.central_claim?.claim_id &&
-        input.atom.status === "ready"
+      input.atom.kernel.hook_strategy?.planted_question &&
+        input.atom.kernel.hook_strategy?.opening_intent &&
+        input.atom.kernel.payoff &&
+        input.atom.kernel.central_claim?.claim_id &&
+        isAtomSpecialistReady(input.atom)
     ),
-    detail: "Atom ready with hook_strategy, payoff, and central_claim",
+    detail:
+      "Atom specialist-ready with hook_strategy, payoff, and central_claim",
   });
 
   checks.push({
     id: "supporting_proof_present",
-    pass: input.atom.supporting_proof.length > 0,
+    pass: input.atom.kernel.supporting_proof.length > 0,
     detail: "At least one supporting_proof present",
   });
 
   const claimBlob = [
-    input.atom.central_claim.canonical_wording,
-    input.atom.central_claim.meaning,
-    input.atom.promised_payoff,
+    input.atom.kernel.central_claim.canonical_wording,
+    input.atom.kernel.central_claim.meaning,
+    input.atom.kernel.payoff,
   ]
     .join(" ")
     .toLowerCase();

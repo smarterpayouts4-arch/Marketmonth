@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "scoreType": "Internal Engineering Quality Score",
   "rubricVersion": "2.1.0",
-  "evaluatedAt": "2026-07-28T00:38:56.256Z",
+  "evaluatedAt": "2026-07-29T22:41:20.562Z",
   "withProbes": true,
   "probeStatus": {
     "typecheck": {
@@ -11,13 +11,13 @@
       "error": null
     },
     "lint": {
-      "status": "pass",
-      "exitCode": 0,
+      "status": "fail",
+      "exitCode": 1,
       "error": null
     },
     "test": {
-      "status": "pass",
-      "exitCode": 0,
+      "status": "fail",
+      "exitCode": 1,
       "error": null
     }
   },
@@ -27,11 +27,11 @@
     "rubricVersion": "2.1.0",
     "rubricFile": "project-knowledge/quality-rules.json",
     "rubricFileHash": "16cf6a0540c1e5f9",
-    "commitSha": "unavailable",
-    "commitShort": "unavailable",
-    "workingTreeStatus": "unavailable",
-    "gitScope": "parent-repo-outside-project",
-    "gitNote": "MarketMonth is not its own git root; a parent directory owns .git. Commit SHA is intentionally unavailable until MarketMonth is a dedicated repository (or a documented monorepo package with an explicit root policy).",
+    "commitSha": "ffaf395a4dd1f3beb7f93137f3efbbadd42467f5",
+    "commitShort": "ffaf395",
+    "workingTreeStatus": "dirty",
+    "gitScope": "project-root",
+    "gitNote": null,
     "commandsExecuted": [
       "npm run typecheck",
       "npm run lint",
@@ -46,23 +46,24 @@
         "error": null
       },
       "lint": {
-        "status": "pass",
-        "exitCode": 0,
+        "status": "fail",
+        "exitCode": 1,
         "error": null
       },
       "test": {
-        "status": "pass",
-        "exitCode": 0,
+        "status": "fail",
+        "exitCode": 1,
         "error": null
       }
     },
     "generatedFromRealExecution": true,
     "skippedProbes": [],
-    "failedProbes": [],
-    "passedProbes": [
-      "typecheck",
+    "failedProbes": [
       "lint",
       "test"
+    ],
+    "passedProbes": [
+      "typecheck"
     ],
     "notEvaluatedProbes": [],
     "visibleIgnorePatterns": [
@@ -70,16 +71,17 @@
       ".next",
       "Refrence folder",
       "generated",
-      "node_modules"
+      "node_modules",
+      "reference-library"
     ],
     "aiAffectsOfficialScore": false
   },
   "officialScore": {
     "label": "Internal Engineering Quality Score",
-    "totalPoints": 84,
+    "totalPoints": 67,
     "maxScore": 100,
-    "scoreOutOf10": 8.4,
-    "formula": "84/100 = 8.4/10",
+    "scoreOutOf10": 6.7,
+    "formula": "67/100 = 6.7/10",
     "evaluationsComplete": true,
     "perfectEligible": false,
     "notEvaluatedRules": [],
@@ -88,7 +90,7 @@
   "externalBaseline": {
     "schemaVersion": 1,
     "label": "External Baseline Coverage",
-    "coveragePercent": 52,
+    "coveragePercent": 48,
     "externalValidationStatus": "Limited",
     "externalCertification": "None",
     "areas": [
@@ -102,15 +104,15 @@
       {
         "id": "eslint_static",
         "label": "ESLint / static analysis",
-        "status": "covered",
-        "evidence": "eslint.config present; lint exit=0",
+        "status": "partial",
+        "evidence": "eslint.config present; lint exit=1",
         "recommended": "now"
       },
       {
         "id": "automated_tests",
         "label": "Automated testing with meaningful assertions",
-        "status": "covered",
-        "evidence": "npm test + 48 feature test files under src/",
+        "status": "partial",
+        "evidence": "npm test + 92 feature test files under src/",
         "recommended": "now"
       },
       {
@@ -277,19 +279,24 @@
     {
       "id": "organization",
       "label": "File and folder organization",
-      "points": 12,
+      "points": 5,
       "maxPoints": 15,
-      "scoreOutOf10": 8,
+      "scoreOutOf10": 3.3,
       "deductions": [
         {
           "ruleId": "PK-QUALITY-060",
           "category": "organization",
           "description": "Source files should stay under the agreed line threshold",
           "reason": "Oversized files hide mixed responsibilities.",
-          "deducted": 2,
-          "findingCount": 2,
+          "deducted": 6,
+          "findingCount": 7,
           "evidence": [
-            "src/engine/discovery/build-activation-profile.ts (599 lines > 500)",
+            "src/app/dev/brain/idea-lab/use-idea-lab-sandbox.ts (638 lines > 500)",
+            "src/brain/atom/generate.ts (791 lines > 500)",
+            "src/brain/atom/validate/index.ts (870 lines > 500)",
+            "src/components/dashboard/content/hooks/use-content-studio.ts (629 lines > 500)",
+            "src/components/dashboard/marketing-topic/hooks/use-content-directions.ts (524 lines > 500)",
+            "src/lib/company-profile/csv-contract.ts (959 lines > 500)",
             "src/lib/dev/bootstrap-dev-workspace.ts (532 lines > 500)"
           ],
           "evidenceTruncated": false,
@@ -304,6 +311,21 @@
           "findingCount": 1,
           "evidence": [
             "src/app/api/onboarding/workspace-context/route.ts layers=[db,server,next,engine] (min 3)"
+          ],
+          "evidenceTruncated": false,
+          "status": "deducted"
+        },
+        {
+          "ruleId": "PK-QUALITY-062",
+          "category": "organization",
+          "description": "Modules should not expose an excessive public surface",
+          "reason": "Too many exports usually means mixed jobs.",
+          "deducted": 3,
+          "findingCount": 3,
+          "evidence": [
+            "src/brain/atom/content-atom.schema.ts (44 export decls > 25)",
+            "src/engine/discovery/index.ts (26 export decls > 25)",
+            "src/lib/discovery/discovery-narrative.schema.ts (32 export decls > 25)"
           ],
           "evidenceTruncated": false,
           "status": "deducted"
@@ -329,7 +351,7 @@
           "description": "Structural src paths must have an owner",
           "reason": "Unowned paths drift without a responsible surface.",
           "deducted": 8,
-          "findingCount": 27,
+          "findingCount": 34,
           "evidence": [
             "src/app/api/dev/brain/idea-lab/generate/route.ts",
             "src/app/api/dev/brain/idea-lab/runs/route.ts",
@@ -341,23 +363,30 @@
             "src/app/dev/brain/idea-lab/idea-lab-candidates-panel.tsx",
             "src/app/dev/brain/idea-lab/idea-lab-client.tsx",
             "src/app/dev/brain/idea-lab/idea-lab-directions-panel.tsx",
-            "src/app/dev/brain/idea-lab/idea-lab-evaluation-drawer.tsx",
+            "src/app/dev/brain/idea-lab/idea-lab-research-assist-panel.tsx",
             "src/app/dev/brain/idea-lab/idea-lab-test-inspector.tsx",
             "src/app/dev/brain/idea-lab/idea-lab-title-hook-badge.tsx",
             "src/app/dev/brain/idea-lab/idea-lab-ui.test.ts",
             "src/app/dev/brain/idea-lab/ili/candidates-tab.tsx",
             "src/app/dev/brain/idea-lab/ili/compare-mini.tsx",
             "src/app/dev/brain/idea-lab/ili/controls-tab.tsx",
+            "src/app/dev/brain/idea-lab/ili/craft-tab.tsx",
+            "src/app/dev/brain/idea-lab/ili/evidence-tab.tsx",
             "src/app/dev/brain/idea-lab/ili/history-tab.tsx",
             "src/app/dev/brain/idea-lab/ili/inputs-tab.tsx",
             "src/app/dev/brain/idea-lab/ili/overview-tab.tsx",
+            "src/app/dev/brain/idea-lab/ili/resolve-evidence.ts",
             "src/app/dev/brain/idea-lab/ili/row.tsx",
             "src/app/dev/brain/idea-lab/ili/trace-tab.tsx",
             "src/app/dev/brain/idea-lab/layout.tsx",
             "src/app/dev/brain/idea-lab/map-idea-to-variation.ts",
             "src/app/dev/brain/idea-lab/page.tsx",
             "src/app/dev/brain/idea-lab/SANDBOX.md",
-            "src/app/dev/brain/idea-lab/use-idea-lab-sandbox.ts"
+            "src/app/dev/brain/idea-lab/use-idea-lab-sandbox.ts",
+            "src/components/topic-candidates/from-candidate.ts",
+            "src/components/topic-candidates/index.ts",
+            "src/components/topic-candidates/topic-candidate-list.tsx",
+            "src/components/topic-candidates/topic-candidates-panel.tsx"
           ],
           "evidenceTruncated": false,
           "status": "deducted"
@@ -372,10 +401,24 @@
     {
       "id": "documentation",
       "label": "Documentation freshness",
-      "points": 15,
+      "points": 13,
       "maxPoints": 15,
-      "scoreOutOf10": 10,
-      "deductions": [],
+      "scoreOutOf10": 8.7,
+      "deductions": [
+        {
+          "ruleId": "PK-QUALITY-022",
+          "category": "documentation",
+          "description": "Qualifying feature roots need FEATURES briefs",
+          "reason": "Meaningful surfaces need a short intent doc.",
+          "deducted": 2,
+          "findingCount": 1,
+          "evidence": [
+            "src/brain/content"
+          ],
+          "evidenceTruncated": false,
+          "status": "deducted"
+        }
+      ],
       "notEvaluated": [],
       "checksContributing": [
         "PK-QUALITY-020",
@@ -386,10 +429,24 @@
     {
       "id": "code_quality",
       "label": "Type safety and code quality",
-      "points": 15,
+      "points": 12,
       "maxPoints": 15,
-      "scoreOutOf10": 10,
-      "deductions": [],
+      "scoreOutOf10": 8,
+      "deductions": [
+        {
+          "ruleId": "PK-QUALITY-034",
+          "category": "code_quality",
+          "description": "Lint must pass",
+          "reason": "Lint failures block a perfect code-quality score.",
+          "deducted": 3,
+          "findingCount": 1,
+          "evidence": [
+            "lint failed (exit 1)"
+          ],
+          "evidenceTruncated": false,
+          "status": "deducted"
+        }
+      ],
       "notEvaluated": [],
       "checksContributing": [
         "PK-QUALITY-030",
@@ -402,10 +459,24 @@
     {
       "id": "testing",
       "label": "Testing and verification",
-      "points": 10,
+      "points": 5,
       "maxPoints": 10,
-      "scoreOutOf10": 10,
-      "deductions": [],
+      "scoreOutOf10": 5,
+      "deductions": [
+        {
+          "ruleId": "PK-QUALITY-043",
+          "category": "testing",
+          "description": "npm test suite must pass",
+          "reason": "Failing tests block a perfect testing score.",
+          "deducted": 5,
+          "findingCount": 1,
+          "evidence": [
+            "test failed (exit 1)"
+          ],
+          "evidenceTruncated": false,
+          "status": "deducted"
+        }
+      ],
       "notEvaluated": [],
       "checksContributing": [
         "PK-QUALITY-040",
@@ -427,8 +498,13 @@
           "description": "Referenced process.env keys should appear in .env.example",
           "reason": "Undocumented env vars hide required configuration.",
           "deducted": 4,
-          "findingCount": 15,
+          "findingCount": 21,
           "evidence": [
+            "ALLOW_DEV_COMPANY_ALIASES",
+            "ATOM_CRAFT_POLISH_PROVIDER",
+            "BRAIN_HISTORY_STORE",
+            "BRAIN_JUDGE_SAMPLE_RATE",
+            "BRAIN_TENANT_DAILY_TOKEN_CAP",
             "DISCOVERY_PLAYWRIGHT",
             "HOOK_ENRICHMENT_PROVIDER",
             "INDUSTRY_RESEARCH_ENABLED",
@@ -438,11 +514,12 @@
             "MM_IMAGE_MODEL",
             "MM_IMAGE_PROVIDER",
             "MM_IMAGE_RENDER",
+            "MM_PIPELINE_TRACE",
+            "MM_PROVENANCE",
             "MM_VOICE_MODEL",
             "MM_VOICE_PROVIDER",
-            "OPENAI_CONTENT_BRAIN_MODEL",
-            "OPENAI_DIRECTIONS_MODEL",
-            "OPENAI_HOOK_ENRICHMENT_MODEL",
+            "OPENAI_MAX_CONCURRENCY",
+            "RATE_LIMIT_STORE",
             "TOPIC_TITLE_HOOK_PROVIDER"
           ],
           "evidenceTruncated": false,
@@ -477,10 +554,15 @@
       "category": "organization",
       "description": "Source files should stay under the agreed line threshold",
       "reason": "Oversized files hide mixed responsibilities.",
-      "deducted": 2,
-      "findingCount": 2,
+      "deducted": 6,
+      "findingCount": 7,
       "evidence": [
-        "src/engine/discovery/build-activation-profile.ts (599 lines > 500)",
+        "src/app/dev/brain/idea-lab/use-idea-lab-sandbox.ts (638 lines > 500)",
+        "src/brain/atom/generate.ts (791 lines > 500)",
+        "src/brain/atom/validate/index.ts (870 lines > 500)",
+        "src/components/dashboard/content/hooks/use-content-studio.ts (629 lines > 500)",
+        "src/components/dashboard/marketing-topic/hooks/use-content-directions.ts (524 lines > 500)",
+        "src/lib/company-profile/csv-contract.ts (959 lines > 500)",
         "src/lib/dev/bootstrap-dev-workspace.ts (532 lines > 500)"
       ],
       "evidenceTruncated": false,
@@ -500,12 +582,27 @@
       "status": "deducted"
     },
     {
+      "ruleId": "PK-QUALITY-062",
+      "category": "organization",
+      "description": "Modules should not expose an excessive public surface",
+      "reason": "Too many exports usually means mixed jobs.",
+      "deducted": 3,
+      "findingCount": 3,
+      "evidence": [
+        "src/brain/atom/content-atom.schema.ts (44 export decls > 25)",
+        "src/engine/discovery/index.ts (26 export decls > 25)",
+        "src/lib/discovery/discovery-narrative.schema.ts (32 export decls > 25)"
+      ],
+      "evidenceTruncated": false,
+      "status": "deducted"
+    },
+    {
       "ruleId": "PK-QUALITY-004",
       "category": "ownership",
       "description": "Structural src paths must have an owner",
       "reason": "Unowned paths drift without a responsible surface.",
       "deducted": 8,
-      "findingCount": 27,
+      "findingCount": 34,
       "evidence": [
         "src/app/api/dev/brain/idea-lab/generate/route.ts",
         "src/app/api/dev/brain/idea-lab/runs/route.ts",
@@ -517,23 +614,69 @@
         "src/app/dev/brain/idea-lab/idea-lab-candidates-panel.tsx",
         "src/app/dev/brain/idea-lab/idea-lab-client.tsx",
         "src/app/dev/brain/idea-lab/idea-lab-directions-panel.tsx",
-        "src/app/dev/brain/idea-lab/idea-lab-evaluation-drawer.tsx",
+        "src/app/dev/brain/idea-lab/idea-lab-research-assist-panel.tsx",
         "src/app/dev/brain/idea-lab/idea-lab-test-inspector.tsx",
         "src/app/dev/brain/idea-lab/idea-lab-title-hook-badge.tsx",
         "src/app/dev/brain/idea-lab/idea-lab-ui.test.ts",
         "src/app/dev/brain/idea-lab/ili/candidates-tab.tsx",
         "src/app/dev/brain/idea-lab/ili/compare-mini.tsx",
         "src/app/dev/brain/idea-lab/ili/controls-tab.tsx",
+        "src/app/dev/brain/idea-lab/ili/craft-tab.tsx",
+        "src/app/dev/brain/idea-lab/ili/evidence-tab.tsx",
         "src/app/dev/brain/idea-lab/ili/history-tab.tsx",
         "src/app/dev/brain/idea-lab/ili/inputs-tab.tsx",
         "src/app/dev/brain/idea-lab/ili/overview-tab.tsx",
+        "src/app/dev/brain/idea-lab/ili/resolve-evidence.ts",
         "src/app/dev/brain/idea-lab/ili/row.tsx",
         "src/app/dev/brain/idea-lab/ili/trace-tab.tsx",
         "src/app/dev/brain/idea-lab/layout.tsx",
         "src/app/dev/brain/idea-lab/map-idea-to-variation.ts",
         "src/app/dev/brain/idea-lab/page.tsx",
         "src/app/dev/brain/idea-lab/SANDBOX.md",
-        "src/app/dev/brain/idea-lab/use-idea-lab-sandbox.ts"
+        "src/app/dev/brain/idea-lab/use-idea-lab-sandbox.ts",
+        "src/components/topic-candidates/from-candidate.ts",
+        "src/components/topic-candidates/index.ts",
+        "src/components/topic-candidates/topic-candidate-list.tsx",
+        "src/components/topic-candidates/topic-candidates-panel.tsx"
+      ],
+      "evidenceTruncated": false,
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-022",
+      "category": "documentation",
+      "description": "Qualifying feature roots need FEATURES briefs",
+      "reason": "Meaningful surfaces need a short intent doc.",
+      "deducted": 2,
+      "findingCount": 1,
+      "evidence": [
+        "src/brain/content"
+      ],
+      "evidenceTruncated": false,
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-034",
+      "category": "code_quality",
+      "description": "Lint must pass",
+      "reason": "Lint failures block a perfect code-quality score.",
+      "deducted": 3,
+      "findingCount": 1,
+      "evidence": [
+        "lint failed (exit 1)"
+      ],
+      "evidenceTruncated": false,
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-043",
+      "category": "testing",
+      "description": "npm test suite must pass",
+      "reason": "Failing tests block a perfect testing score.",
+      "deducted": 5,
+      "findingCount": 1,
+      "evidence": [
+        "test failed (exit 1)"
       ],
       "evidenceTruncated": false,
       "status": "deducted"
@@ -544,8 +687,13 @@
       "description": "Referenced process.env keys should appear in .env.example",
       "reason": "Undocumented env vars hide required configuration.",
       "deducted": 4,
-      "findingCount": 15,
+      "findingCount": 21,
       "evidence": [
+        "ALLOW_DEV_COMPANY_ALIASES",
+        "ATOM_CRAFT_POLISH_PROVIDER",
+        "BRAIN_HISTORY_STORE",
+        "BRAIN_JUDGE_SAMPLE_RATE",
+        "BRAIN_TENANT_DAILY_TOKEN_CAP",
         "DISCOVERY_PLAYWRIGHT",
         "HOOK_ENRICHMENT_PROVIDER",
         "INDUSTRY_RESEARCH_ENABLED",
@@ -555,11 +703,12 @@
         "MM_IMAGE_MODEL",
         "MM_IMAGE_PROVIDER",
         "MM_IMAGE_RENDER",
+        "MM_PIPELINE_TRACE",
+        "MM_PROVENANCE",
         "MM_VOICE_MODEL",
         "MM_VOICE_PROVIDER",
-        "OPENAI_CONTENT_BRAIN_MODEL",
-        "OPENAI_DIRECTIONS_MODEL",
-        "OPENAI_HOOK_ENRICHMENT_MODEL",
+        "OPENAI_MAX_CONCURRENCY",
+        "RATE_LIMIT_STORE",
         "TOPIC_TITLE_HOOK_PROVIDER"
       ],
       "evidenceTruncated": false,
@@ -567,13 +716,13 @@
     }
   ],
   "stats": {
-    "unownedCount": 27,
+    "unownedCount": 34,
     "duplicateRouteCount": 0,
-    "oversizedCount": 2,
-    "undocumentedEnvCount": 15,
+    "oversizedCount": 7,
+    "undocumentedEnvCount": 21,
     "guardianHard": 0,
-    "guardianSoft": 0,
-    "featureTestFiles": 48,
+    "guardianSoft": 5,
+    "featureTestFiles": 92,
     "knowledgeTestFiles": 5,
     "deepCrossFeatureCount": 1,
     "cycleCount": 0
@@ -599,25 +748,66 @@
       "status": "deducted"
     },
     {
-      "ruleId": "PK-QUALITY-051",
+      "ruleId": "PK-QUALITY-060",
       "priority": "high",
-      "action": "Referenced process.env keys should appear in .env.example",
+      "action": "Source files should stay under the agreed line threshold",
       "evidenceSample": [
-        "DISCOVERY_PLAYWRIGHT",
-        "HOOK_ENRICHMENT_PROVIDER",
-        "INDUSTRY_RESEARCH_ENABLED",
-        "INDUSTRY_RESEARCH_LIVE",
-        "JSON2VIDEO_API_KEY"
+        "src/app/dev/brain/idea-lab/use-idea-lab-sandbox.ts (638 lines > 500)",
+        "src/brain/atom/generate.ts (791 lines > 500)",
+        "src/brain/atom/validate/index.ts (870 lines > 500)",
+        "src/components/dashboard/content/hooks/use-content-studio.ts (629 lines > 500)",
+        "src/components/dashboard/marketing-topic/hooks/use-content-directions.ts (524 lines > 500)"
       ],
       "status": "deducted"
     },
     {
-      "ruleId": "PK-QUALITY-060",
-      "priority": "medium",
-      "action": "Source files should stay under the agreed line threshold",
+      "ruleId": "PK-QUALITY-043",
+      "priority": "high",
+      "action": "npm test suite must pass",
       "evidenceSample": [
-        "src/engine/discovery/build-activation-profile.ts (599 lines > 500)",
-        "src/lib/dev/bootstrap-dev-workspace.ts (532 lines > 500)"
+        "test failed (exit 1)"
+      ],
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-051",
+      "priority": "high",
+      "action": "Referenced process.env keys should appear in .env.example",
+      "evidenceSample": [
+        "ALLOW_DEV_COMPANY_ALIASES",
+        "ATOM_CRAFT_POLISH_PROVIDER",
+        "BRAIN_HISTORY_STORE",
+        "BRAIN_JUDGE_SAMPLE_RATE",
+        "BRAIN_TENANT_DAILY_TOKEN_CAP"
+      ],
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-062",
+      "priority": "medium",
+      "action": "Modules should not expose an excessive public surface",
+      "evidenceSample": [
+        "src/brain/atom/content-atom.schema.ts (44 export decls > 25)",
+        "src/engine/discovery/index.ts (26 export decls > 25)",
+        "src/lib/discovery/discovery-narrative.schema.ts (32 export decls > 25)"
+      ],
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-034",
+      "priority": "medium",
+      "action": "Lint must pass",
+      "evidenceSample": [
+        "lint failed (exit 1)"
+      ],
+      "status": "deducted"
+    },
+    {
+      "ruleId": "PK-QUALITY-022",
+      "priority": "medium",
+      "action": "Qualifying feature roots need FEATURES briefs",
+      "evidenceSample": [
+        "src/brain/content"
       ],
       "status": "deducted"
     },
@@ -647,5 +837,5 @@
     "affectsOfficialScore": false
   },
   "hardFailures": 0,
-  "softWarnings": 0
+  "softWarnings": 5
 }

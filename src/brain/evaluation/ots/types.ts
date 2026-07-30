@@ -13,6 +13,11 @@ export type TopicSeed = {
   frameHint: string;
   sourceType?: "brand_observed" | "industry_research";
   supportFamilyKey?: string;
+  /** Original subject wording (FAQ question, etc.). */
+  rawSubject?: string;
+  /** Noun form for shells. */
+  normalizedSubject?: string;
+  subjectShape?: "question" | "noun" | "other";
   /**
    * Title-derived intent bucket for display-intent dedupe. Set for LLM
    * candidates so distinct angles on one subject don't all collapse into
@@ -42,6 +47,9 @@ export function seedFrom(
     frameHint,
     sourceType: s.sourceType ?? "brand_observed",
     supportFamilyKey: s.supportFamilyKey,
+    rawSubject: s.rawSubject ?? s.label,
+    normalizedSubject: s.normalizedSubject ?? s.label,
+    subjectShape: s.subjectShape,
   };
 }
 

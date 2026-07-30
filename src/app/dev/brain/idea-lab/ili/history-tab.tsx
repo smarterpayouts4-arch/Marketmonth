@@ -1,5 +1,4 @@
 import type { IdeaLabRun } from "@/brain/evaluation/idea-lab.types";
-import { overallAverage } from "@/brain/evaluation/idea-quality.schema";
 
 import { CompareMini } from "./compare-mini";
 
@@ -19,7 +18,7 @@ export function HistoryTab({
   return (
     <div className="space-y-3" data-testid="inspector-history">
       <p className="text-xs text-text-muted">
-        Latest 5 Idea Lab evaluation runs (sandbox store only).
+        Latest 5 Idea Lab runs (sandbox store only).
       </p>
       <div className="overflow-x-auto rounded-lg border border-border">
         <table className="w-full text-left text-xs">
@@ -29,7 +28,6 @@ export function HistoryTab({
               <th className="px-2 py-2 font-medium">Topic</th>
               <th className="px-2 py-2 font-medium">ms</th>
               <th className="px-2 py-2 font-medium">Hist</th>
-              <th className="px-2 py-2 font-medium">Avg</th>
             </tr>
           </thead>
           <tbody>
@@ -42,11 +40,6 @@ export function HistoryTab({
                 <td className="px-2 py-2">{r.durationMs}</td>
                 <td className="px-2 py-2">
                   {r.historyPersisted ? "yes" : "no"}
-                </td>
-                <td className="px-2 py-2">
-                  {r.evaluation
-                    ? overallAverage(r.evaluation.ideas)?.toFixed(1) ?? "—"
-                    : "—"}
                 </td>
               </tr>
             ))}

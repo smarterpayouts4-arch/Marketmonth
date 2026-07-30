@@ -1,32 +1,12 @@
 import { clampLabel } from "./label-text";
+import { analyzeMalformedSubject } from "./subject-rejection";
 
 /**
- * Incomplete / non-noun leads that must never become topic subjects.
- * Does not invent replacements — callers discard when normalize returns null.
+ * Incomplete / non-noun leads and multi-item catalog blobs that must never
+ * become topic subjects. Does not invent replacements — callers discard.
  */
 export function isMalformedSubjectLabel(label: string): boolean {
-  const t = label.trim().replace(/\s+/g, " ");
-  if (!t) return true;
-  // Bare Help/Helping chops (e.g. "Help overwhelmed")
-  if (/^(Help|Helping)\s+\S+$/i.test(t)) return true;
-  if (/^(Help|Helping)\b/i.test(t) && t.split(/\s+/).length < 3) return true;
-  // Incomplete interrogatives
-  if (/^(How|What|Why|When|Where|Who)\s*$/i.test(t)) return true;
-  if (/^(How|What|Why)\s+(to|about|for)?\s*$/i.test(t)) return true;
-  // Audience noun + bare participle with no problem clause ("Shoppers comparing")
-  if (
-    /^(shoppers|buyers|customers|patients|parents|users|people)\s+(comparing|shopping|looking|buying|choosing)$/i.test(
-      t
-    )
-  ) {
-    return true;
-  }
-  // Broken prepositional fragments ("… in on", "… for to")
-  if (/\b(in on|for to|of to|at to|to to)\b/i.test(t)) return true;
-  if (/\b(in|on|at|for|to|of|and|or)\s*$/i.test(t)) return true;
-  // Too short / incomplete noun phrase
-  if (t.split(/\s+/).length === 1 && t.length < 4) return true;
-  return false;
+  return analyzeMalformedSubject(label).malformed;
 }
 
 const GROUNDED_AUDIENCE_NOUN =

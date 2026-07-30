@@ -1,17 +1,16 @@
 import {
   buildContentAtom,
+  type AtomBuildTrace,
+  type AtomValidationReport,
   type ContentAtom,
-  validateAtomAgainstBrandCore,
 } from "@/brain/atom";
 import type { SelectedDirectionInput } from "@/brain/atom/build-content-atom";
 import {
   compileBrandCore,
-  toBrandCoreSlice,
   type BrandCore,
 } from "@/brain/core";
 import type { ContentBrainContext } from "@/brain/content/types";
-
-import { llmGenerateContentAtom } from "./llm-atom";
+import { PRODUCT_ATOM_PREFER_LLM } from "@/brain/policy/provider-policy";
 
 export type CoreContentBrainResult =
   | {
@@ -19,16 +18,23 @@ export type CoreContentBrainResult =
       atom: ContentAtom;
       brandCore: BrandCore;
       provider: "deterministic" | "openai";
+      report: AtomValidationReport;
+      /** Refs + metadata only — not a second atom copy. */
+      trace: AtomBuildTrace;
     }
   | {
       ok: false;
       errors: string[];
       brandCore?: BrandCore;
+      atom?: ContentAtom;
+      report?: AtomValidationReport;
+      trace?: AtomBuildTrace;
     };
 
 /**
- * Brand Core + selected editorial direction → Content Atom.
- * Deterministic builder validates to ready|invalid; LLM path falls back on failure.
+ * Brand Core + selected editorial direction → Content Atom (v2 pipeline).
+ * Constrained LLM when preferLlm (product default true); honest limited/insufficient
+ * fallback — never hollow template belief shifts.
  */
 export async function runCoreContentBrain(input: {
   context: ContentBrainContext;
@@ -36,40 +42,31 @@ export async function runCoreContentBrain(input: {
   preferLlm?: boolean;
 }): Promise<CoreContentBrainResult> {
   const brandCore = compileBrandCore(input.context);
-  const brandSlice = toBrandCoreSlice(brandCore);
+  const preferLlm = input.preferLlm ?? PRODUCT_ATOM_PREFER_LLM;
 
-  const preferLlm =
-    input.preferLlm !== false && Boolean(process.env.OPENAI_API_KEY);
-
-  if (preferLlm) {
-    const atom = await llmGenerateContentAtom({
-      brandCore,
-      brandSlice,
-      selected: input.selected,
-    });
-    const validated = validateAtomAgainstBrandCore(atom, brandCore);
-    if (validated.ok) {
-      return {
-        ok: true,
-        atom: validated.atom,
-        brandCore,
-        provider: "openai",
-      };
-    }
-  }
-
-  const built = buildContentAtom({
+  const built = await buildContentAtom({
     brandCore,
     selected: input.selected,
+    preferLlm,
   });
+
   if (!built.ok) {
-    return { ok: false, errors: built.errors, brandCore };
+    return {
+      ok: false,
+      errors: built.errors,
+      brandCore,
+      atom: built.atom,
+      report: built.report,
+      trace: built.trace,
+    };
   }
 
   return {
     ok: true,
     atom: built.atom,
     brandCore,
-    provider: "deterministic",
+    provider: built.provider,
+    report: built.report,
+    trace: built.trace,
   };
 }

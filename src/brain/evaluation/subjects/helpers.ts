@@ -1,10 +1,15 @@
 import type { ContentBrainContext } from "@/brain/content/types";
+import { dualSubjectFromLabel } from "@/brain/content/subject-shape";
 
 import { isMetaInstructionalPhrase } from "../topic-meta";
 import {
   isMalformedSubjectLabel,
   normalizeOpportunityLabel,
 } from "./subject-label";
+import {
+  analyzeMalformedSubject,
+  logSubjectRejection,
+} from "./subject-rejection";
 import type { TopicSubject } from "./types";
 
 export function normalizeCategoryLabel(raw: string): string {
@@ -57,11 +62,26 @@ export function pushUnique(out: TopicSubject[], subject: TopicSubject): void {
   const key = `${subject.kind}|${subject.label.toLowerCase()}`;
   if (out.some((s) => `${s.kind}|${s.label.toLowerCase()}` === key)) return;
   if (!subject.label || isMetaInstructionalPhrase(subject.label)) return;
-  // Defense in depth — malformed labels never enter the ranked list
-  if (isMalformedSubjectLabel(subject.label)) return;
+  const analysis = analyzeMalformedSubject(subject.label);
+  if (analysis.malformed) {
+    logSubjectRejection({
+      candidate: subject.label,
+      reason: analysis.reason,
+      repeatedHead: analysis.repeatedHead,
+      itemCount: analysis.itemCount,
+      sourceField: subject.sourceField,
+    });
+    return;
+  }
   // No evidence-free subjects — empty backfill was removed from evidenceForField
   if (!subject.evidenceIds?.length) return;
-  out.push(subject);
+  const dual = dualSubjectFromLabel(subject.rawSubject ?? subject.label);
+  out.push({
+    ...subject,
+    rawSubject: subject.rawSubject ?? dual.rawSubject,
+    normalizedSubject: subject.normalizedSubject ?? dual.normalizedSubject,
+    subjectShape: subject.subjectShape ?? dual.subjectShape,
+  });
 }
 
 export { isMalformedSubjectLabel, normalizeOpportunityLabel };

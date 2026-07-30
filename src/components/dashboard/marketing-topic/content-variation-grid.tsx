@@ -25,7 +25,7 @@ export function ContentVariationGrid({
   onHighlight,
   onConfirm,
   disabled,
-  selectHint = "Select one to continue to Content",
+  selectHint = "Select one to continue to Content Atom review",
   renderCardMeta,
 }: ContentVariationGridProps) {
   const groupRef = useRef<HTMLDivElement>(null);

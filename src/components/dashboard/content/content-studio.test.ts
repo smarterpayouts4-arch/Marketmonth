@@ -4,239 +4,199 @@ import path from "node:path";
 import { describe, it } from "node:test";
 
 import {
-  CHANNEL_FORMATS,
-  CHANNEL_LABELS,
-  CONTENT_STUDIO_CHANNELS,
-  defaultFormat,
-  isStudioChannelEnabled,
-  isSupportedFormat,
-  logicalSizeFor,
-} from "./studio-channels";
-import { computePreviewScale } from "./hooks/use-preview-scale";
-import { PROMPT_INSPECTOR_TABS } from "./prompt-inspector/prompt-inspector-tabs";
-import { buildStudioPrompt } from "./prompt-inspector/prompt-panel";
+  PLATFORM_REGISTRY,
+  defaultFormatIdsForYoutube,
+  listActiveFormatsForPlatform,
+} from "@/brain/content-studio";
+
+import { buildExternalVideoPrompt } from "./studio/build-external-prompt";
 
 const root = process.cwd();
 
-describe("Content Studio channel manifest", () => {
-  it("lists registry-backed studio channels with YouTube Short first", () => {
-    assert.equal(CONTENT_STUDIO_CHANNELS[0], "youtube_short");
-    assert.ok(CONTENT_STUDIO_CHANNELS.includes("linkedin"));
-    assert.ok(CONTENT_STUDIO_CHANNELS.includes("tiktok"));
-    assert.ok(CONTENT_STUDIO_CHANNELS.includes("x"));
-  });
-
-  it("enables only YouTube Short", () => {
-    assert.equal(isStudioChannelEnabled("youtube_short"), true);
-    assert.equal(isStudioChannelEnabled("facebook"), false);
-    assert.equal(isStudioChannelEnabled("youtube"), false);
-  });
-
-  it("labels YouTube Long and YouTube Shorts distinctly", () => {
-    assert.equal(CHANNEL_LABELS.youtube, "YouTube Long");
-    assert.equal(CHANNEL_LABELS.youtube_short, "YouTube Shorts");
-  });
-
-  it("provides channel-specific formats and defaults", () => {
-    assert.deepEqual(CHANNEL_FORMATS.youtube_short, ["short_video"]);
-    assert.equal(defaultFormat("youtube_short"), "short_video");
-    assert.equal(isSupportedFormat("facebook", "post"), true);
-    assert.equal(isSupportedFormat("facebook", "single_post"), false);
-  });
-
-  it("defines logical preview dimensions per channel", () => {
-    assert.deepEqual(logicalSizeFor("facebook", "post"), {
-      width: 1200,
-      height: 1200,
-    });
-    assert.deepEqual(logicalSizeFor("youtube_short", "short_video"), {
-      width: 1080,
-      height: 1920,
-    });
-  });
-});
-
-describe("PreviewScaler math", () => {
-  it("fits logical canvas into available frame without upscaling", () => {
-    assert.equal(computePreviewScale(600, 300, 1200, 1200), 0.25);
-    assert.equal(computePreviewScale(2000, 2000, 1200, 1200), 1);
-    assert.equal(computePreviewScale(0, 300, 1200, 1200), 1);
-  });
-});
-
-describe("Prompt Inspector tabs", () => {
-  it("defines Directions / Atom / YouTube Short / Prompt stages", () => {
-    assert.deepEqual([...PROMPT_INSPECTOR_TABS], [
-      "directions",
-      "atom",
-      "youtube_short",
-      "prompt",
-    ]);
-  });
-
-  it("builds a complete copyable prompt", () => {
-    const prompt = buildStudioPrompt({
-      handoff: {
-        version: 1,
-        brand: { name: "Zynava", domain: "zynava.com" },
-        generationId: "tgen_d1",
-        contextVersion: "c1",
-        mode: "automatic",
-        masterTopic: {
-          id: "m1",
-          source: "automatic",
-          punchline: "Topic",
-          subheading: "",
-          rationale: "",
-          evidenceIds: [],
-          confidence: "high",
-          safety: { status: "safe", reasons: [] },
-        },
-        variations: [
-          {
-            id: "v1",
-            angle: "decision_guide",
-            punchline: "Var",
-            subheading: "",
-            brief: "Brief",
-            audienceProblem: "",
-            strategicPurpose: "",
-            suggestedCta: "Learn",
-            destination: "https://zynava.com",
-            evidenceIds: [],
-            assumptionIds: [],
-            confidence: "high",
-            safety: { status: "safe", reasons: [] },
-          },
-          {
-            id: "v2",
-            angle: "decision_guide",
-            punchline: "Var2",
-            subheading: "",
-            brief: "Brief",
-            audienceProblem: "",
-            strategicPurpose: "",
-            suggestedCta: "Learn",
-            destination: "https://zynava.com",
-            evidenceIds: [],
-            assumptionIds: [],
-            confidence: "high",
-            safety: { status: "safe", reasons: [] },
-          },
-          {
-            id: "v3",
-            angle: "decision_guide",
-            punchline: "Var3",
-            subheading: "",
-            brief: "Brief",
-            audienceProblem: "",
-            strategicPurpose: "",
-            suggestedCta: "Learn",
-            destination: "https://zynava.com",
-            evidenceIds: [],
-            assumptionIds: [],
-            confidence: "high",
-            safety: { status: "safe", reasons: [] },
-          },
-          {
-            id: "v4",
-            angle: "decision_guide",
-            punchline: "Var4",
-            subheading: "",
-            brief: "Brief",
-            audienceProblem: "",
-            strategicPurpose: "",
-            suggestedCta: "Learn",
-            destination: "https://zynava.com",
-            evidenceIds: [],
-            assumptionIds: [],
-            confidence: "high",
-            safety: { status: "safe", reasons: [] },
-          },
-          {
-            id: "v5",
-            angle: "decision_guide",
-            punchline: "Var5",
-            subheading: "",
-            brief: "Brief",
-            audienceProblem: "",
-            strategicPurpose: "",
-            suggestedCta: "Learn",
-            destination: "https://zynava.com",
-            evidenceIds: [],
-            assumptionIds: [],
-            confidence: "high",
-            safety: { status: "safe", reasons: [] },
-          },
-          {
-            id: "v6",
-            angle: "decision_guide",
-            punchline: "Var6",
-            subheading: "",
-            brief: "Brief",
-            audienceProblem: "",
-            strategicPurpose: "",
-            suggestedCta: "Learn",
-            destination: "https://zynava.com",
-            evidenceIds: [],
-            assumptionIds: [],
-            confidence: "high",
-            safety: { status: "safe", reasons: [] },
-          },
-        ],
-        selectedVariationId: "v1",
-        selectedAt: "2026-07-25T12:00:00.000Z",
-      },
-      atom: null,
-      pkg: null,
-      channel: "youtube_short",
-    });
-    assert.match(prompt, /Content Studio Prompt/);
-    assert.match(prompt, /Channel: youtube_short/);
-    assert.match(prompt, /Topic/);
-  });
-});
-
-describe("Content Studio cleanup", () => {
-  it("does not import deleted ContentUniverse or content-phase-panel", () => {
-    const contentPage = readFileSync(
-      path.join(root, "src/app/(app)/content/page.tsx"),
-      "utf8"
-    );
-    assert.match(contentPage, /ContentStudio/);
-    assert.doesNotMatch(contentPage, /ContentUniverse/);
-
-    const dashboardHome = readFileSync(
-      path.join(root, "src/components/dashboard/dashboard-home.tsx"),
-      "utf8"
-    );
-    assert.doesNotMatch(dashboardHome, /ContentPhasePanel/);
-  });
-
-  it("uses registry Studio and does not import content-production", () => {
+describe("Content Studio atomId-only entry", () => {
+  it("routes atomId to vision shell and bare /content to empty state", () => {
     const studio = readFileSync(
       path.join(root, "src/components/dashboard/content/content-studio.tsx"),
       "utf8"
     );
-    assert.match(studio, /ContentStudioHeader/);
-    assert.match(studio, /promptInspectorEnabled/);
-    assert.doesNotMatch(studio, /@\/brain\/content-production/);
+    assert.match(studio, /AtomDeepLinkStudio/);
+    assert.match(studio, /ContentEmptyState/);
+    assert.equal(studio.includes("LegacyHandoffContentStudio"), false);
+    assert.equal(studio.includes("useContentStudio"), false);
+    assert.equal(studio.includes("use-content-studio"), false);
+    assert.equal(studio.includes("promptInspectorEnabled"), false);
+  });
+
+  it("ships dense vision shell: toolbar, header actions, overlay atom, prompt rail", () => {
+    const shell = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/vision-shell.tsx"
+      ),
+      "utf8"
+    );
+    assert.match(shell, /StudioPlatformToolbar/);
+    assert.match(shell, /StudioPromptRail/);
+    assert.match(shell, /StudioPreviewCanvas/);
+    assert.match(shell, /StudioStoryboard/);
+    assert.match(shell, /studio-header/);
+    assert.match(shell, /studio-header__brand/);
+    assert.match(shell, /studio-header__actions/);
+    assert.match(shell, /studio-header__platforms/);
+    assert.match(shell, /studio-workspace/);
+    assert.match(shell, /studio-strategy-toggle/);
+    assert.match(shell, /studio-strategy-overlay/);
+    assert.match(shell, /studio-copy-chatgpt-prompt/);
+    assert.match(shell, /studio-regenerate/);
+    assert.match(shell, /studio-export-disabled/);
+    assert.match(shell, /data-studio-shell/);
+    assert.match(shell, /AtomReviewPanel/);
+    assert.match(shell, /buildExternalVideoPrompt/);
+    assert.match(shell, /\n\s*Strategy\n/);
+    assert.match(shell, /promptCopied \? "Copied" : "Prompt"/);
+    assert.match(shell, /\n\s*Regen\n/);
+    assert.match(shell, /title="Strategy \/ Content Atom"/);
+    assert.equal(shell.includes(">Strategy / Content Atom<"), false);
+    assert.equal(shell.includes("ChatGPT prompt"), false);
+    assert.equal(shell.includes("StudioPlatformTabs"), false);
+    assert.equal(shell.includes("StudioFormatTabs"), false);
+    assert.equal(shell.includes("h-[248px]"), false);
+    assert.equal(shell.includes("100dvh"), false);
     assert.equal(
-      existsSync(path.join(root, "src/brain/content-production")),
+      existsSync(
+        path.join(
+          root,
+          "src/components/dashboard/content/studio/production-inspector.tsx"
+        )
+      ),
+      false
+    );
+
+    const canvas = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/preview-canvas.tsx"
+      ),
+      "utf8"
+    );
+    assert.equal(canvas.includes("studio-export-disabled"), false);
+    assert.equal(canvas.includes("Regenerate"), false);
+
+    const toolbar = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/platform-toolbar.tsx"
+      ),
+      "utf8"
+    );
+    assert.match(toolbar, /studio-format-tabs/);
+    assert.match(toolbar, /format-tab-\$\{f\.id\}/);
+    assert.match(toolbar, /YOUTUBE_SHORT_FORMAT/);
+    assert.match(toolbar, /YOUTUBE_VIDEO_FORMAT/);
+  });
+
+  it("does not keep deleted legacy UI modules", () => {
+    assert.equal(
+      existsSync(
+        path.join(root, "src/components/dashboard/content/hooks/use-content-studio.ts")
+      ),
+      false
+    );
+    assert.equal(
+      existsSync(
+        path.join(root, "src/components/dashboard/content/studio-channels.ts")
+      ),
+      false
+    );
+    assert.equal(
+      existsSync(
+        path.join(root, "src/components/dashboard/content/prompt-inspector")
+      ),
       false
     );
   });
 
-  it("channel tabs include LinkedIn as not_connected scaffold", () => {
-    const tabs = readFileSync(
-      path.join(
-        root,
-        "src/components/dashboard/content/content-channel-tabs.tsx"
-      ),
+  it("wraps Content Studio in Suspense for useSearchParams", () => {
+    const page = readFileSync(
+      path.join(root, "src/app/(app)/content/page.tsx"),
       "utf8"
     );
-    assert.match(tabs, /CONTENT_STUDIO_CHANNELS/);
-    assert.match(tabs, /linkedin/);
-    assert.match(tabs, /not connected/i);
+    assert.match(page, /Suspense/);
+    assert.match(page, /ContentStudio/);
+  });
+
+  it("exports only ContentStudio from the dashboard content barrel", () => {
+    const barrel = readFileSync(
+      path.join(root, "src/components/dashboard/content/index.ts"),
+      "utf8"
+    );
+    assert.match(barrel, /ContentStudio/);
+    assert.equal(barrel.includes("PromptInspector"), false);
+  });
+});
+
+describe("platform registry (canonical Studio formats)", () => {
+  it("marks YouTube active with Short and Video", () => {
+    const yt = PLATFORM_REGISTRY.find((p) => p.id === "youtube");
+    assert.ok(yt);
+    assert.equal(yt!.status, "active");
+    assert.deepEqual(
+      listActiveFormatsForPlatform("youtube").map((f) => f.id),
+      ["youtube_short", "youtube_video"]
+    );
+    assert.deepEqual(defaultFormatIdsForYoutube(), [
+      "youtube_short",
+      "youtube_video",
+    ]);
+  });
+});
+
+describe("buildExternalVideoPrompt", () => {
+  it("includes strategy + task for ChatGPT paste", () => {
+    const text = buildExternalVideoPrompt({
+      atom: {
+        schemaVersion: "content-atom/2",
+        atomId: "atom_test",
+        companyId: "co",
+        buildStatus: "complete",
+        approvalStatus: "locked",
+        createdAt: "2026-01-01T00:00:00.000Z",
+        updatedAt: "2026-01-01T00:00:00.000Z",
+        lineage: {
+          masterTitle: "Test Topic",
+          angle: "myth_vs_reality",
+          directionId: "dir_1",
+          topicGenerationId: "tg_1",
+        },
+        kernel: {
+          audience_problem: "Too many ideas",
+          core_tension: "Scatter vs focus",
+          central_claim: {
+            meaning: "One narrative wins",
+            canonical_wording: "One narrative wins",
+          },
+          belief_shift: { from: "more ideas", to: "one spine" },
+          payoff: "Clear month",
+          intended_action: "Lock a direction",
+          hook_strategy: { opening_intent: "Name the tension" },
+          proof_plan: { allowed_claims: [], forbidden_claims: [] },
+          brand_placement: { mode: "soft", notes: "" },
+          research_needs: [],
+        },
+        evidence: { admitted: [], rejected: [] },
+        craft: { version: 1, clauses: [] },
+        limitations: [],
+      } as never,
+      pkg: null,
+      imagePrompt: "Opening frame",
+      voiceoverPrompt: "Calm VO",
+      script: "Hook line",
+    });
+    assert.match(text, /FORMAT:/);
+    assert.match(text, /STRATEGY \(Content Atom/);
+    assert.match(text, /Test Topic/);
+    assert.match(text, /Opening frame/);
+    assert.match(text, /TASK/);
+    assert.match(text, /ChatGPT|short-form|YouTube/i);
   });
 });

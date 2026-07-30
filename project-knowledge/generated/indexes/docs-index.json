@@ -194,6 +194,22 @@
       "generated": false
     },
     {
+      "id": "0005-content-atom-v2",
+      "path": "project-knowledge/DECISIONS/0005-content-atom-v2.md",
+      "title": "ADR 0005 — Content Atom v2 and select→atom",
+      "description": "The Content Atom is the channel-neutral strategic SoT between editorial selection and channel specialists. An earlier pipeline LLM path (`pipeline/llm-atom.ts`)",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "accepted",
+      "owner": "product",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
       "id": "definition-of-done",
       "path": "project-knowledge/DEFINITION-OF-DONE.md",
       "title": "MarketMonth Definition of Done",
@@ -293,7 +309,7 @@
       "id": "content-brain",
       "path": "project-knowledge/FEATURES/content-brain.md",
       "title": "Content Brain",
-      "description": "Canonical Content Brain pipeline: Brand Core → editorial directions → Content Atom → channel production (YouTube Short first). Doctrine SoT is [`CONTENT_BRAIN.m",
+      "description": "Canonical Content Brain pipeline: Brand Core → editorial directions → Content Atom v2 → approve/lock → channel / Studio production (YouTube Short + Video format",
       "kind": "supporting",
       "authority": "supporting",
       "status": "active",
@@ -341,7 +357,7 @@
       "id": "idea-lab",
       "path": "project-knowledge/FEATURES/idea-lab.md",
       "title": "Idea Lab",
-      "description": "Dev / Marketing Topic surface for generating and selecting editorial directions from approved Brand Core / Zynava fixture data. Topic strategy and direction har",
+      "description": "Dev / Marketing Topic surface for generating and selecting editorial directions from approved Brand Core / Zynava fixture data, then building/approving a Conten",
       "kind": "supporting",
       "authority": "supporting",
       "status": "active",

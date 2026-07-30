@@ -3,8 +3,8 @@ title: MarketMonth Product
 status: active
 authority: canonical
 owner: product
-last_verified: 2026-07-28
-verified_against_commit: 4a2dc0a
+last_verified: 2026-07-29
+verified_against_commit: ffaf395
 related_paths:
   - project-knowledge/PRODUCT.md
   - project-knowledge/CURRENT_STATE.md

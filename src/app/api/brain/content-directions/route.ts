@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import type { SelectedTopicContext } from "@/brain/content/direction-writing-context";
 import type { TopicGenerationMode } from "@/brain/content/topic-generation-record";
 import type { ExtraContextInput, TopicCategoryId } from "@/brain/content/types";
 import { createRunTraceRepository } from "@/brain/store";
@@ -7,7 +8,7 @@ import { generateAndRecordContentDirections } from "@/brain/use-cases/generate-c
 import { requireCompanyAccess } from "@/lib/auth/company-access";
 import { requireApiSession } from "@/lib/auth/require-api-session";
 import { enforceRateLimit } from "@/lib/http/durable-rate-limit";
-import { rateLimitKeyFromRequest } from "@/lib/http/rate-limit";
+import { tenantScopedRateLimitKey } from "@/lib/http/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -27,6 +28,8 @@ type Body = {
   experimentId?: string;
   /** Opt-in experiment provider. Default: deterministic-v1. */
   directionsProvider?: "deterministic-v1" | "intelligent-v1";
+  /** Frozen topic handoff from a selected TopicCandidate (or typed topic). */
+  selectedTopicContext?: SelectedTopicContext;
 };
 
 /**
@@ -39,20 +42,6 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { ok: false, error: session.error },
       { status: session.status }
-    );
-  }
-
-  const rate = await enforceRateLimit(
-    "brain.content-directions",
-    rateLimitKeyFromRequest(request)
-  );
-  if (!rate.ok) {
-    return NextResponse.json(
-      { ok: false, error: "Rate limit exceeded" },
-      {
-        status: 429,
-        headers: { "Retry-After": String(rate.retryAfterSec) },
-      }
     );
   }
 
@@ -77,6 +66,24 @@ export async function POST(request: Request) {
     }
   }
 
+  const rate = await enforceRateLimit(
+    "brain.content-directions",
+    tenantScopedRateLimitKey({
+      userId: session.userId,
+      companyId: requestedDomain || null,
+      request,
+    })
+  );
+  if (!rate.ok) {
+    return NextResponse.json(
+      { ok: false, error: "Rate limit exceeded" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rate.retryAfterSec) },
+      }
+    );
+  }
+
   const mode = body.mode === "manual" ? "manual" : "automatic";
   const generationMode: TopicGenerationMode =
     body.generationReason === "regenerate"
@@ -95,8 +102,10 @@ export async function POST(request: Request) {
   const outcome = await generateAndRecordContentDirections({
     domain: body.domain ?? "",
     mode,
-    topic: body.topic,
-    topicCategory: body.topicCategory,
+    topic: body.selectedTopicContext
+      ? body.selectedTopicContext.masterTitle
+      : body.topic,
+    topicCategory: body.topicCategory ?? body.selectedTopicContext?.objective,
     priorities: body.priorities,
     extraContext: body.extraContext,
     requestedVariations: body.requestedVariations,
@@ -107,6 +116,7 @@ export async function POST(request: Request) {
     comparisonGroupId: body.comparisonGroupId,
     experimentId: body.experimentId,
     directionsProvider,
+    selectedTopicContext: body.selectedTopicContext,
   });
 
   if (!outcome.ok) {

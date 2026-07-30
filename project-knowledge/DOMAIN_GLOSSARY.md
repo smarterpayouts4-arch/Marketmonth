@@ -26,7 +26,10 @@ Canonical terminology for MarketMonth Content Brain and product loop. Prefer the
 | Service | Reserved for declared service lines; not page headings | Future structured extraction | Marketing section titles |
 | Catalog | Indexed sellable or browsable item (`indexedProducts`, `indexedProduct` evidence) | Product education, SEO opportunities | Offer row, commercial term |
 | Commercial term | Published transacting mechanic (price, guarantee, trial, shipping) | CSV `offer` rows, `commercialTerms` on Brand Core | Product name, capability copy |
-| Content Atom | Channel-neutral strategic package | After direction select | Platform caption dump |
+| Content Atom | Channel-neutral strategic package (`content-atom-v2`) | After direction select | Platform caption dump |
+| Craft DNA | Shared operational craft clauses + optional fact-locked atom polish (`CRAFT_DNA_VERSION`) | Atom / topic / discovery writing stages | Copyrighted playbook extracts; always-on polish as product default |
+| Content Production Bundle | Idempotent Short + Video format packages from a locked atom (`produceContentBundle`) | Content Studio `/content?atomId=` | Treating Studio Video as `youtubeLong` channel |
+| limitationsAcknowledgement | Human ack of pipeline-derived atom limitations before approve | Limited atom approve/lock | Approving insufficient/invalid atoms |
 | StrategyLock | Semantic immutability for channel specialists | Produce stage | Specialist rewriting strategy |
 | generation_id | Canonical run identity | History / handoff | decision_set_id (removed) |
 | MarketingFocus | **Retired** five-value objective enum (`brand_awareness`, `value_proposition`, `product_education`, `decision_support`, `trust_authority`); migrates via `parseTopicCategory` | Legacy runs / stored payloads only | Using as canonical topic objective — use **Topic category** (`TopicCategoryId`) per ADR 0004 |

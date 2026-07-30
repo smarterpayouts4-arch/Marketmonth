@@ -1,4 +1,6 @@
 import type { TopicCategoryId } from "@/brain/content/topic-category";
+import { isQuestionShapedSubject } from "@/brain/content/subject-shape";
+import { pipelineTrace } from "@/brain/debug/pipeline-trace";
 
 import { clamp } from "../text";
 
@@ -59,7 +61,8 @@ function articleA(noun: string): string {
 }
 
 function nounForShell(ctx: TopicTitleHookContext): string {
-  return displayNoun(ctx.primaryLabel, ctx.primaryKind);
+  const label = ctx.normalizedSubject?.trim() || ctx.primaryLabel;
+  return displayNoun(label, ctx.primaryKind);
 }
 
 /** PE label-check / buy-check patterns banned for offers_conversion unless attr-grounded. */
@@ -204,7 +207,9 @@ function shellEligible(
   framedTitle: string
 ): boolean {
   if (!ctx.primaryLabel) return false;
-  if (/^(how|what|why|help|helping)\b/i.test(ctx.primaryLabel)) return false;
+  if (ctx.subjectShape === "question") return false;
+  if (isQuestionShapedSubject(ctx.primaryLabel)) return false;
+  if (isQuestionShapedSubject(ctx.rawSubject ?? "")) return false;
   if (
     /^(The |Why |One )/i.test(framedTitle) &&
     !/^What to (know|check) /i.test(framedTitle)
@@ -241,12 +246,23 @@ export function deterministicHookedTitle(
 
   if (
     !ctx.primaryLabel ||
-    /^(how|what|why|help|helping)\b/i.test(ctx.primaryLabel)
+    ctx.subjectShape === "question" ||
+    isQuestionShapedSubject(ctx.primaryLabel) ||
+    isQuestionShapedSubject(ctx.rawSubject ?? "")
   ) {
     const payoff = tryAttributePayoff(seed, ctx);
     if (payoff && !usedTitles?.has(payoff.title.toLowerCase())) {
       return payoff;
     }
+    pipelineTrace(
+      "title.hook.shell",
+      {
+        questionShaped: true,
+        shellEligible: false,
+        title: framedTitle,
+      },
+      "ok"
+    );
     return { title: clamp(framedTitle, 90), itchType: "passthrough" };
   }
 

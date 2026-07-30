@@ -16,10 +16,10 @@ export const IDEA_LAB_DIRECTIONS_PROVIDER: DirectionProviderId =
   "deterministic-v1";
 
 /**
- * Product Atom path: deterministic only (cost + stability).
- * LLM atom remains available for experiments via preferLlm on the pipeline.
+ * Product Atom path: constrained LLM via atom/generate.ts (envelope-bound).
+ * Set preferLlm: false on the pipeline for deterministic-only / offline tests.
  */
-export const PRODUCT_ATOM_PREFER_LLM = false;
+export const PRODUCT_ATOM_PREFER_LLM = true;
 
 /** Canonical provider-selection entry points (boundary tests). */
 export const ALLOWED_PROVIDER_SELECTION_ENTRYPOINTS = [

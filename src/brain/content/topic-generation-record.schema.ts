@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+import { selectedTopicContextSchema } from "./direction-writing-context";
+import { contentDirectionsHandoffV1Schema } from "./schemas";
+import type { ContentDirectionsHandoffV1 } from "./types";
+
 /**
  * Frozen baseline Directions Brain. Template-based; not an LLM prompt stack.
  * Future intelligent providers get new brain_version values (e.g. intelligent-v1).
@@ -135,6 +139,18 @@ export const topicGenerationRecordSchema = z.object({
   /** Full intelligent result (valid or failed parse payload) before UI mapping. */
   intelligent_result: z.unknown().optional(),
   validation: directionsValidationReportSchema.optional(),
+  /** Structured topic selection used when directions were generated (optional). */
+  selected_topic_context: selectedTopicContextSchema.optional(),
+  /**
+   * Durable Content Studio handoff snapshot (optional; set on continue).
+   * Validated with contentDirectionsHandoffV1Schema; typed as the hand type
+   * (avoid transform-output mismatch with ContentDirectionsHandoffV1).
+   */
+  handoff: z
+    .custom<ContentDirectionsHandoffV1>(
+      (val) => contentDirectionsHandoffV1Schema.safeParse(val).success
+    )
+    .optional(),
   record_revision: z.number().int().positive(),
   created_at: z.string().min(1),
   updated_at: z.string().min(1),
@@ -193,6 +209,8 @@ export const TOPIC_HISTORY_CSV_HEADERS = [
   "novelty_context_json",
   "intelligent_result_json",
   "validation_json",
+  "selected_topic_context_json",
+  "handoff_json",
   "record_revision",
   "created_at",
   "updated_at",

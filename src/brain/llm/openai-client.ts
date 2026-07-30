@@ -37,6 +37,12 @@ export type BrainLlmCallArgs = {
   user: string;
   temperature?: number;
   /**
+   * Soft cap on completion tokens. Wired to `max_completion_tokens`.
+   * Prefer policy defaults from `token-budgets.ts` (atom stage up to 40_000;
+   * gpt-5.4-nano supports up to 128k output).
+   */
+  maxOutputTokens?: number;
+  /**
    * Strict structured output (constrained decoding). When omitted the call
    * uses `json_object` — prefer a schema for any new adapter.
    */
@@ -100,10 +106,14 @@ export async function callBrainLlm(
   if (args.costScope) {
     const cap = await checkTenantTokenCap(args.costScope.companyId);
     if (!cap.ok) {
+      const detail =
+        cap.reason === "cap_store_unavailable"
+          ? `tenant_cost_cap_store_unavailable: ${cap.detail ?? "unknown"}`
+          : `tenant_cost_cap_exceeded: ${cap.usedTokens}/${cap.capTokens} daily tokens used`;
       return {
         ok: false,
         reason: "api_error",
-        detail: `tenant_cost_cap_exceeded: ${cap.usedTokens}/${cap.capTokens} daily tokens used`,
+        detail,
         attempts: 0,
       };
     }
@@ -169,13 +179,26 @@ async function callOpenAiWithRetries(
         ...(args.temperature !== undefined
           ? { temperature: args.temperature }
           : {}),
+        ...(args.maxOutputTokens !== undefined
+          ? { max_completion_tokens: args.maxOutputTokens }
+          : {}),
         response_format: responseFormat,
         messages: [
           { role: "system", content: args.system },
           { role: "user", content: args.user },
         ],
       });
-      const raw = completion.choices[0]?.message?.content ?? "";
+      const choice = completion.choices[0];
+      const finishReason = choice?.finish_reason;
+      if (finishReason === "length") {
+        return {
+          ok: false,
+          reason: "api_error",
+          detail: "finish_reason_length: response truncated before complete JSON",
+          attempts,
+        };
+      }
+      const raw = choice?.message?.content ?? "";
       const usage = completion.usage;
       return {
         ok: true,

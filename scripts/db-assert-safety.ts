@@ -22,6 +22,18 @@ async function main() {
     await upsertAppMetadata({ environment: "development" });
     console.log("app_metadata upserted");
   }
+  const {
+    probeLlmUsageDailyTable,
+    probeContentAtomsTable,
+  } = await import("../src/brain/llm/cost-caps");
+  const usage = await probeLlmUsageDailyTable();
+  const atoms = await probeContentAtomsTable();
+  console.log(
+    `db-probe llm_usage_daily: ${usage.ok ? "OK" : "MISSING"} — ${usage.detail}`
+  );
+  console.log(
+    `db-probe content_atoms: ${atoms.ok ? "OK" : "MISSING"} — ${atoms.detail}`
+  );
   console.log("db-safety: OK");
 }
 

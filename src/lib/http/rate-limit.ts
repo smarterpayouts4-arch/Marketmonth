@@ -52,6 +52,27 @@ export function rateLimitKeyFromRequest(req: Request): string {
   );
 }
 
+/**
+ * Prefer tenant-scoped rate-limit keys for expensive brain routes.
+ * Falls back to IP when user/company are unavailable (pre-parse / anonymous).
+ */
+export function tenantScopedRateLimitKey(args: {
+  userId: string | null;
+  companyId?: string | null;
+  request: Request;
+}): string {
+  const company = (args.companyId ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .split(/[/?#]/)[0];
+  if (args.userId && company) return `${args.userId}:${company}`;
+  if (args.userId) return args.userId;
+  if (company) return company;
+  return rateLimitKeyFromRequest(args.request);
+}
+
 /** Test helper */
 export function resetRateLimitForTests(): void {
   buckets.clear();

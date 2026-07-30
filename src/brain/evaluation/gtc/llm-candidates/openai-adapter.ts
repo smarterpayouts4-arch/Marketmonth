@@ -2,6 +2,7 @@ import {
   callBrainLlm,
   type BrainLlmTokenUsage,
 } from "@/brain/llm/openai-client";
+import { tokenBudget } from "@/brain/policy/token-budgets";
 
 import { LLM_TOPIC_CANDIDATES_JSON_SCHEMA } from "./schema";
 
@@ -56,6 +57,7 @@ export async function callTopicCandidatesOpenAi(
     system: args.system,
     user: args.user,
     jsonSchema: LLM_TOPIC_CANDIDATES_JSON_SCHEMA,
+    maxOutputTokens: tokenBudget("topicCandidates"),
     costScope: args.costScope,
   });
   if (result.ok) {

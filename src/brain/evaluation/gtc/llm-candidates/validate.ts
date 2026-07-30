@@ -1,4 +1,5 @@
 import type { TopicCategoryId } from "@/brain/content/topic-category";
+import { QUESTION_LEAD_RE } from "@/brain/content/subject-shape";
 import {
   hasMedicalOrStudyClaim,
   hasNewNumbers,
@@ -91,9 +92,6 @@ function titleMatchesObservedSubjects(
 
   return titleWords.length === 0;
 }
-
-const QUESTION_LEAD_RE =
-  /^(who|whose|what|when|where|why|how|which|does|do|did|is|are|was|were|can|could|should|would|will)\b/i;
 
 /** Complete interrogative sentence, e.g. "Does ZYNAVA sell supplements?" */
 function isCompleteQuestionTitle(title: string): boolean {

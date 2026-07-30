@@ -1,6 +1,7 @@
 import type { ContentBrainContext } from "@/brain/content/types";
 
 import { isMetaInstructionalPhrase } from "../topic-meta";
+import { corpusSupportsSupplementRetailHeuristics } from "./corpus-industry";
 import {
   clampLabel,
   evidenceForField,
@@ -11,10 +12,18 @@ import { typedCommerceAttribute } from "./commerce-attributes";
 import { COMPARISON_ATTR_RE } from "./ingredient-patterns";
 import type { TopicSubject } from "./types";
 
+/** Generic commerce comparison cues — safe for any industry. */
+const GENERIC_COMPARISON_ATTR_RE =
+  /\b(price|prices|brand|brands|trade-?off|criteria|checklist|compare)\b/i;
+
 export function extractComparisonAttributes(
   context: ContentBrainContext
 ): TopicSubject[] {
   const out: TopicSubject[] = [];
+  const retailCorpus = corpusSupportsSupplementRetailHeuristics(context);
+  const opportunityAttrRe = retailCorpus
+    ? COMPARISON_ATTR_RE
+    : GENERIC_COMPARISON_ATTR_RE;
 
   // P2.3: typed comparison attrs from commercial fields — a published term
   // of sale mentioning price/shipping/returns/warranty grounds a comparison
@@ -61,7 +70,7 @@ export function extractComparisonAttributes(
 
   for (const o of ops) {
     if (isMetaInstructionalPhrase(o)) continue;
-    if (!COMPARISON_ATTR_RE.test(o)) continue;
+    if (!opportunityAttrRe.test(o)) continue;
     // Help-imperatives belong to audience extraction after normalize
     if (/^(Help|Helping)\b/i.test(o.trim())) continue;
     const label = normalizeOpportunityLabel(o);

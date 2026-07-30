@@ -128,7 +128,8 @@ describe("marketing topic copy + request", () => {
     assert.doesNotMatch(workspace, /MasterTopicSideSlot|master-topic-side-slot/);
     assert.doesNotMatch(workspace, /MasterTopicPanel|master-topic-panel/);
     assert.match(workspace, /ContentVariationGrid/);
-    assert.match(workspace, /router\.push\(["']\/content["']\)/);
+    assert.match(workspace, /content\?atomId=/);
+    assert.match(workspace, /confirmDirectionAndBuildAtom|AtomReviewPanel/);
     for (const file of [
       "topic-creation-card.tsx",
       "marketing-topic-workspace.tsx",

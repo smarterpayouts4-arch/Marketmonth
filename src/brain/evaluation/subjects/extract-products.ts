@@ -2,6 +2,7 @@ import type { ContentBrainContext } from "@/brain/content/types";
 
 import { isMetaInstructionalPhrase } from "../topic-meta";
 import { classifyOfferNoun, isSemanticallyValidCatalogName } from "./classify-offer";
+import { corpusSupportsSupplementRetailHeuristics } from "./corpus-industry";
 import {
   clampLabel,
   countLabelMentions,
@@ -18,6 +19,7 @@ export function extractProductSubjects(
   context: ContentBrainContext
 ): TopicSubject[] {
   const out: TopicSubject[] = [];
+  const supplementCorpus = corpusSupportsSupplementRetailHeuristics(context);
 
   context.products.forEach((p, i) => {
     const s = classifyOfferNoun(p, `products[${i}]`, context);
@@ -29,7 +31,7 @@ export function extractProductSubjects(
   for (const [i, product] of (context.indexedProducts ?? []).entries()) {
     const name = product.name?.trim();
     if (!name || !isSemanticallyValidCatalogName(name)) continue;
-    if (looksLikeIngredientLabel(name)) {
+    if (supplementCorpus && looksLikeIngredientLabel(name)) {
       pushUnique(out, {
         label: clampLabel(name, 48),
         kind: "ingredient_or_component",
@@ -58,9 +60,10 @@ export function extractProductSubjects(
     if (!name || !isSemanticallyValidCatalogName(name)) continue;
     pushUnique(out, {
       label: clampLabel(name, 48),
-      kind: looksLikeIngredientLabel(name)
-        ? "ingredient_or_component"
-        : "catalog_product",
+      kind:
+        supplementCorpus && looksLikeIngredientLabel(name)
+          ? "ingredient_or_component"
+          : "catalog_product",
       sourceField: "evidence.indexedProduct",
       evidenceIds: [ev.id],
       classificationReason:
@@ -68,6 +71,8 @@ export function extractProductSubjects(
       classificationConfidence: "medium",
     });
   }
+
+  if (!supplementCorpus) return out;
 
   for (const o of context.contentOpportunities) {
     if (isMetaInstructionalPhrase(o)) continue;

@@ -3,7 +3,12 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, it } from "node:test";
 
-import { validateContentAtom } from "@/brain/atom";
+import {
+  approveAtom,
+  isAtomBuildSuccessful,
+  lockAtom,
+  validateContentAtom,
+} from "@/brain/atom";
 import { channelRegistry, isChannelEnabled } from "@/brain/channels/channel-registry";
 import {
   generateYouTubeShortPackage,
@@ -70,7 +75,7 @@ describe("canonical content pipeline", () => {
     assert.equal(channelRegistry.youtubeLong.status, "not_connected");
   });
 
-  it("Core Content Brain produces a ready Content Atom", async () => {
+  it("Core Content Brain produces a build-successful Content Atom", async () => {
     const context = loadFixtureContext();
     const result = await runCoreContentBrain({
       context,
@@ -82,14 +87,23 @@ describe("canonical content pipeline", () => {
     if (!result.ok) return;
 
     const atom = result.atom;
-    assert.equal(atom.status, "ready");
-    assert.ok(atom.hook_strategy.opening_intent);
-    assert.ok(atom.hook_strategy.planted_question);
-    assert.ok(atom.promised_payoff);
-    assert.ok(atom.central_claim.canonical_wording);
-    assert.ok(atom.supporting_proof.length >= 1);
+    assert.ok(isAtomBuildSuccessful(atom));
+    assert.equal(atom.schemaVersion, "content-atom-v2");
+    assert.ok(atom.kernel.hook_strategy.opening_intent);
+    assert.ok(atom.kernel.hook_strategy.planted_question);
+    assert.ok(atom.kernel.payoff);
+    assert.ok(atom.kernel.central_claim.canonical_wording);
+    assert.ok(atom.kernel.supporting_proof.length >= 1);
+    assert.ok(
+      atom.kernel.supporting_proof.every(
+        (p) => p.evidence_id === p.proof_id && !p.evidence_id.startsWith("http")
+      )
+    );
     assert.ok(atom.message_hash.startsWith("mh_"));
-    assert.doesNotMatch(atom.creative_mode, /facebook|tiktok|youtube/i);
+    assert.doesNotMatch(
+      atom.engagementBlueprint.creative_mode,
+      /facebook|tiktok|youtube/i
+    );
 
     const validated = validateContentAtom(atom);
     assert.equal(validated.ok, true);
@@ -105,11 +119,18 @@ describe("canonical content pipeline", () => {
     assert.equal(brain.ok, true);
     if (!brain.ok) return;
 
-    const adapted = generateYouTubeShortPackage({ atom: brain.atom });
+    const approved = approveAtom(brain.atom);
+    assert.equal(approved.ok, true);
+    if (!approved.ok) return;
+    const locked = lockAtom(approved.atom);
+    assert.equal(locked.ok, true);
+    if (!locked.ok) return;
+
+    const adapted = generateYouTubeShortPackage({ atom: locked.atom });
     assert.equal(adapted.ok, true);
     if (!adapted.ok) return;
 
-    const lock = assertStrategyLock(brain.atom, adapted.package.strategy_lock, {
+    const lock = assertStrategyLock(locked.atom, adapted.package.strategy_lock, {
       claim_ids: adapted.package.claim_ids_used,
       proof_ids: adapted.package.proof_ids_used,
     });
@@ -119,11 +140,11 @@ describe("canonical content pipeline", () => {
       ...adapted.package,
       claim_ids_used: [...adapted.package.claim_ids_used, "claim_forged"],
     };
-    const forgedCheck = validateYouTubeShortPackage(brain.atom, forged);
+    const forgedCheck = validateYouTubeShortPackage(locked.atom, forged);
     assert.equal(forgedCheck.ok, false);
 
     const qa = runDeterministicQa({
-      atom: brain.atom,
+      atom: locked.atom,
       brandCore: brain.brandCore,
       youtubeShortPackage: adapted.package,
       imageConfig: defaultImageProviderConfig(),

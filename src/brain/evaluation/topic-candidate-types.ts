@@ -35,6 +35,9 @@ export type TopicCandidateSubjectIdentity = {
   classificationConfidence: ClassificationConfidence;
   /** brand_observed (default) vs industry_research */
   sourceType?: "brand_observed" | "industry_research";
+  rawSubject?: string;
+  normalizedSubject?: string;
+  subjectShape?: "question" | "noun" | "other";
 };
 
 export type TopicTitleSource = "deterministic-v2" | "llm-generated";

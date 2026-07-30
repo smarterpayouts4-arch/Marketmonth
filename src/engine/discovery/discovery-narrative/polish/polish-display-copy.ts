@@ -16,11 +16,13 @@
 import OpenAI from "openai";
 import { z } from "zod";
 
+import { buildCraftClause } from "@/brain/craft";
 import {
   hasMedicalOrStudyClaim,
   hasNewNumbers,
 } from "@/brain/evaluation/creative-safety";
 import { resolveModel } from "@/brain/policy/model-registry";
+import { tokenBudget } from "@/brain/policy/token-budgets";
 import {
   MAX_CARD_ROWS,
   deterministicRowCopy,
@@ -87,6 +89,8 @@ Rules:
 - summary: one sentence, at most ${SUMMARY_MAX_WORDS} words, grounded strictly in the detail.
 - Write direct statements. Never hedge with "is described as", "appears to", or "seems to" — the detail is already the source of truth.
 - If a row's detail is garbled, truncated, or unusable, echo the currentTitle and currentSummary back verbatim. Do not invent readable copy to cover for bad input, and do not write the word "unchanged".
+
+${buildCraftClause("discovery_copy")}
 
 Return JSON: { "rows": [ { "id": string, "title": string, "summary": string } ] }`;
 
@@ -322,6 +326,7 @@ export async function polishDiscoveryDisplayCopy(
     // nano / reasoning models reject a custom temperature — omit for default.
     const completion = await client.chat.completions.create({
       model,
+      max_completion_tokens: tokenBudget("discoveryCopyPolish"),
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: SYSTEM },

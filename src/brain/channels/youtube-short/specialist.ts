@@ -1,5 +1,9 @@
 import { shortHash } from "@/brain/content/evidence";
-import type { ContentAtom } from "@/brain/atom";
+import {
+  isAtomSpecialistReady,
+  type ContentAtom,
+} from "@/brain/atom";
+import { wordSafeClamp } from "@/brain/lib/word-safe-clamp";
 import {
   assertStrategyLock,
   buildStrategyLock,
@@ -17,59 +21,71 @@ export type YouTubeShortGenerateResult =
   | { ok: false; errors: string[] };
 
 /**
- * YouTube Short specialist — platform-native package from a ready Content Atom.
+ * YouTube Short specialist — platform-native package from a specialist-ready atom.
  * Controlled interpretation: rewrite OK; strategy contradiction fail-closed.
  */
 export function generateYouTubeShortPackage(input: {
   atom: ContentAtom;
 }): YouTubeShortGenerateResult {
   const { atom } = input;
-  if (atom.status !== "ready") {
+  if (!isAtomSpecialistReady(atom)) {
     return {
       ok: false,
-      errors: [`atom must be ready, got ${atom.status}`],
+      errors: [
+        `atom must be specialist-ready, got buildStatus=${atom.buildStatus} approvalStatus=${atom.approvalStatus}`,
+      ],
     };
   }
 
   const lock = buildStrategyLock(atom);
-  const claimId = atom.central_claim.claim_id;
-  const proofIds = atom.supporting_proof.map((p) => p.proof_id);
-  const proofLine = atom.supporting_proof[0]?.meaning ?? atom.promised_payoff;
+  const claimId = atom.kernel.central_claim.claim_id;
+  const proofIds = atom.kernel.supporting_proof.map((p) => p.proof_id);
+  const proofLine =
+    atom.kernel.supporting_proof[0]?.meaning ?? atom.kernel.payoff;
 
   const spoken_hook = clamp(
-    atom.hook_strategy.opening_intent || atom.hook_strategy.planted_question,
+    atom.kernel.hook_strategy.opening_intent ||
+      atom.kernel.hook_strategy.planted_question,
     280
   );
-  const title = clamp(atom.selected_direction.specific_topic, 100);
+  const title = clamp(
+    atom.lineage.specificTopic || atom.lineage.masterTitle,
+    100
+  );
+
+  const narrative = atom.narrativeModules[atom.lineage.angle];
+  const spokenSetup =
+    narrative?.canonicalNarrativeSpine?.setup ||
+    atom.kernel.audience_problem;
 
   const scenes = [
     {
       scene_id: "s1_hook",
       duration_seconds: 3,
       spoken_line: spoken_hook,
-      on_screen_text: clamp(atom.hook_strategy.planted_question, 80),
+      on_screen_text: clamp(atom.kernel.hook_strategy.planted_question, 80),
       visual_prompt: clamp(
-        `${atom.visual_concept}. First frame tension: ${atom.audience.core_tension}`,
+        `${atom.engagementBlueprint.visual_concept}. First frame tension: ${atom.kernel.core_tension}`,
         500
       ),
     },
     {
       scene_id: "s2_context",
       duration_seconds: 8,
-      spoken_line: clamp(atom.narrative.setup, 400),
-      on_screen_text: clamp(atom.audience.problem, 80),
+      spoken_line: clamp(spokenSetup, 400),
+      on_screen_text: clamp(atom.kernel.audience_problem, 80),
       visual_prompt: clamp(
-        `Context visual for: ${atom.audience.problem}`,
+        `Context visual for: ${atom.kernel.audience_problem}`,
         500
       ),
     },
     {
       scene_id: "s3_claim",
       duration_seconds: 10,
-      spoken_line: clamp(atom.central_claim.canonical_wording, 400),
-      on_screen_text: clamp(atom.central_claim.meaning, 80),
+      spoken_line: clamp(atom.kernel.central_claim.canonical_wording, 400),
+      on_screen_text: clamp(atom.kernel.central_claim.meaning, 80),
       visual_prompt: clamp(
-        `Support the claim visually without new promises: ${atom.central_claim.meaning}`,
+        `Support the claim visually without new promises: ${atom.kernel.central_claim.meaning}`,
         500
       ),
     },
@@ -83,10 +99,10 @@ export function generateYouTubeShortPackage(input: {
     {
       scene_id: "s5_payoff",
       duration_seconds: 8,
-      spoken_line: clamp(atom.promised_payoff, 400),
-      on_screen_text: clamp(atom.intended_action, 40),
+      spoken_line: clamp(atom.kernel.payoff, 400),
+      on_screen_text: clamp(atom.kernel.intended_action, 40),
       visual_prompt: clamp(
-        `Payoff visual ending on intended action: ${atom.intended_action}`,
+        `Payoff visual ending on intended action: ${atom.kernel.intended_action}`,
         500
       ),
     },
@@ -117,9 +133,9 @@ export function generateYouTubeShortPackage(input: {
       payoff_timestamp: Math.max(total - 8, 12),
     },
     thumbnail_or_first_frame: {
-      text: clamp(atom.hook_strategy.planted_question, 80),
+      text: clamp(atom.kernel.hook_strategy.planted_question, 80),
       image_prompt: clamp(
-        `${atom.visual_concept}. Bold first-frame text energy, 9:16`,
+        `${atom.engagementBlueprint.visual_concept}. Bold first-frame text energy, 9:16`,
         500
       ),
     },
@@ -127,7 +143,7 @@ export function generateYouTubeShortPackage(input: {
     voice_direction: {
       tone: "clear, confident, non-hype",
       pace: "brisk with a pause after the hook",
-      emphasis: atom.central_claim.canonical_wording,
+      emphasis: atom.kernel.central_claim.canonical_wording,
     },
     render_plan: {
       image_provider: "stub-image",
@@ -168,7 +184,5 @@ export function generateYouTubeShortPackage(input: {
 }
 
 function clamp(value: string, max: number): string {
-  const t = value.trim();
-  if (t.length <= max) return t;
-  return `${t.slice(0, max - 1)}…`;
+  return wordSafeClamp(value, max);
 }

@@ -6,6 +6,10 @@ import type { ContentBrainContext } from "@/brain/content/types";
 import { deduplicateEvidenceItems } from "./dedupe";
 import { buildTopicEvidenceIndex } from "./index-evidence";
 import {
+  parseStructuredEvidenceValue,
+  splitTopicListSegments,
+} from "./parse-structured";
+import {
   isNavChrome,
   isRejectedEvidence,
   sanitizeEvidenceValue,
@@ -125,7 +129,9 @@ describe("sanitizeEvidenceValue", () => {
     );
     assert.ok(repaired);
     assert.match(repaired!, /Vitamins/);
+    assert.match(repaired!, /Vitamin D The/);
     assert.match(repaired!, /Sunshine Vitamin/);
+    assert.equal(repaired!.includes("DThe"), false);
   });
 
   it("returns cleaned usable prose", () => {
@@ -192,6 +198,43 @@ describe("deduplicateEvidenceItems", () => {
     const out = deduplicateEvidenceItems([clipped, complete]);
     assert.equal(out.length, 1);
     assert.equal(out[0]!.id, "b");
+  });
+});
+
+describe("splitTopicListSegments / educationalTopics blob", () => {
+  it("splits separator-joined headings into per-segment items", () => {
+    const blob =
+      "Compare Supplement Prices Based on Your Preferences · Why Zynava Exists · Smarter Choices Start Here";
+    const segments = splitTopicListSegments(blob);
+    assert.equal(segments.length, 3);
+    assert.equal(
+      segments[0],
+      "Compare Supplement Prices Based on Your Preferences"
+    );
+    assert.ok(!segments.some((s) => s.includes("·")));
+
+    const items = parseStructuredEvidenceValue(
+      "educationalTopics",
+      blob,
+      "https://zynava.com",
+      "observed",
+      "high",
+      "evidence"
+    );
+    assert.ok(items.length >= 3);
+    assert.ok(
+      items.every((i) => !i.normalizedText.includes("·") || i.normalizedText.split("·").length === 1)
+    );
+    assert.ok(
+      items.some((i) =>
+        /Compare Supplement Prices Based on Your Preferences/i.test(
+          i.normalizedText
+        )
+      )
+    );
+    assert.ok(
+      items.some((i) => /Why Zynava Exists/i.test(i.normalizedText))
+    );
   });
 });
 

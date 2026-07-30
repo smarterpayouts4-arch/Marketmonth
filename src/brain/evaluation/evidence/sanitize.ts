@@ -1,3 +1,5 @@
+import { pipelineTrace } from "@/brain/debug/pipeline-trace";
+
 const PLACEHOLDER_RETRIEVED_AT = "1970-01-01T00:00:00.000Z";
 
 const GENERIC_INSIGHT_PHRASES = [
@@ -121,6 +123,8 @@ export function segmentCamelGlued(
   const { masked, masks } = maskAll(text, [...protect, ...CAMEL_ALLOWLIST]);
   const repaired = masked
     .replace(/([A-Z]{2,})([A-Z][a-z])/g, "$1 $2")
+    // Single capital + letter/digit run then capital word: "DThe", "B12The", "CThe"
+    .replace(/([A-Z]\d*)([A-Z][a-z])/g, "$1 $2")
     .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
     .replace(/([.!?])([A-Z])/g, "$1 $2")
     .replace(new RegExp(`${CLOSE}([A-Z])`, "g"), `${CLOSE} $1`)
@@ -135,9 +139,18 @@ export function segmentCamelGlued(
 }
 
 function repairCamelGlued(text: string, protect: string[] = []): string {
-  const segments = segmentCamelGlued(text, protect);
-  if (segments.length <= 1) return text;
-  return segments.join(" ");
+  // Prefer join-preserving repair (keep phrase integrity) over word-split.
+  const { masked, masks } = maskAll(text, [...protect, ...CAMEL_ALLOWLIST]);
+  const repaired = masked
+    .replace(/([A-Z]{2,})([A-Z][a-z])/g, "$1 $2")
+    .replace(/([A-Z]\d*)([A-Z][a-z])/g, "$1 $2")
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/([.!?])([A-Z])/g, "$1 $2")
+    .replace(new RegExp(`${CLOSE}([A-Z])`, "g"), `${CLOSE} $1`)
+    .replace(new RegExp(`([a-z0-9])${OPEN}`, "g"), `$1 ${OPEN}`)
+    .replace(/[^\S\n]{2,}/g, " ");
+  const out = unmaskAll(repaired, masks).replace(/[^\S\n]{2,}/g, " ").trim();
+  return out || text;
 }
 
 function scrubInlinePii(text: string): string {
@@ -195,7 +208,8 @@ export function failsGenericInsight(text: string): boolean {
   return GENERIC_INSIGHT_PHRASES.some((re) => re.test(t));
 }
 
-const CAMEL_GLUED_RE = /[a-z][A-Z]|[A-Z]{2,}[A-Z][a-z]/;
+const CAMEL_GLUED_RE =
+  /[a-z][A-Z]|[A-Z]{2,}[A-Z][a-z]|[A-Z]\d*[A-Z][a-z]/;
 
 export function sanitizeEvidenceValue(
   text: string,
@@ -210,7 +224,15 @@ export function sanitizeEvidenceValue(
     .trim();
 
   if (CAMEL_GLUED_RE.test(t)) {
+    const before = t;
     t = repairCamelGlued(t, opts?.protect);
+    if (t !== before) {
+      pipelineTrace(
+        "subject.deglue",
+        { before, after: t },
+        before.includes("DThe") || before.includes("CThe") ? "ok" : "warn"
+      );
+    }
   }
   t = scrubInlinePii(t);
   t = t.replace(/\b([A-Z][A-Za-z0-9]{2,})\1\b/g, "$1");

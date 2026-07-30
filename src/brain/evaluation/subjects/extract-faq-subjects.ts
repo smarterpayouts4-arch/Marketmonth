@@ -1,3 +1,4 @@
+import { dualSubjectFromLabel } from "@/brain/content/subject-shape";
 import type { ContentBrainContext } from "@/brain/content/types";
 
 import {
@@ -23,8 +24,10 @@ export function extractFaqSubjects(
       /(?:^|\bQ:\s*)([^?]{8,120}\?)/i
     );
     const labelRaw = qMatch?.[1] ?? ev.value.slice(0, 120);
-    const label = normalizeOpportunityLabel(labelRaw.replace(/^Q:\s*/i, ""));
+    const rawQuestion = labelRaw.replace(/^Q:\s*/i, "").trim();
+    const label = normalizeOpportunityLabel(rawQuestion);
     if (!label || label.length < 8) continue;
+    const dual = dualSubjectFromLabel(rawQuestion);
     pushUnique(out, {
       label,
       kind: "faq_topic",
@@ -37,6 +40,9 @@ export function extractFaqSubjects(
           : ev.confidence === "medium"
             ? "medium"
             : "low",
+      rawSubject: dual.rawSubject,
+      normalizedSubject: dual.normalizedSubject,
+      subjectShape: dual.subjectShape,
     });
   }
   return out.slice(0, 8);

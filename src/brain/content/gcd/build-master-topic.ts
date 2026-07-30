@@ -85,14 +85,42 @@ export function buildMasterTopicStage(input: {
       };
     }
 
-    // Prefer the selected candidate's own evidence — never arbitrary map keys.
+    // Prefer the selected candidate's own evidence, then widen with
+    // proof-aligned IDs (never brand-profile keys like businessName/logoUrl).
     const fromCandidate = (selectedTopicContext.evidenceIds ?? []).filter(
       (id) => Boolean(context.evidenceById[id] || id)
     );
+    const PROFILE_KEYS = new Set([
+      "businessName",
+      "description",
+      "logoUrl",
+      "website",
+      "domain",
+      "brandName",
+      "valueProposition",
+      "tagline",
+      "email",
+      "phone",
+      "address",
+    ]);
+    const proofAligned = Object.keys(context.evidenceById).filter((id) => {
+      if (PROFILE_KEYS.has(id)) return false;
+      const ev = context.evidenceById[id];
+      const value = (ev?.value ?? "").toString().trim();
+      if (value.length < 24) return false;
+      if (/^https?:\/\//i.test(value)) return false;
+      return true;
+    });
+    const widened = [
+      ...fromCandidate,
+      ...proofAligned.filter((id) => !fromCandidate.includes(id)),
+    ].slice(0, 6);
     const evidenceIds =
-      fromCandidate.length > 0
-        ? fromCandidate
-        : Object.keys(context.evidenceById).slice(0, 3);
+      widened.length > 0
+        ? widened
+        : Object.keys(context.evidenceById)
+            .filter((id) => !PROFILE_KEYS.has(id))
+            .slice(0, 3);
 
     return {
       ok: true,

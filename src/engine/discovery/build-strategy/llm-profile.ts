@@ -1,5 +1,8 @@
 import OpenAI from "openai";
 
+import { resolveModel } from "@/brain/policy/model-registry";
+import { tokenBudget } from "@/brain/policy/token-budgets";
+
 import {
   aiBrandProfileResultSchema,
   type BrandProfile,
@@ -11,8 +14,9 @@ import type { ProfileArgs } from "./types";
 export async function llmBrandProfile(args: ProfileArgs): Promise<BrandProfile> {
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const completion = await client.chat.completions.create({
-    model: process.env.OPENAI_DISCOVERY_MODEL || "gpt-5.4-nano",
+    model: resolveModel("discovery"),
     temperature: 0,
+    max_completion_tokens: tokenBudget("discoveryProfile"),
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: BRAND_PROFILE_SYSTEM },

@@ -11,11 +11,19 @@ import {
 } from "./evaluate-draft";
 
 function atom(partial: {
-  master_topic: string;
-  audience: ContentAtom["audience"];
-  supporting_proof: ContentAtom["supporting_proof"];
+  masterTitle: string;
+  audience_state: string;
+  audience_problem: string;
+  supporting_proof: ContentAtom["kernel"]["supporting_proof"];
 }): ContentAtom {
-  return partial as ContentAtom;
+  return {
+    lineage: { masterTitle: partial.masterTitle },
+    kernel: {
+      audience_state: partial.audience_state,
+      audience_problem: partial.audience_problem,
+      supporting_proof: partial.supporting_proof,
+    },
+  } as ContentAtom;
 }
 
 describe("draft-eval", () => {
@@ -38,12 +46,9 @@ describe("draft-eval", () => {
     const result = evaluateDraft({
       artifactId: "atom_test",
       atom: atom({
-        master_topic: "Does magnesium help with sleep?",
-        audience: {
-          state: "tired adults",
-          problem: "poor sleep quality",
-          core_tension: "want rest without guesswork",
-        },
+        masterTitle: "Does magnesium help with sleep?",
+        audience_state: "tired adults",
+        audience_problem: "poor sleep quality",
         supporting_proof: [
           {
             proof_id: "pf_1",
@@ -79,12 +84,9 @@ describe("draft-eval", () => {
       initial: {
         artifactId: "atom_bad",
         atom: atom({
-          master_topic: "Topic",
-          audience: {
-            state: "a",
-            problem: "needs clarity on magnesium",
-            core_tension: "t",
-          },
+          masterTitle: "Topic",
+          audience_state: "a",
+          audience_problem: "needs clarity on magnesium",
           supporting_proof: [
             {
               proof_id: "pf_x",
@@ -98,12 +100,9 @@ describe("draft-eval", () => {
       reviseOnce: () => ({
         artifactId: "atom_bad",
         atom: atom({
-          master_topic: "Topic",
-          audience: {
-            state: "a",
-            problem: "needs clarity on magnesium",
-            core_tension: "t",
-          },
+          masterTitle: "Topic",
+          audience_state: "a",
+          audience_problem: "needs clarity on magnesium",
           supporting_proof: [
             {
               proof_id: "pf_1",

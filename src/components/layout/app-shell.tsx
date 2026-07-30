@@ -36,7 +36,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <PrototypeModeToggle />
         </div>
         <main className="min-h-0 flex-1 overflow-y-auto lg:has-[[data-studio-shell]]:overflow-hidden">
-          <div className="mx-auto h-full min-h-0 w-full max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8 lg:has-[[data-studio-shell]]:py-3">
+          <div className="mx-auto h-full min-h-0 w-full max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8 lg:has-[[data-studio-shell]]:max-w-none lg:has-[[data-studio-shell]]:py-3">
             {children}
           </div>
         </main>

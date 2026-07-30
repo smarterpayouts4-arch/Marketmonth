@@ -1,5 +1,6 @@
 import type { ContentBrainContext } from "@/brain/content/types";
 
+import { corpusSupportsSupplementRetailHeuristics } from "./corpus-industry";
 import {
   clampLabel,
   evidenceForField,
@@ -13,6 +14,8 @@ export function extractProductCategories(
   context: ContentBrainContext
 ): TopicSubject[] {
   const out: TopicSubject[] = [];
+  // Supplement/vitamin category nouns only when the corpus already uses them.
+  if (!corpusSupportsSupplementRetailHeuristics(context)) return out;
   const narrative = [
     context.description,
     context.audience,

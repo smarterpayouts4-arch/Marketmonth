@@ -105,6 +105,9 @@ function toCandidates(
         evidenceIds: [...s.seed.evidenceIds],
         classificationConfidence: s.seed.classificationConfidence,
         sourceType: s.seed.sourceType ?? "brand_observed",
+        rawSubject: s.seed.rawSubject ?? s.seed.subject,
+        normalizedSubject: s.seed.normalizedSubject ?? s.seed.subject,
+        subjectShape: s.seed.subjectShape,
       },
       subjectKind: s.seed.subjectType,
       sourceFields: s.seed.sourceFields,
@@ -127,9 +130,30 @@ function rankScored(scored: ScoredCandidate[]): ScoredCandidate[] {
     const prev = byTitle.get(key);
     if (!prev || b.score.overall > prev.score.overall) byTitle.set(key, b);
   }
-  return [...byTitle.values()].sort(
-    (a, b) => b.score.overall - a.score.overall
-  );
+  return [...byTitle.values()].sort((a, b) => {
+    const scoreDiff = b.score.overall - a.score.overall;
+    if (Math.abs(scoreDiff) > 1e-9) return scoreDiff;
+    // Score ties: keep LLM partial-accept ahead of deterministic top-up.
+    const aLlm = titleSourceOf(a) === "llm-generated" ? 0 : 1;
+    const bLlm = titleSourceOf(b) === "llm-generated" ? 0 : 1;
+    return aLlm - bLlm;
+  });
+}
+
+/**
+ * Partial-accept contract: LLM-framed candidates claim distinct support /
+ * display slots first; deterministic drafts fill the remainder. Without this,
+ * high-scoring deterministic templates can crowd a single accepted LLM title
+ * out of a complete six-slate.
+ */
+function preferLlmFirst(ranked: ScoredCandidate[]): ScoredCandidate[] {
+  const llm: ScoredCandidate[] = [];
+  const rest: ScoredCandidate[] = [];
+  for (const item of ranked) {
+    if (titleSourceOf(item) === "llm-generated") llm.push(item);
+    else rest.push(item);
+  }
+  return [...llm, ...rest];
 }
 
 function itchTypeOf(s: ScoredCandidate): string {
@@ -207,7 +231,10 @@ export function assembleCandidateResult(args: {
       };
     }
 
-    const distinct = selectDistinctSupportKeys(ranked, COMPLETE_COUNT);
+    const distinct = selectDistinctSupportKeys(
+      preferLlmFirst(ranked),
+      COMPLETE_COUNT
+    );
     const canComplete = distinct.length >= COMPLETE_COUNT;
 
     if (!canComplete) {
@@ -260,7 +287,10 @@ export function assembleCandidateResult(args: {
     };
   }
 
-  const distinct = selectDistinctSupportKeys(ranked, COMPLETE_COUNT);
+  const distinct = selectDistinctSupportKeys(
+    preferLlmFirst(ranked),
+    COMPLETE_COUNT
+  );
 
   if (distinct.length < COMPLETE_COUNT) {
     if (distinct.length === 0) {

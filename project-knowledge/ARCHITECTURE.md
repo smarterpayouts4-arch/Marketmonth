@@ -3,10 +3,11 @@ title: MarketMonth Architecture
 status: active
 authority: canonical
 owner: engineering
-last_verified: 2026-07-24
+last_verified: 2026-07-29
 related_paths:
   - src/app/**
   - src/engine/**
+  - src/brain/**
   - src/components/**
   - src/seo/**
 ---
@@ -55,9 +56,9 @@ Cross-surface coordination goes through **explicit shared domain contracts**, ap
 | Discovery Engine | LEARN pipeline | `src/engine/discovery/` | `POST /api/discovery/analyze` |
 | Brand | LEARN | `src/components/brand/` (+ `src/app/(app)/brand/`) | `/brand` |
 | Content Brain | STRATEGIZE (directions) | `src/brain/content/` | `POST /api/brain/content-directions` |
-| Content Production | CONTENT UNIVERSE + PRODUCE | `src/brain/atom/`, `strategy-lock/`, `channels/` (+ `youtube-short` enabled) | `POST /api/brain/content/production`, `POST /api/brain/content-atom` |
+| Content Production | CONTENT UNIVERSE + PRODUCE | `src/brain/atom/`, `craft/`, `content-studio/`, `strategy-lock/`, `channels/` (Short enabled; Long not_connected) | `POST /api/brain/content-atom`, `POST /api/brain/content-atom/review`, `GET|POST /api/brain/content/production` |
 | Marketing Topic (dashboard) | STRATEGIZE | `src/components/dashboard/marketing-topic/` | `/dashboard?phase=marketing-topic` (`/strategy` redirects) |
-| Content | CONTENT UNIVERSE + PRODUCE (strategy-linked) | `src/components/dashboard/content/` + `/content` | `/content` (`?phase=content` redirects here) |
+| Content | CONTENT UNIVERSE + PRODUCE (strategy-linked) | `src/components/dashboard/content/` + `/content` (`?atomId=` Live; bare path Partial) | `/content` (`?phase=content` redirects here) |
 | Review | REVIEW | review route + components | `/review` |
 | Calendar | SCHEDULE | calendar route | `/calendar` |
 | Analytics | PUBLISH + LEARN | analytics route | `/analytics` |

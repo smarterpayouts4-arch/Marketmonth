@@ -1,8 +1,17 @@
+import { Suspense } from "react";
+
 import { ContentStudio } from "@/components/dashboard/content";
-import { isContentPromptInspectorEnabled } from "@/lib/content/prompt-inspector";
 
 export default function ContentPage() {
-  const promptInspectorEnabled = isContentPromptInspectorEnabled();
-
-  return <ContentStudio promptInspectorEnabled={promptInspectorEnabled} />;
+  return (
+    <Suspense
+      fallback={
+        <p className="p-6 text-sm text-text-secondary" aria-live="polite">
+          Loading Content Studio…
+        </p>
+      }
+    >
+      <ContentStudio />
+    </Suspense>
+  );
 }

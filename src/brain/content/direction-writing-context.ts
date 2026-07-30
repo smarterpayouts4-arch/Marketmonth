@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+import { pipelineTrace } from "@/brain/debug/pipeline-trace";
+
+import {
+  dualSubjectFromLabel,
+  isQuestionShapedSubject,
+  toNounSubject,
+} from "./subject-shape";
 import {
   TOPIC_CATEGORY_IDS,
   type TopicCategoryId,
@@ -44,6 +51,16 @@ export type SelectedTopicContext = {
   evidenceIds?: string[];
   /** Preferred writing subject (candidate.subject.label) — not the hooked title. */
   subjectLabel?: string;
+  /** Original subject wording (e.g. full FAQ question). */
+  rawSubject?: string;
+  /** Noun form for beginner / noun templates. */
+  normalizedSubject?: string;
+  subjectShape?: "question" | "noun" | "other";
+  /**
+   * How the topic was chosen. `user_typed` topics are limited at atom preflight.
+   * Omitted on older handoffs — treated as candidate-equivalent.
+   */
+  grounding?: "candidate" | "user_typed";
 };
 
 export type DirectionWritingContext = {
@@ -71,6 +88,10 @@ export const selectedTopicContextSchema = z.object({
   relevanceReasons: z.array(z.string()).optional(),
   evidenceIds: z.array(z.string()).optional(),
   subjectLabel: z.string().optional(),
+  rawSubject: z.string().optional(),
+  normalizedSubject: z.string().optional(),
+  subjectShape: z.enum(["question", "noun", "other"]).optional(),
+  grounding: z.enum(["candidate", "user_typed"]).optional(),
 });
 
 export function framingStrategyForObjective(
@@ -115,6 +136,15 @@ const GERUND_MAP: Record<string, string> = {
  */
 export function parseTopicSubjectFromTitle(masterTitle: string): string {
   let s = masterTitle.trim();
+  // Prefer noun extraction for question-shaped titles before shell stripping.
+  if (isQuestionShapedSubject(s)) {
+    const noun = toNounSubject(s);
+    if (noun) return noun;
+  }
+  const dual = dualSubjectFromLabel(s);
+  if (dual.subjectShape === "question" && dual.normalizedSubject) {
+    return dual.normalizedSubject;
+  }
   const howTo = /^(how to|how should)\s+/i.test(s);
   s = s.replace(/^(how to|how should|why|what|when|where|who)\s+/i, "");
   s = s.replace(/\?+$/g, "");
@@ -164,9 +194,18 @@ export function buildDirectionWritingContext(args: {
   const framingStrategy = framingStrategyForObjective(objective);
 
   let topicSubjectDerived: DerivedLabel;
-  if (selected?.subjectLabel?.trim()) {
+  if (selected?.normalizedSubject?.trim()) {
     topicSubjectDerived = label(
-      parseTopicSubjectFromTitle(selected.subjectLabel.trim()),
+      selected.normalizedSubject.trim(),
+      "selected_topic",
+      "normalizedSubject"
+    );
+  } else if (selected?.subjectLabel?.trim()) {
+    const dual = dualSubjectFromLabel(selected.subjectLabel.trim());
+    topicSubjectDerived = label(
+      dual.subjectShape === "question"
+        ? dual.normalizedSubject
+        : parseTopicSubjectFromTitle(selected.subjectLabel.trim()),
       "selected_topic",
       "subjectLabel"
     );
@@ -178,6 +217,11 @@ export function buildDirectionWritingContext(args: {
       "masterTitle"
     );
   }
+  pipelineTrace("direction.subject", {
+    in: selected?.rawSubject ?? selected?.subjectLabel ?? masterTopic,
+    out: topicSubjectDerived.value,
+    subjectShape: selected?.subjectShape,
+  });
 
   let audienceLabel: DerivedLabel;
   if (selected?.audience?.trim()) {

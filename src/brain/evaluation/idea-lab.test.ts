@@ -14,39 +14,11 @@ import {
 } from "@/brain/evaluation/idea-lab.types";
 import { TOPIC_OBJECTIVE_REQUIRED } from "@/brain/evaluation/topic-candidate-types";
 import {
-  averageScores,
-  overallAverage,
-  type IdeaQualityScores,
-} from "@/brain/evaluation/idea-quality.schema";
-import {
   inspectIdeaLabFixture,
   runIdeaLabDirections,
 } from "@/brain/use-cases/run-idea-lab-directions";
 import { runIdeaLabTopicCandidates } from "@/brain/use-cases/run-idea-lab-topic-candidates";
 import { topicHistoryCsvPath } from "@/brain/store/paths";
-
-const EMPTY_SCORES: IdeaQualityScores = {
-  csv_relevance: 4,
-  brand_alignment: 3,
-  audience_relevance: 5,
-  specificity: 2,
-  originality: 3,
-  usefulness: 4,
-  distinctness: 3,
-  evidence_grounding: 2,
-  clarity: 4,
-  would_create: 3,
-};
-
-describe("Idea Lab evaluation helpers", () => {
-  it("averages scores across dimensions", () => {
-    assert.equal(averageScores(EMPTY_SCORES), 3.3);
-  });
-
-  it("overallAverage returns null for empty list", () => {
-    assert.equal(overallAverage([]), null);
-  });
-});
 
 describe("Idea Lab use case (deterministic-v1)", () => {
   let productHistoryBefore: string | null;

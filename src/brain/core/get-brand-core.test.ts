@@ -16,6 +16,31 @@ describe("getBrandCore", () => {
     assert.ok((loaded.brandCore.indexed_products?.length ?? 0) >= 4);
   });
 
+  it("resolves zynava short alias in non-production (dev fixture alias)", () => {
+    const prev = process.env.ALLOW_DEV_COMPANY_ALIASES;
+    delete process.env.ALLOW_DEV_COMPANY_ALIASES;
+    try {
+      const loaded = getBrandCore("zynava");
+      assert.equal(loaded.source, "fixture");
+      assert.equal(loaded.identity.company_id, "zynava.com");
+    } finally {
+      if (prev === undefined) delete process.env.ALLOW_DEV_COMPANY_ALIASES;
+      else process.env.ALLOW_DEV_COMPANY_ALIASES = prev;
+    }
+  });
+
+  it("does not apply zynava aliases when ALLOW_DEV_COMPANY_ALIASES=false", () => {
+    const prev = process.env.ALLOW_DEV_COMPANY_ALIASES;
+    process.env.ALLOW_DEV_COMPANY_ALIASES = "false";
+    try {
+      // Without alias, bare "zynava" is not a fixture folder — must not silently remap.
+      assert.throws(() => getBrandCore("zynava"), /required|not found|missing|fixture/i);
+    } finally {
+      if (prev === undefined) delete process.env.ALLOW_DEV_COMPANY_ALIASES;
+      else process.env.ALLOW_DEV_COMPANY_ALIASES = prev;
+    }
+  });
+
   it("loads Zynava fixture by companyId with indexed_products separate from offers", () => {
     const loaded = getBrandCore("zynava.com");
     assert.equal(loaded.source, "fixture");

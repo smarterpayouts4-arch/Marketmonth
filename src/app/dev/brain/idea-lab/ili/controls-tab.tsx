@@ -1,14 +1,12 @@
 export function ControlsTab({
   showPaths,
   onShowPathsChange,
-  onResetEvaluation,
   onResetLabHistory,
   historyPath,
   productPath,
 }: {
   showPaths: boolean;
   onShowPathsChange: (v: boolean) => void;
-  onResetEvaluation: () => void;
   onResetLabHistory: () => void;
   historyPath?: string;
   productPath?: string;
@@ -16,17 +14,10 @@ export function ControlsTab({
   return (
     <div className="space-y-4" data-testid="inspector-controls">
       <p className="text-xs text-text-secondary">
-        Reset Evaluation clears scores/selection only. Reset Lab History clears
-        only Idea Lab history. Product topic history is untouched.
+        Reset Lab History clears only Idea Lab history. Product topic history is
+        untouched.
       </p>
       <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={onResetEvaluation}
-          className="rounded-xl border border-border px-3 py-2 text-xs font-medium"
-        >
-          Reset Evaluation
-        </button>
         <button
           type="button"
           onClick={onResetLabHistory}

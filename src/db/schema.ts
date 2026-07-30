@@ -254,3 +254,28 @@ export const contentRunTraces = pgTable(
     index("content_run_traces_company_idx").on(table.companyId, table.createdAt),
   ]
 );
+
+/**
+ * Content Atoms (Phase 1) — versioned strategic SSoT rows.
+ * Composite PK (atom_id, atom_version); `record` holds the full ContentAtom
+ * plus record_revision for optimistic concurrency.
+ */
+export const contentAtoms = pgTable(
+  "content_atoms",
+  {
+    atomId: text("atom_id").notNull(),
+    atomVersion: integer("atom_version").notNull(),
+    companyId: text("company_id").notNull(),
+    approvalStatus: text("approval_status").notNull(),
+    buildStatus: text("build_status").notNull(),
+    recordRevision: integer("record_revision").notNull(),
+    record: jsonb("record").$type<Record<string, unknown>>().notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.atomId, table.atomVersion] }),
+    index("content_atoms_company_idx").on(table.companyId, table.updatedAt),
+    index("content_atoms_company_atom_idx").on(table.companyId, table.atomId),
+  ]
+);

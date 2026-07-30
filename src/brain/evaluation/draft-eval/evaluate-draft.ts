@@ -35,7 +35,7 @@ export function evaluateDraft(input: DraftEvalInput): EvaluationResult {
   const metrics: EvaluationMetricResult[] = [];
 
   const evidenceIds = new Set(Object.keys(input.context.evidenceById ?? {}));
-  const proofs = input.atom.supporting_proof ?? [];
+  const proofs = input.atom.kernel?.supporting_proof ?? [];
   const unsupported = proofs
     .map((p) => p.evidence_id)
     .filter((id) => id.startsWith("ev_") && !evidenceIds.has(id));
@@ -57,8 +57,8 @@ export function evaluateDraft(input: DraftEvalInput): EvaluationResult {
   });
 
   const audienceText = [
-    input.atom.audience?.problem,
-    input.atom.audience?.state,
+    input.atom.kernel?.audience_problem,
+    input.atom.kernel?.audience_state,
     input.audienceHint,
     input.context.audience,
   ]
@@ -78,8 +78,8 @@ export function evaluateDraft(input: DraftEvalInput): EvaluationResult {
         : "Name at least one approved audience need, constraint, or intent",
   });
 
-  const master = input.masterTitle ?? input.atom.master_topic ?? "";
-  const atomTopic = input.atom.master_topic ?? "";
+  const master = input.masterTitle ?? input.atom.lineage?.masterTitle ?? "";
+  const atomTopic = input.atom.lineage?.masterTitle ?? "";
   const masterOk =
     !master ||
     !atomTopic ||

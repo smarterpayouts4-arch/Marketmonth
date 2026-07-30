@@ -32,11 +32,13 @@ export const deterministicProvider: DirectionProvider = {
         fallbackObjective: input.topicCategory,
       });
 
+    const proofLibraryIds = input.brandSlice.evidence.map((e) => e.evidence_id);
     const variations = buildSixVariations({
       context: input.context,
       masterTopic: input.masterTopic,
       writing,
       topicCategory: input.topicCategory ?? writing.objective,
+      proofLibraryIds,
     });
 
     const masterTopic =

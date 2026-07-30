@@ -16,14 +16,31 @@ describe("Idea Lab UI sandbox structure", () => {
     assert.equal(client.includes("useContentDirections"), false);
     assert.equal(client.includes("content-directions-storage"), false);
     assert.equal(client.includes("/api/brain/content-directions"), false);
-    assert.equal(client.includes("buildContentAtom"), false);
-    assert.equal(client.includes("ContentAtom"), false);
+    assert.equal(client.includes("buildContentAtom("), false);
   });
 
-  it("calls only Idea Lab sandbox APIs", () => {
+  it("exposes Content Atom review stage after direction confirm", () => {
+    const client = read("idea-lab-client.tsx");
+    const hook = read("use-idea-lab-sandbox.ts");
+    assert.match(client, /AtomReviewPanel/);
+    assert.match(client, /idea-lab-atom-stage/);
+    assert.match(hook, /\/api\/brain\/content-atom/);
+    assert.match(hook, /confirmDirectionAndBuildAtom/);
+    assert.match(hook, /stage:\s*"atom"/);
+  });
+
+  it("offers Create YouTube Content deep link to /content?atomId= after lock", () => {
+    const client = read("idea-lab-client.tsx");
+    assert.match(client, /Create YouTube Content/);
+    assert.match(client, /\/content\?atomId=/);
+    assert.equal(client.includes("localStorage.setItem"), false);
+  });
+
+  it("calls Idea Lab sandbox APIs plus content-atom for the atom stage", () => {
     const hook = read("use-idea-lab-sandbox.ts");
     assert.match(hook, /\/api\/dev\/brain\/idea-lab\/generate/);
     assert.match(hook, /\/api\/dev\/brain\/idea-lab\/runs/);
+    assert.match(hook, /\/api\/brain\/content-atom/);
     assert.equal(
       read("idea-lab-client.tsx").includes("/api/brain/content-directions"),
       false
@@ -110,6 +127,14 @@ describe("Idea Lab UI sandbox structure", () => {
     );
   });
 
+  it("registers Craft tab in Test Inspector", () => {
+    const inspector = read("idea-lab-test-inspector.tsx");
+    const craftTab = read("ili/craft-tab.tsx");
+    assert.match(inspector, /CraftTab/);
+    assert.match(inspector, /id: "craft"/);
+    assert.match(craftTab, /inspector-craft/);
+  });
+
   it("reuses Marketing Topic presentational components", () => {
     const client = read("idea-lab-client.tsx");
     const directionsPanel = read("idea-lab-directions-panel.tsx");
@@ -137,11 +162,6 @@ describe("Idea Lab UI sandbox structure", () => {
     assert.equal(client.includes("historyRepositoryPath"), false);
     assert.equal(client.includes("productHistoryPath"), false);
     assert.equal(client.includes("fixtureHash"), false);
-  });
-
-  it("evaluation drawer states no Content Atom creation", () => {
-    const drawer = read("idea-lab-evaluation-drawer.tsx");
-    assert.match(drawer, /does not create a Content Atom/i);
   });
 
   it("layout uses AppShell and remains production-blocked", () => {

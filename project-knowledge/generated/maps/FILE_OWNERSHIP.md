@@ -4,7 +4,7 @@
 
 From `ownership-rules.json` matched against `src/**`.
 
-## Unowned paths (30)
+## Unowned paths (34)
 
 - `src/app/api/dev/brain/idea-lab/generate/route.ts`
 - `src/app/api/dev/brain/idea-lab/runs/route.ts`
@@ -16,7 +16,6 @@ From `ownership-rules.json` matched against `src/**`.
 - `src/app/dev/brain/idea-lab/idea-lab-candidates-panel.tsx`
 - `src/app/dev/brain/idea-lab/idea-lab-client.tsx`
 - `src/app/dev/brain/idea-lab/idea-lab-directions-panel.tsx`
-- `src/app/dev/brain/idea-lab/idea-lab-evaluation-drawer.tsx`
 - `src/app/dev/brain/idea-lab/idea-lab-research-assist-panel.tsx`
 - `src/app/dev/brain/idea-lab/idea-lab-test-inspector.tsx`
 - `src/app/dev/brain/idea-lab/idea-lab-title-hook-badge.tsx`
@@ -24,6 +23,7 @@ From `ownership-rules.json` matched against `src/**`.
 - `src/app/dev/brain/idea-lab/ili/candidates-tab.tsx`
 - `src/app/dev/brain/idea-lab/ili/compare-mini.tsx`
 - `src/app/dev/brain/idea-lab/ili/controls-tab.tsx`
+- `src/app/dev/brain/idea-lab/ili/craft-tab.tsx`
 - `src/app/dev/brain/idea-lab/ili/evidence-tab.tsx`
 - `src/app/dev/brain/idea-lab/ili/history-tab.tsx`
 - `src/app/dev/brain/idea-lab/ili/inputs-tab.tsx`
@@ -36,6 +36,10 @@ From `ownership-rules.json` matched against `src/**`.
 - `src/app/dev/brain/idea-lab/page.tsx`
 - `src/app/dev/brain/idea-lab/SANDBOX.md`
 - `src/app/dev/brain/idea-lab/use-idea-lab-sandbox.ts`
+- `src/components/topic-candidates/from-candidate.ts`
+- `src/components/topic-candidates/index.ts`
+- `src/components/topic-candidates/topic-candidate-list.tsx`
+- `src/components/topic-candidates/topic-candidates-panel.tsx`
 
 ## Sample owned paths
 
@@ -50,6 +54,7 @@ From `ownership-rules.json` matched against `src/**`.
 - `src/app/(app)/settings/page.tsx` → **app-shell**
 - `src/app/(app)/strategy/page.tsx` → **strategy**
 - `src/app/api/auth/[...nextauth]/route.ts` → **auth**
+- `src/app/api/brain/content-atom/review/route.ts` → **content-brain**
 - `src/app/api/brain/content-atom/route.ts` → **content-brain**
 - `src/app/api/brain/content-directions/route.ts` → **content-brain**
 - `src/app/api/brain/content/production/route.ts` → **content-brain**
@@ -71,11 +76,38 @@ From `ownership-rules.json` matched against `src/**`.
 - `src/app/sitemap.ts` → **site-seo**
 - `src/auth.ts` → **auth**
 - `src/brain/architecture-boundary.test.ts` → **content-brain**
+- `src/brain/atom/approval.ts` → **content-brain**
+- `src/brain/atom/atom-core.test.ts` → **content-brain**
+- `src/brain/atom/brand-placement.ts` → **content-brain**
 - `src/brain/atom/build-content-atom.ts` → **content-brain**
+- `src/brain/atom/build-envelope.ts` → **content-brain**
+- `src/brain/atom/build-key.ts` → **content-brain**
+- `src/brain/atom/build-trace.ts` → **content-brain**
+- `src/brain/atom/compile/index.ts` → **content-brain**
 - `src/brain/atom/content-atom.schema.ts` → **content-brain**
+- `src/brain/atom/craft-polish/apply.ts` → **content-brain**
+- `src/brain/atom/craft-polish/enrich.ts` → **content-brain**
+- `src/brain/atom/craft-polish/index.ts` → **content-brain**
+- `src/brain/atom/craft-polish/openai-adapter.ts` → **content-brain**
+- `src/brain/atom/craft-polish/types.ts` → **content-brain**
+- `src/brain/atom/craft-polish/validate.ts` → **content-brain**
+- `src/brain/atom/craft-score.ts` → **content-brain**
+- `src/brain/atom/direction-contract.ts` → **content-brain**
+- `src/brain/atom/evidence-admission.ts` → **content-brain**
+- `src/brain/atom/evidence-sufficiency.ts` → **content-brain**
+- `src/brain/atom/framework-promise.ts` → **content-brain**
+- `src/brain/atom/generate.ts` → **content-brain**
 - `src/brain/atom/hash.ts` → **content-brain**
 - `src/brain/atom/index.ts` → **content-brain**
+- `src/brain/atom/limitations.ts` → **content-brain**
+- `src/brain/atom/readable-document.ts` → **content-brain**
+- `src/brain/atom/repair.ts` → **content-brain**
+- `src/brain/atom/research-handoff.ts` → **content-brain**
 - `src/brain/atom/validate-atom.ts` → **content-brain**
+- `src/brain/atom/validate/banned-claims.ts` → **content-brain**
+- `src/brain/atom/validate/closed-world.ts` → **content-brain**
+- `src/brain/atom/validate/index.ts` → **content-brain**
+- `src/brain/atom/validate/types.ts` → **content-brain**
 - `src/brain/channels/channel-registry.ts` → **content-brain**
 - `src/brain/channels/facebook/channel-manifest.ts` → **content-brain**
 - `src/brain/channels/facebook/index.ts` → **content-brain**
@@ -91,31 +123,3 @@ From `ownership-rules.json` matched against `src/**`.
 - `src/brain/channels/linkedin/README.md` → **content-brain**
 - `src/brain/channels/package-envelope.schema.ts` → **content-brain**
 - `src/brain/channels/reddit/channel-manifest.ts` → **content-brain**
-- `src/brain/channels/reddit/index.ts` → **content-brain**
-- `src/brain/channels/reddit/package-envelope.schema.ts` → **content-brain**
-- `src/brain/channels/reddit/README.md` → **content-brain**
-- `src/brain/channels/threads/channel-manifest.ts` → **content-brain**
-- `src/brain/channels/threads/index.ts` → **content-brain**
-- `src/brain/channels/threads/package-envelope.schema.ts` → **content-brain**
-- `src/brain/channels/threads/README.md` → **content-brain**
-- `src/brain/channels/tiktok/channel-manifest.ts` → **content-brain**
-- `src/brain/channels/tiktok/index.ts` → **content-brain**
-- `src/brain/channels/tiktok/package-envelope.schema.ts` → **content-brain**
-- `src/brain/channels/tiktok/README.md` → **content-brain**
-- `src/brain/channels/x/channel-manifest.ts` → **content-brain**
-- `src/brain/channels/x/index.ts` → **content-brain**
-- `src/brain/channels/x/package-envelope.schema.ts` → **content-brain**
-- `src/brain/channels/x/README.md` → **content-brain**
-- `src/brain/channels/youtube-long/channel-manifest.ts` → **content-brain**
-- `src/brain/channels/youtube-long/index.ts` → **content-brain**
-- `src/brain/channels/youtube-long/package-envelope.schema.ts` → **content-brain**
-- `src/brain/channels/youtube-long/README.md` → **content-brain**
-- `src/brain/channels/youtube-short/channel-manifest.ts` → **content-brain**
-- `src/brain/channels/youtube-short/hash-package.ts` → **content-brain**
-- `src/brain/channels/youtube-short/index.ts` → **content-brain**
-- `src/brain/channels/youtube-short/package.schema.ts` → **content-brain**
-- `src/brain/channels/youtube-short/prompt.ts` → **content-brain**
-- `src/brain/channels/youtube-short/README.md` → **content-brain**
-- `src/brain/channels/youtube-short/specialist.ts` → **content-brain**
-- `src/brain/channels/youtube-short/to-studio-package.ts` → **content-brain**
-- `src/brain/channels/youtube-short/validate-package.ts` → **content-brain**

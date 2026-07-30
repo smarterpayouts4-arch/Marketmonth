@@ -1,18 +1,28 @@
+import {
+  dualSubjectFromLabel,
+  isQuestionShapedSubject,
+} from "@/brain/content/subject-shape";
+import { pipelineTrace } from "@/brain/debug/pipeline-trace";
+
 import type { TopicSeed } from "../../objective-topic-strategies";
+import { SUPPLEMENT_RETAIL_CORPUS_RE } from "../../subjects/corpus-industry";
 import { POSITIVE_INGREDIENT_TOKEN_RE } from "../../subjects/ingredient-patterns";
 import { isMalformedSubjectLabel } from "../../subjects/subject-label";
 import { naturalCategoryNoun } from "../text";
 
 import type { TopicTitleHookContext } from "./types";
 
-const ATTR_PHRASES: Array<{ re: RegExp; label: string }> = [
+/** Retail/supplement shopping attrs — only when the seed already uses that lexicon. */
+const RETAIL_ATTR_PHRASES: Array<{ re: RegExp; label: string }> = [
   { re: /price\s+per\s+serving/i, label: "price per serving" },
   { re: /serving\s+size/i, label: "serving size" },
   { re: /\blabel\s+detail/i, label: "label detail" },
   { re: /\blabel\b/i, label: "label" },
   { re: /\bform(?:ulation)?s?\b/i, label: "form" },
-  // P2.3 typed commerce attributes — industry-agnostic families surfaced
-  // from typed commercial/catalog fields (extract-comparison).
+];
+
+/** Industry-agnostic commerce attrs from typed commercial/catalog fields. */
+const GENERIC_ATTR_PHRASES: Array<{ re: RegExp; label: string }> = [
   { re: /\bpric(?:e|es|ing)\b|\bcosts?\b/i, label: "price" },
   { re: /\b(?:shipping|delivery)\b/i, label: "shipping" },
   { re: /\b(?:returns?|refunds?)\b/i, label: "returns" },
@@ -21,7 +31,11 @@ const ATTR_PHRASES: Array<{ re: RegExp; label: string }> = [
 ];
 
 function matchAttrPhrase(text: string): string | undefined {
-  for (const { re, label } of ATTR_PHRASES) {
+  const retailOk = SUPPLEMENT_RETAIL_CORPUS_RE.test(text);
+  const phrases = retailOk
+    ? [...RETAIL_ATTR_PHRASES, ...GENERIC_ATTR_PHRASES]
+    : GENERIC_ATTR_PHRASES;
+  for (const { re, label } of phrases) {
     if (re.test(text)) return label;
   }
   return undefined;
@@ -81,14 +95,25 @@ export function isPluralCategoryLabel(noun: string): boolean {
 export function buildTopicTitleHookContext(
   seed: TopicSeed
 ): TopicTitleHookContext {
-  const raw = seed.subject.trim().replace(/\s+/g, " ");
+  const raw = (seed.rawSubject ?? seed.subject).trim().replace(/\s+/g, " ");
+  const dual =
+    seed.normalizedSubject && seed.subjectShape
+      ? {
+          rawSubject: raw,
+          normalizedSubject: seed.normalizedSubject,
+          subjectShape: seed.subjectShape,
+        }
+      : dualSubjectFromLabel(raw);
   const attr = matchAttrPhrase(raw);
   const ingredient = raw.match(POSITIVE_INGREDIENT_TOKEN_RE)?.[1]?.trim();
   const cleaned = stripInstructionalLead(raw);
   const ingredient2 = cleaned.match(POSITIVE_INGREDIENT_TOKEN_RE)?.[1]?.trim();
 
   let primaryLabel = "";
-  if (ingredient || ingredient2) {
+  // Question-shaped subjects disable noun shells — keep framed FAQ title.
+  if (dual.subjectShape === "question" || isQuestionShapedSubject(raw)) {
+    primaryLabel = "";
+  } else if (ingredient || ingredient2) {
     primaryLabel = (ingredient ?? ingredient2)!;
   } else if (
     seed.subjectType === "comparison_attribute" &&
@@ -96,7 +121,9 @@ export function buildTopicTitleHookContext(
   ) {
     primaryLabel = attr;
   } else if (seed.subjectType === "product_category") {
-    primaryLabel = naturalCategoryNoun(raw);
+    primaryLabel = naturalCategoryNoun(dual.normalizedSubject || raw);
+  } else if (dual.normalizedSubject && dual.normalizedSubject.length <= 42) {
+    primaryLabel = dual.normalizedSubject;
   } else if (cleaned.length > 0 && cleaned.length <= 42) {
     primaryLabel = cleaned;
   } else {
@@ -123,6 +150,14 @@ export function buildTopicTitleHookContext(
   // Only set when a real attr phrase exists — never default to vague "label detail"
   const actionObject = attr;
 
+  pipelineTrace("title.hook.context", {
+    raw,
+    primaryLabel,
+    questionShaped: dual.subjectShape === "question",
+    subjectShape: dual.subjectShape,
+    normalizedSubject: dual.normalizedSubject,
+  });
+
   return {
     primaryLabel: primaryLabel.trim(),
     primaryKind: seed.subjectType,
@@ -130,9 +165,12 @@ export function buildTopicTitleHookContext(
     comparisonAttribute: attr,
     categoryLabel:
       seed.subjectType === "product_category"
-        ? naturalCategoryNoun(raw)
+        ? naturalCategoryNoun(dual.normalizedSubject || raw)
         : undefined,
     frameHint: seed.frameHint,
     evidenceIds: [...seed.evidenceIds],
+    rawSubject: dual.rawSubject,
+    normalizedSubject: dual.normalizedSubject,
+    subjectShape: dual.subjectShape,
   };
 }

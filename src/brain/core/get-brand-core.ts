@@ -32,14 +32,35 @@ export type GetBrandCoreResult = {
   fixturePath?: string;
 };
 
-/** Short aliases → canonical companyId (not path shortcuts to someone else's data). */
-const COMPANY_ID_ALIASES: Record<string, string> = {
-  zynava: "zynava.com",
-  "www.zynava.com": "zynava.com",
+/**
+ * Fixture aliases for ClearFlow (always available — fixture company id).
+ * Zynava short aliases are DEV/test only so production never remaps arbitrary
+ * "zynava" strings to the fixture brand. Disable with ALLOW_DEV_COMPANY_ALIASES=false.
+ */
+const CLEARFLOW_COMPANY_ID_ALIASES: Record<string, string> = {
   "clearflow-plumbing": "clearflow-plumbing",
   "clearflowplumbing.example": "clearflow-plumbing",
   "www.clearflowplumbing.example": "clearflow-plumbing",
 };
+
+const ZYNAVA_DEV_COMPANY_ID_ALIASES: Record<string, string> = {
+  zynava: "zynava.com",
+  "www.zynava.com": "zynava.com",
+};
+
+/** Zynava short aliases: DEV/test by default; opt-in for prod; kill-switch false. */
+function allowZynavaDevAliases(): boolean {
+  if (process.env.ALLOW_DEV_COMPANY_ALIASES === "false") return false;
+  if (process.env.ALLOW_DEV_COMPANY_ALIASES === "true") return true;
+  return process.env.NODE_ENV !== "production";
+}
+
+function companyIdAliases(): Record<string, string> {
+  return {
+    ...CLEARFLOW_COMPANY_ID_ALIASES,
+    ...(allowZynavaDevAliases() ? ZYNAVA_DEV_COMPANY_ID_ALIASES : {}),
+  };
+}
 
 export function normalizeCompanyId(companyId: string): string {
   return companyId
@@ -52,7 +73,7 @@ export function normalizeCompanyId(companyId: string): string {
 
 function resolveCompanyId(companyId: string): string {
   const id = normalizeCompanyId(companyId);
-  return COMPANY_ID_ALIASES[id] ?? id;
+  return companyIdAliases()[id] ?? id;
 }
 
 function fixtureExists(relativePath: string): boolean {
@@ -155,8 +176,8 @@ export function getBrandCore(
 }
 
 /**
- * Compiled Brand Core cache keyed by artifactHash — the same approved CSV
- * always compiles to the same Brand Core, so recompiling per request is waste.
+ * Compiled Brand Core cache keyed by companyId:artifactHash — tenant-scoped
+ * so identical artifact hashes across companies cannot collide.
  */
 const compiledByArtifactHash = new Map<
   string,
@@ -164,23 +185,36 @@ const compiledByArtifactHash = new Map<
 >();
 const COMPILED_CACHE_MAX = 64;
 
+/** Cache key for compiled Brand Core (exported for isolation tests). */
+export function brandCoreCacheKey(
+  companyId: string,
+  artifactHash: string
+): string {
+  return `${normalizeCompanyId(companyId)}:${artifactHash}`;
+}
+
 function compileCached(
+  companyId: string,
   artifactHash: string | undefined,
   context: ContentBrainContext
 ): { brandCore: BrandCore; identity: BrandCoreIdentity } {
-  if (artifactHash) {
-    const hit = compiledByArtifactHash.get(artifactHash);
+  const cacheKey =
+    artifactHash && companyId
+      ? brandCoreCacheKey(companyId, artifactHash)
+      : undefined;
+  if (cacheKey) {
+    const hit = compiledByArtifactHash.get(cacheKey);
     if (hit) return hit;
   }
   const brandCore = compileBrandCore(context);
   const identity = resolveBrandCoreIdentity(brandCore);
   const entry = { brandCore, identity };
-  if (artifactHash) {
+  if (cacheKey) {
     if (compiledByArtifactHash.size >= COMPILED_CACHE_MAX) {
       const oldest = compiledByArtifactHash.keys().next().value;
       if (oldest !== undefined) compiledByArtifactHash.delete(oldest);
     }
-    compiledByArtifactHash.set(artifactHash, entry);
+    compiledByArtifactHash.set(cacheKey, entry);
   }
   return entry;
 }
@@ -228,6 +262,7 @@ export async function getBrandCoreAsync(
 
   const context = projectionToBrainContext(projection);
   const { brandCore, identity } = compileCached(
+    normalized,
     projection.artifactHash,
     context
   );

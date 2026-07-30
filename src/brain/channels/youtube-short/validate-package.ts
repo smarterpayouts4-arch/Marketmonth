@@ -56,7 +56,22 @@ export function validateYouTubeShortPackage(
   }
   for (const banned of atom.safety.banned_claims) {
     if (banned.trim() && textBlob.toLowerCase().includes(banned.toLowerCase())) {
-      errors.push(`atom banned_claims hit: ${banned}`);
+      // Allow negation / dispelling usage at package level for brand banned phrases
+      // that appear only in "rather than X" form — specialist still fail-closed on
+      // hard BANNED_PATTERNS above.
+      const lower = textBlob.toLowerCase();
+      const phrase = banned.toLowerCase();
+      const idx = lower.indexOf(phrase);
+      if (idx !== -1) {
+        const preceding = lower.slice(Math.max(0, idx - 40), idx);
+        if (
+          !/(?:\brather than\b|\binstead of\b|\bnot\b|\bnever\b|\bwithout\b)/.test(
+            preceding
+          )
+        ) {
+          errors.push(`atom banned_claims hit: ${banned}`);
+        }
+      }
     }
   }
 

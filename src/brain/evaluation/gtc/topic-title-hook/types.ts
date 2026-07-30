@@ -22,6 +22,9 @@ export type TopicTitleHookContext = {
   categoryLabel?: string;
   frameHint: TopicFrameHint;
   evidenceIds: string[];
+  rawSubject?: string;
+  normalizedSubject?: string;
+  subjectShape?: "question" | "noun" | "other";
 };
 
 export type TopicTitleHookResult = {

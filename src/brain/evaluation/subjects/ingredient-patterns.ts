@@ -1,6 +1,9 @@
 /**
  * Shared ingredient / platform patterns for subject classification
  * and industry-research mapping. One source — no divergent regexes.
+ *
+ * Callers on the topic/directions path must gate supplement/retail uses
+ * behind `corpusSupportsSupplementRetailHeuristics` (see corpus-industry.ts).
  */
 
 export const PLATFORM_CAPABILITY_RE =

@@ -50,7 +50,8 @@ describe("Marketing Topic Phase 2 session + history", () => {
     assert.doesNotMatch(hook, /handoffToReadyResult/);
     assert.doesNotMatch(hook, /useEffect\(/);
     assert.match(hook, /useState<SessionStatus>\("idle"\)/);
-    assert.match(hook, /Never hydrates/);
+    assert.match(hook, /Does not write Studio localStorage handoff/);
+    assert.match(hook, /confirmDirectionAndBuildAtom/);
   });
 
   it("3: Auto-generate uses fixture Brand Core as primary truth", async () => {
@@ -278,8 +279,10 @@ describe("Marketing Topic Phase 2 session + history", () => {
       assert.equal(continued.status, "continued");
 
       const hook = readSrc("hooks/use-content-directions.ts");
-      assert.match(hook, /saveContentDirectionsHandoff/);
+      assert.match(hook, /confirmDirectionAndBuildAtom/);
+      assert.match(hook, /\/api\/brain\/content-atom/);
       assert.match(hook, /action: "continue"/);
+      assert.doesNotMatch(hook, /saveContentDirectionsHandoff/);
     } finally {
       process.chdir(prevCwd);
       rmSync(tempRoot, { recursive: true, force: true });

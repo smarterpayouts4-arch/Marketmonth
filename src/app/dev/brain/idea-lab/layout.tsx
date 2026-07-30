@@ -5,8 +5,8 @@ import { PrototypeModeProvider } from "@/lib/prototype-mode";
 
 /**
  * Idea Lab sandbox shell — visual parity with the product dashboard only.
- * Does not route through Marketing Topic product session, product topic history,
- * or ContentAtom. Generation goes exclusively through /api/dev/brain/idea-lab/*.
+ * Does not route through Marketing Topic product session or product topic history.
+ * Candidates/directions use /api/dev/brain/idea-lab/*; atom stage uses product content-atom.
  */
 export default function IdeaLabLayout({
   children,

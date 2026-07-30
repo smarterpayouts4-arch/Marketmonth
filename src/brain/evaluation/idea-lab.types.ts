@@ -10,7 +10,6 @@ import {
 import type { TopicCategoryId } from "@/brain/content/topic-category";
 import { IDEA_LAB_DIRECTIONS_PROVIDER } from "@/brain/policy/provider-policy";
 
-import type { IdeaLabRunEvaluation } from "./idea-quality.schema";
 /** Leaf re-export — cycle-free (hook types does not import idea-lab.types). */
 export { TOPIC_TITLE_HOOK_VERSION } from "./gtc/topic-title-hook/types";
 
@@ -181,8 +180,6 @@ export type IdeaLabRun = {
 
   warnings: string[];
   errors: string[];
-
-  evaluation?: IdeaLabRunEvaluation;
 };
 
 export type IdeaLabInspectResult = {

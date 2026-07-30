@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 
+import type { AtomValidationReport } from "@/brain/atom";
 import type {
   IdeaLabInspectResult,
   IdeaLabRun,
@@ -11,6 +12,7 @@ import type { IdeaLabCandidatesResult } from "@/brain/evaluation/topic-candidate
 
 import { CandidatesTab } from "./ili/candidates-tab";
 import { ControlsTab } from "./ili/controls-tab";
+import { CraftTab } from "./ili/craft-tab";
 import { EvidenceTab } from "./ili/evidence-tab";
 import { HistoryTab } from "./ili/history-tab";
 import { InputsTab } from "./ili/inputs-tab";
@@ -21,6 +23,7 @@ type TabId =
   | "overview"
   | "candidates"
   | "evidence"
+  | "craft"
   | "inputs"
   | "trace"
   | "history"
@@ -33,9 +36,9 @@ type Props = {
   run: IdeaLabRun | null;
   runs: IdeaLabRun[];
   candidatesResult: IdeaLabCandidatesResult | null;
+  atomValidation?: AtomValidationReport | null;
   compareId: string;
   onCompareIdChange: (id: string) => void;
-  onResetEvaluation: () => void;
   onResetLabHistory: () => void;
   showPaths: boolean;
   onShowPathsChange: (v: boolean) => void;
@@ -45,6 +48,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "overview", label: "Overview" },
   { id: "candidates", label: "Candidates" },
   { id: "evidence", label: "Evidence" },
+  { id: "craft", label: "Craft" },
   { id: "inputs", label: "Inputs" },
   { id: "trace", label: "Brain Trace" },
   { id: "history", label: "Run History" },
@@ -58,9 +62,9 @@ export function IdeaLabTestInspector({
   run,
   runs,
   candidatesResult,
+  atomValidation,
   compareId,
   onCompareIdChange,
-  onResetEvaluation,
   onResetLabHistory,
   showPaths,
   onShowPathsChange,
@@ -138,6 +142,9 @@ export function IdeaLabTestInspector({
           {tab === "evidence" ? (
             <EvidenceTab result={candidatesResult} />
           ) : null}
+          {tab === "craft" ? (
+            <CraftTab validation={atomValidation} />
+          ) : null}
           {tab === "inputs" ? <InputsTab run={run} inspect={inspect} /> : null}
           {tab === "trace" ? <TraceTab run={run} /> : null}
           {tab === "history" ? (
@@ -153,7 +160,6 @@ export function IdeaLabTestInspector({
             <ControlsTab
               showPaths={showPaths}
               onShowPathsChange={onShowPathsChange}
-              onResetEvaluation={onResetEvaluation}
               onResetLabHistory={onResetLabHistory}
               historyPath={inspect?.historyRepositoryPath}
               productPath={inspect?.productHistoryPath}

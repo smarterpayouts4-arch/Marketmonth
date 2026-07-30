@@ -33,6 +33,9 @@ export const PROJECT_DOCS = {
   adr0001: "project-knowledge/DECISIONS/0001-knowledge-os.md",
   adr0002: "project-knowledge/DECISIONS/0002-directions-deterministic-v1-baseline.md",
   adr0003: "project-knowledge/DECISIONS/0003-selected-topic-context-for-directions.md",
+  adr0004: "project-knowledge/DECISIONS/0004-topic-category-model.md",
+  adr0005: "project-knowledge/DECISIONS/0005-content-atom-v2.md",
+
   qualityRubric: "project-knowledge/QUALITY_RUBRIC.md",
   ownershipRules: "project-knowledge/ownership-rules.json",
   brandChangeMap: "project-knowledge/BRAND_CHANGE_MAP.md",

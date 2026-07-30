@@ -1,5 +1,6 @@
 import type { ContentBrainContext } from "@/brain/content/types";
 
+import { corpusSupportsSupplementRetailHeuristics } from "./corpus-industry";
 import {
   PLATFORM_CAPABILITY_RE,
   REJECT_AS_INGREDIENT_LABEL_RE,
@@ -36,6 +37,7 @@ export function classifyOfferNoun(
   }
 
   if (
+    corpusSupportsSupplementRetailHeuristics(context) &&
     looksLikeIngredientLabel(clipped) &&
     !/\b(filter|filters)\b/i.test(lower)
   ) {

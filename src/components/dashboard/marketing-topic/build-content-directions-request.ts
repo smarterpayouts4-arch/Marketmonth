@@ -1,3 +1,4 @@
+import type { SelectedTopicContext } from "@/brain/content/direction-writing-context";
 import type { TopicCategoryId } from "@/brain/content/topic-category";
 import type { GenerationReason } from "@/brain/content/topic-generation-record";
 import type { ExtraContextInput } from "@/brain/content/types";
@@ -18,6 +19,7 @@ export type ContentDirectionsClientRequest = {
   generationReason?: GenerationReason;
   parentGenerationId?: string;
   lockedMasterTopic?: string;
+  selectedTopicContext?: SelectedTopicContext;
 };
 
 export type BuildRequestResult =
@@ -37,6 +39,7 @@ export function buildContentDirectionsRequest(input: {
   generationReason?: GenerationReason;
   parentGenerationId?: string;
   lockedMasterTopic?: string;
+  selectedTopicContext?: SelectedTopicContext;
 }): BuildRequestResult {
   const domain = input.domain.trim();
   if (!domain) {
@@ -50,6 +53,7 @@ export function buildContentDirectionsRequest(input: {
 
   const extraContext = buildExtraContextPayload(input.contextState) ?? undefined;
   const reason = input.generationReason;
+  const stc = input.selectedTopicContext;
 
   if (reason === "regenerate") {
     if (!input.lockedMasterTopic?.trim()) {
@@ -64,9 +68,27 @@ export function buildContentDirectionsRequest(input: {
         lockedMasterTopic: input.lockedMasterTopic.trim(),
         generationReason: "regenerate",
         parentGenerationId: input.parentGenerationId,
-        topicCategory: input.topicCategory ?? undefined,
+        topicCategory: input.topicCategory ?? stc?.objective ?? undefined,
         extraContext,
         requestedVariations: 6,
+        selectedTopicContext: stc,
+      },
+    };
+  }
+
+  if (stc) {
+    return {
+      ok: true,
+      body: {
+        domain,
+        mode: input.mode,
+        topic: stc.masterTitle,
+        generationReason:
+          reason ?? (input.mode === "manual" ? "manual" : "automatic"),
+        topicCategory: input.topicCategory ?? stc.objective,
+        extraContext,
+        requestedVariations: 6,
+        selectedTopicContext: stc,
       },
     };
   }

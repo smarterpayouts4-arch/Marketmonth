@@ -3,12 +3,20 @@ title: Knowledge Changelog
 status: active
 authority: supporting
 owner: engineering
-last_verified: 2026-07-24
+last_verified: 2026-07-29
 ---
 
 # KNOWLEDGE_CHANGELOG
 
 Meaningful **knowledge** events only (not ordinary code/style commits).
+
+## 2026-07-29
+
+- ADR **0005** Content Atom v2 / select→atom accepted; MCP allowlist `adr0005`.
+- Living docs synced to shipped Atom v2 (Live), Craft DNA polish (Partial/opt-in), Content Studio Short+Video via `produceContentBundle` + `src/brain/content-studio/`.
+- Dual-registry honesty: `channelRegistry` Short-only vs content-studio format registry Short+Video; dual Studio entry (`?atomId=` Live; bare `/content` / MT legacy Partial).
+- Ownership matrix: removed deleted Idea Lab eval schema/drawer; added Craft DNA, content-studio, production bundle store; RunContext no longer “fully deferred.”
+- FEATURES/content-brain + idea-lab, ARCHITECTURE Content Production, DATA_MODEL production-bundle file store, COMMANDS atom gates, DOMAIN_GLOSSARY Craft/Studio terms.
 
 ## 2026-07-24
 

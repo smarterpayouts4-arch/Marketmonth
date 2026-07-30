@@ -19,8 +19,8 @@ describe("Content Brain policy", () => {
     assert.equal(selectIdeaLabDirectionsProvider().id, "deterministic-v1");
   });
 
-  it("keeps product atom preferLlm false", () => {
-    assert.equal(PRODUCT_ATOM_PREFER_LLM, false);
+  it("defaults product atom preferLlm true (constrained LLM path)", () => {
+    assert.equal(PRODUCT_ATOM_PREFER_LLM, true);
   });
 
   it("resolves models from registry defaults", () => {

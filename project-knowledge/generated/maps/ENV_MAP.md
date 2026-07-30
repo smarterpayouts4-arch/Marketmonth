@@ -6,13 +6,15 @@ Names only from `.env.example` + static `process.env.*` in `src/`. Never reads `
 
 | Variable | inEnvExample | referencedInSrc | Classification |
 | --- | --- | --- | --- |
+| ALLOW_DEV_COMPANY_ALIASES | No | Yes | undocumented |
+| ATOM_CRAFT_POLISH_PROVIDER | No | Yes | undocumented |
 | AUTH_SECRET | Yes | Yes | server-only |
 | AUTH_URL | Yes | Yes | server-only |
 | BRAIN_HISTORY_STORE | No | Yes | undocumented |
 | BRAIN_JUDGE_SAMPLE_RATE | No | Yes | undocumented |
 | BRAIN_TENANT_DAILY_TOKEN_CAP | No | Yes | undocumented |
 | DATABASE_URL | Yes | Yes | server-only |
-| DEV_AUTH_BYPASS | Yes | No | documented-unused |
+| DEV_AUTH_BYPASS | Yes | Yes | server-only |
 | DISCOVERY_COPY_POLISH_PROVIDER | Yes | Yes | server-only |
 | DISCOVERY_PLAYWRIGHT | No | Yes | undocumented |
 | GOOGLE_CLIENT_ID | Yes | Yes | server-only |
@@ -25,6 +27,7 @@ Names only from `.env.example` + static `process.env.*` in `src/`. Never reads `
 | MM_IMAGE_MODEL | No | Yes | undocumented |
 | MM_IMAGE_PROVIDER | No | Yes | undocumented |
 | MM_IMAGE_RENDER | No | Yes | undocumented |
+| MM_PIPELINE_TRACE | No | Yes | undocumented |
 | MM_PROVENANCE | No | Yes | undocumented |
 | MM_VOICE_MODEL | No | Yes | undocumented |
 | MM_VOICE_PROVIDER | No | Yes | undocumented |

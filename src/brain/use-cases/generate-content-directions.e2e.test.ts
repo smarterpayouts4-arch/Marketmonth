@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, before, describe, it } from "node:test";
 
+import { approveAtom, lockAtom } from "@/brain/atom";
 import {
   generateYouTubeShortPackage,
   validateYouTubeShortPackage,
@@ -97,21 +98,28 @@ describe("E2E: generation_id → Atom → YouTube Short", () => {
     if (!brain.ok) return;
 
     const identity = resolveBrandCoreIdentity(brain.brandCore);
-    assert.equal(brain.atom.brand_core_id, identity.brand_core_id);
-    assert.equal(brain.atom.brand_core_version, identity.brand_core_version);
+    assert.equal(brain.atom.lineage.brandCoreId, identity.brand_core_id);
+    assert.equal(brain.atom.lineage.brandCoreVersion, identity.brand_core_version);
     assert.equal(identity.brand_core_id, outcome.brandCoreId);
     assert.equal(identity.brand_core_hash, outcome.brandCoreHash);
 
-    const pkg = generateYouTubeShortPackage({ atom: brain.atom });
+    const approved = approveAtom(brain.atom);
+    assert.equal(approved.ok, true);
+    if (!approved.ok) return;
+    const locked = lockAtom(approved.atom);
+    assert.equal(locked.ok, true);
+    if (!locked.ok) return;
+
+    const pkg = generateYouTubeShortPackage({ atom: locked.atom });
     assert.equal(pkg.ok, true);
     if (!pkg.ok) return;
-    assert.equal(pkg.package.source_atom_id, brain.atom.atom_id);
-    const lock = assertStrategyLock(brain.atom, pkg.package.strategy_lock, {
+    assert.equal(pkg.package.source_atom_id, locked.atom.atom_id);
+    const lock = assertStrategyLock(locked.atom, pkg.package.strategy_lock, {
       claim_ids: pkg.package.claim_ids_used,
       proof_ids: pkg.package.proof_ids_used,
     });
     assert.equal(lock.ok, true);
-    const validated = validateYouTubeShortPackage(brain.atom, pkg.package);
+    const validated = validateYouTubeShortPackage(locked.atom, pkg.package);
     assert.equal(validated.ok, true);
   });
 });

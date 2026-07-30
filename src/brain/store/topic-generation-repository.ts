@@ -1,8 +1,10 @@
+import type { SelectedTopicContext } from "@/brain/content/direction-writing-context";
 import type {
   TopicGenerationEvaluation,
   TopicGenerationRecord,
   TopicGenerationRecordStatus,
 } from "@/brain/content/topic-generation-record.schema";
+import type { ContentDirectionsHandoffV1 } from "@/brain/content/types";
 
 /**
  * Topic Generation History and Evaluation Repository.
@@ -38,6 +40,9 @@ export type TopicGenerationRepository = {
     generationId: string;
     status: TopicGenerationRecordStatus;
     expectedRevision: number;
+    /** Optional durable handoff fields (typically set on continue). */
+    selectedTopicContext?: SelectedTopicContext;
+    handoff?: ContentDirectionsHandoffV1;
   }): Promise<TopicGenerationRecord>;
 
   saveEvaluation(input: {

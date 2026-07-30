@@ -1,6 +1,8 @@
+import { buildCraftClause } from "@/brain/craft";
 import { PRODUCT_IDENTITY } from "@/seo/config/product-identity";
 
 const agentName = PRODUCT_IDENTITY.displayName;
+const STRATEGY_CRAFT = buildCraftClause("discovery_copy");
 
 export const BRAND_PROFILE_SYSTEM = `You are ${agentName} Discovery. Return JSON:
 {
@@ -83,4 +85,6 @@ Return JSON:
 
 Limits: exactly 3 contentPillars; max 3 channelRoles; max 5 formats; max 3 assumptions.
 Keep all strings short and display-safe. No unsupported numerical claims.
-conversionPath is required: Content → Audience action → Lead offer / Destination → CTA.`;
+conversionPath is required: Content → Audience action → Lead offer / Destination → CTA.
+
+${STRATEGY_CRAFT}`;

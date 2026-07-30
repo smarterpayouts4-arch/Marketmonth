@@ -4,9 +4,7 @@ import {
   getIdeaLabRun,
   listIdeaLabRuns,
   resetIdeaLabTopicHistory,
-  updateIdeaLabEvaluation,
 } from "@/brain/evaluation/idea-lab-store";
-import { ideaLabRunEvaluationSchema } from "@/brain/evaluation/idea-quality.schema";
 
 export const runtime = "nodejs";
 
@@ -65,8 +63,6 @@ export async function PATCH(request: Request) {
 
   const record = body as {
     action?: string;
-    runId?: string;
-    evaluation?: unknown;
   };
 
   if (record.action === "reset_lab_history") {
@@ -75,7 +71,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({
         ok: true,
         reset: "lab_history",
-        note: "Cleared data/runtime/idea-lab-topic-history.csv only. Product history untouched. Evaluation scores unchanged.",
+        note: "Cleared data/runtime/idea-lab-topic-history.csv only. Product history untouched.",
       });
     } catch (err) {
       return NextResponse.json(
@@ -88,31 +84,8 @@ export async function PATCH(request: Request) {
     }
   }
 
-  if (!record.runId || !record.evaluation) {
-    return NextResponse.json(
-      { ok: false, error: "runId and evaluation required" },
-      { status: 400 }
-    );
-  }
-
-  const parsed = ideaLabRunEvaluationSchema.safeParse(record.evaluation);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { ok: false, error: parsed.error.message },
-      { status: 400 }
-    );
-  }
-
-  try {
-    const run = await updateIdeaLabEvaluation(record.runId, parsed.data);
-    return NextResponse.json({ ok: true, run });
-  } catch (err) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: err instanceof Error ? err.message : "Update failed",
-      },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(
+    { ok: false, error: "Unsupported action" },
+    { status: 400 }
+  );
 }

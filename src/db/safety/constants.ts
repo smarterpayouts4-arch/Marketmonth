@@ -8,6 +8,6 @@ export const MARKETMONTH_DB_MARKER_DEV = "marketmonth-dev";
 export const MARKETMONTH_APPLICATION_ID = "marketmonth";
 
 /** Schema version stamped into app_metadata (bump with structural migrations). */
-export const MARKETMONTH_SCHEMA_VERSION = 7;
+export const MARKETMONTH_SCHEMA_VERSION = 8;
 
 export type MarketMonthEnvironment = "development" | "test" | "production";

@@ -103,6 +103,8 @@ export function deglueText(text: string, protect: string[] = []): string {
   const repaired = masked
     // "ZYNAVAWhy" — an acronym run followed by a capitalized word.
     .replace(/([A-Z]{2,})([A-Z][a-z])/g, "$1 $2")
+    // "DThe" / "B12The" — single capital (optional digits) then capital word.
+    .replace(/([A-Z]\d*)([A-Z][a-z])/g, "$1 $2")
     // "ExistsThe" — a word or number followed by a new capital.
     .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
     // "place.We" — a sentence boundary with no following space.

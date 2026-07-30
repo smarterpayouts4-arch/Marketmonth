@@ -88,8 +88,13 @@ function pushFromEvidence(
       ev.recordType
     );
     for (const p of parsed) {
+      // Multi-segment topic lists need distinct ids per segment; a single
+      // structured value keeps the parent evidence id for stable refs.
       const finalized = finalizeItem(
-        { ...p, id: ev.id },
+        {
+          ...p,
+          id: parsed.length === 1 ? ev.id : undefined,
+        },
         protect
       );
       if (finalized) out.push(finalized);
