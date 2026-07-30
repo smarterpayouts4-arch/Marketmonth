@@ -80,6 +80,22 @@ export function StudioPreviewCanvas({
                 Visual: {pkg.imagePrompt}
               </p>
             ) : null}
+            {pkg?.formatId === "youtube_short" && pkg.voiceoverPrompt ? (
+              <p
+                className="max-w-[94%] line-clamp-1 text-[9px] leading-snug text-white/40"
+                data-testid="studio-preview-voiceover-prompt"
+              >
+                VO: {pkg.voiceoverPrompt}
+              </p>
+            ) : null}
+            {pkg?.formatId === "youtube_short" && pkg.script ? (
+              <p
+                className="max-w-[94%] line-clamp-1 text-[9px] leading-snug text-white/40"
+                data-testid="studio-preview-script"
+              >
+                Script: {pkg.script}
+              </p>
+            ) : null}
           </div>
           <div className="absolute right-1.5 bottom-7 left-1.5 h-0.5 overflow-hidden rounded-full bg-white/20">
             <div className="h-full w-[18%] rounded-full bg-white/80" />

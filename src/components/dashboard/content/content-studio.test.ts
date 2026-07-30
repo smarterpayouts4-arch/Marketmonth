@@ -145,6 +145,69 @@ describe("Content Studio atomId-only entry", () => {
     assert.match(hook, /method:\s*["']PATCH["']/);
     assert.doesNotMatch(hook, /sessionStorage/);
   });
+
+  it("Phase 3: Short Generated/Manual mode uses durable-edit fields only", () => {
+    const hook = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/hooks/use-atom-content-studio.ts"
+      ),
+      "utf8"
+    );
+    const rail = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/prompt-rail.tsx"
+      ),
+      "utf8"
+    );
+    const shell = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/vision-shell.tsx"
+      ),
+      "utf8"
+    );
+    const preview = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/preview-canvas.tsx"
+      ),
+      "utf8"
+    );
+    const storyboard = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/storyboard.tsx"
+      ),
+      "utf8"
+    );
+
+    assert.match(hook, /StudioPromptMode/);
+    assert.match(hook, /"generated"\s*\|\s*"manual"/);
+    assert.match(hook, /resetToGenerated:\s*true/);
+    assert.match(hook, /imagePrompt/);
+    assert.match(hook, /voiceoverPrompt/);
+    assert.match(hook, /script/);
+    assert.doesNotMatch(hook, /sessionStorage/);
+    assert.doesNotMatch(hook, /manual-prompt/);
+    assert.doesNotMatch(hook, /@\/brain\/channels/);
+
+    assert.match(rail, /studio-prompt-mode/);
+    assert.match(rail, /studio-prompt-mode-generated/);
+    assert.match(rail, /studio-prompt-mode-manual/);
+    assert.match(rail, /Generated/);
+    assert.match(rail, /Manual/);
+    assert.match(rail, /readOnly=\{fieldsReadOnly\}/);
+
+    assert.match(shell, /onPromptModeChange/);
+    assert.match(shell, /formatId === "youtube_short"/);
+
+    assert.match(preview, /studio-preview-image-prompt/);
+    assert.match(preview, /studio-preview-voiceover-prompt/);
+    assert.match(preview, /studio-preview-script/);
+    assert.match(storyboard, /studio-storyboard-script/);
+  });
 });
 
 describe("platform registry (canonical Studio formats)", () => {

@@ -11,7 +11,10 @@ import type {
   ContentFormatPackage,
   ContentProductionBundle,
   PlatformId,
+  YouTubeShortFormatPackage,
 } from "@/brain/content-studio";
+
+export type StudioPromptMode = "generated" | "manual";
 
 type AtomLoadState =
   | { status: "idle" }
@@ -37,11 +40,24 @@ type BundleState =
     }
   | { status: "error"; error: string };
 
+/** Durable-edit fields only — matches youtubeShortDurableEditsSchema. */
 type FormatEdits = {
   imagePrompt: string;
   voiceoverPrompt: string;
   script: string;
 };
+
+const EMPTY_EDITS: FormatEdits = {
+  imagePrompt: "",
+  voiceoverPrompt: "",
+  script: "",
+};
+
+function isShortPackage(
+  pkg: ContentFormatPackage
+): pkg is YouTubeShortFormatPackage {
+  return pkg.formatId === "youtube_short";
+}
 
 function editsFromPackage(pkg: ContentFormatPackage): FormatEdits {
   return {
@@ -49,6 +65,32 @@ function editsFromPackage(pkg: ContentFormatPackage): FormatEdits {
     voiceoverPrompt: pkg.voiceoverPrompt,
     script: pkg.script,
   };
+}
+
+function baselineEditsFromPackage(pkg: ContentFormatPackage): FormatEdits {
+  if (isShortPackage(pkg) && pkg.generatedBaseline) {
+    return { ...pkg.generatedBaseline };
+  }
+  return editsFromPackage(pkg);
+}
+
+function shortHasDurableEdits(pkg: ContentFormatPackage | null): boolean {
+  return Boolean(pkg && isShortPackage(pkg) && pkg.durableEdits);
+}
+
+function shortPackageSyncKey(pkg: ContentFormatPackage | null): string | null {
+  if (!pkg || !isShortPackage(pkg)) return null;
+  const durable = pkg.durableEdits
+    ? `${pkg.durableEdits.imagePrompt}|${pkg.durableEdits.voiceoverPrompt}|${pkg.durableEdits.script}`
+    : "none";
+  return [
+    pkg.id,
+    pkg.generation.idempotencyKey,
+    durable,
+    pkg.imagePrompt,
+    pkg.voiceoverPrompt,
+    pkg.script,
+  ].join("::");
 }
 
 export function useAtomContentStudio(atomId: string | null) {
@@ -60,6 +102,8 @@ export function useAtomContentStudio(atomId: string | null) {
   const [editsByFormat, setEditsByFormat] = useState<
     Partial<Record<ContentFormatId, FormatEdits>>
   >({});
+  const [promptMode, setPromptModeState] =
+    useState<StudioPromptMode>("generated");
   const [saveLabel, setSaveLabel] = useState("Save draft");
   const atomRequestRef = useRef(0);
   const bundleRequestRef = useRef(0);
@@ -196,14 +240,35 @@ export function useAtomContentStudio(atomId: string | null) {
     void loadOrProduceBundle(atomState.atom.atom_id);
   }, [atomState, loadOrProduceBundle]);
 
-  const packages =
-    bundleState.status === "ready" ? bundleState.bundle.packages : [];
+  const packages = useMemo(
+    () =>
+      bundleState.status === "ready" ? bundleState.bundle.packages : [],
+    [bundleState]
+  );
 
   const activePackage =
     packages.find((p) => p.formatId === formatId) ?? null;
 
+  const shortSyncKey = shortPackageSyncKey(
+    formatId === "youtube_short" ? activePackage : null
+  );
+
+  // Seed Short edits + mode from persisted package (load / save / reset / regen).
   useEffect(() => {
-    if (!activePackage) return;
+    if (!shortSyncKey || formatId !== "youtube_short") return;
+    const pkg = packages.find((p) => p.formatId === "youtube_short");
+    if (!pkg) return;
+    setEditsByFormat((prev) => ({
+      ...prev,
+      youtube_short: editsFromPackage(pkg),
+    }));
+    setPromptModeState(shortHasDurableEdits(pkg) ? "manual" : "generated");
+    setSelectedSceneId((prev) => prev ?? pkg.scenes[0]?.id ?? null);
+  }, [shortSyncKey, formatId, packages]);
+
+  // Video (and other formats): seed local edits without mode semantics.
+  useEffect(() => {
+    if (!activePackage || formatId === "youtube_short") return;
     setEditsByFormat((prev) => {
       if (prev[formatId]) return prev;
       return { ...prev, [formatId]: editsFromPackage(activePackage) };
@@ -211,44 +276,74 @@ export function useAtomContentStudio(atomId: string | null) {
     setSelectedSceneId((prev) => prev ?? activePackage.scenes[0]?.id ?? null);
   }, [activePackage, formatId]);
 
-  const edits =
-    editsByFormat[formatId] ??
-    (activePackage
-      ? editsFromPackage(activePackage)
-      : { imagePrompt: "", voiceoverPrompt: "", script: "" });
+  const edits = useMemo(() => {
+    if (
+      formatId === "youtube_short" &&
+      promptMode === "generated" &&
+      activePackage
+    ) {
+      return baselineEditsFromPackage(activePackage);
+    }
+    return (
+      editsByFormat[formatId] ??
+      (activePackage ? editsFromPackage(activePackage) : EMPTY_EDITS)
+    );
+  }, [activePackage, editsByFormat, formatId, promptMode]);
 
   const dirty = useMemo(() => {
     if (!activePackage) return false;
+    if (formatId === "youtube_short" && promptMode !== "manual") return false;
     const base = editsFromPackage(activePackage);
     return (
       edits.imagePrompt !== base.imagePrompt ||
       edits.voiceoverPrompt !== base.voiceoverPrompt ||
       edits.script !== base.script
     );
-  }, [activePackage, edits]);
+  }, [activePackage, edits, formatId, promptMode]);
+
+  const setPromptMode = useCallback(
+    (mode: StudioPromptMode) => {
+      if (formatId !== "youtube_short" || !activePackage) return;
+      if (mode === "generated") {
+        setEditsByFormat((prev) => ({
+          ...prev,
+          youtube_short: editsFromPackage(activePackage),
+        }));
+        setSaveLabel("Save draft");
+      } else {
+        setEditsByFormat((prev) => ({
+          ...prev,
+          youtube_short: editsFromPackage(activePackage),
+        }));
+      }
+      setPromptModeState(mode);
+    },
+    [activePackage, formatId]
+  );
 
   const setEditField = useCallback(
     (field: keyof FormatEdits, value: string) => {
+      if (formatId === "youtube_short" && promptMode !== "manual") return;
       setEditsByFormat((prev) => ({
         ...prev,
         [formatId]: {
-          ...(prev[formatId] ?? {
-            imagePrompt: "",
-            voiceoverPrompt: "",
-            script: "",
-          }),
+          ...(prev[formatId] ?? EMPTY_EDITS),
           [field]: value,
         },
       }));
       setSaveLabel("Unsaved changes");
     },
-    [formatId]
+    [formatId, promptMode]
   );
 
   const saveEdits = useCallback(async () => {
     if (atomState.status !== "ready") return;
     if (formatId !== "youtube_short") {
       setSaveLabel("Video edits not persisted yet");
+      return;
+    }
+    if (promptMode !== "manual") {
+      setSaveLabel("Switch to Manual to edit");
       return;
     }
     setSaveLabel("Saving…");
@@ -284,11 +379,12 @@ export function useAtomContentStudio(atomId: string | null) {
           youtube_short: editsFromPackage(pkg),
         }));
       }
+      setPromptModeState("manual");
       setSaveLabel("Saved");
     } catch {
       setSaveLabel("Save failed");
     }
-  }, [atomState, edits, formatId]);
+  }, [atomState, edits, formatId, promptMode]);
 
   const resetEdits = useCallback(async () => {
     if (atomState.status !== "ready" || !activePackage) return;
@@ -333,6 +429,7 @@ export function useAtomContentStudio(atomId: string | null) {
           youtube_short: editsFromPackage(pkg),
         }));
       }
+      setPromptModeState("generated");
       setSaveLabel("Save draft");
     } catch {
       setSaveLabel("Reset failed");
@@ -360,6 +457,8 @@ export function useAtomContentStudio(atomId: string | null) {
     activePackage,
     selectedSceneId,
     setSelectedSceneId,
+    promptMode,
+    setPromptMode,
     edits,
     setEditField,
     dirty,

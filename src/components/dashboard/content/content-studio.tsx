@@ -82,6 +82,8 @@ function AtomDeepLinkStudio({ atomId }: { atomId: string }) {
       activePackage={atomStudio.activePackage}
       selectedSceneId={atomStudio.selectedSceneId}
       onSelectScene={atomStudio.setSelectedSceneId}
+      promptMode={atomStudio.promptMode}
+      onPromptModeChange={atomStudio.setPromptMode}
       imagePrompt={atomStudio.edits.imagePrompt}
       voiceoverPrompt={atomStudio.edits.voiceoverPrompt}
       script={atomStudio.edits.script}

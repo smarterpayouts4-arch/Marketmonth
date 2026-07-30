@@ -33,6 +33,14 @@ export function StudioStoryboard({
       data-testid="studio-storyboard"
     >
       <p className="studio-storyboard__label">Storyboard</p>
+      {pkg.formatId === "youtube_short" ? (
+        <p
+          className="line-clamp-2 text-[10px] leading-snug text-text-muted"
+          data-testid="studio-storyboard-script"
+        >
+          {pkg.script}
+        </p>
+      ) : null}
       <div className="studio-storyboard__track">
         {scenes.map((s, i) => {
           const selected = s.id === selectedSceneId;

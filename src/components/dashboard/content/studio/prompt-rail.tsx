@@ -7,8 +7,12 @@ import type { ContentFormatPackage } from "@/brain/content-studio";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import type { StudioPromptMode } from "../hooks/use-atom-content-studio";
+
 type PromptRailProps = {
   pkg: ContentFormatPackage | null;
+  promptMode?: StudioPromptMode;
+  onPromptModeChange?: (mode: StudioPromptMode) => void;
   imagePrompt: string;
   voiceoverPrompt: string;
   script: string;
@@ -31,6 +35,7 @@ function PromptCard({
   maxHint,
   grow,
   copyTestId,
+  readOnly,
 }: {
   title: string;
   icon: ReactNode;
@@ -39,6 +44,7 @@ function PromptCard({
   maxHint?: number;
   grow?: "script" | "default";
   copyTestId: string;
+  readOnly?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -98,6 +104,8 @@ function PromptCard({
         className="studio-prompt-card__field"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        readOnly={readOnly}
+        aria-readonly={readOnly || undefined}
       />
     </div>
   );
@@ -138,6 +146,8 @@ function PrefToggle({
 
 export function StudioPromptRail({
   pkg,
+  promptMode,
+  onPromptModeChange,
   imagePrompt,
   voiceoverPrompt,
   script,
@@ -167,8 +177,44 @@ export function StudioPromptRail({
     );
   }
 
+  const isShort = pkg.formatId === "youtube_short";
+  const mode = promptMode ?? "manual";
+  const fieldsReadOnly = isShort && mode === "generated";
+  const showModeToggle = isShort && Boolean(onPromptModeChange);
+
   return (
     <aside className="studio-prompt-rail" data-testid="studio-prompt-rail">
+      {showModeToggle ? (
+        <div
+          className="studio-prompt-mode"
+          role="group"
+          aria-label="Prompt source"
+          data-testid="studio-prompt-mode"
+          data-mode={mode}
+        >
+          <button
+            type="button"
+            className="studio-prompt-mode__btn"
+            data-active={mode === "generated" ? "true" : "false"}
+            aria-pressed={mode === "generated"}
+            onClick={() => onPromptModeChange?.("generated")}
+            data-testid="studio-prompt-mode-generated"
+          >
+            Generated
+          </button>
+          <button
+            type="button"
+            className="studio-prompt-mode__btn"
+            data-active={mode === "manual" ? "true" : "false"}
+            aria-pressed={mode === "manual"}
+            onClick={() => onPromptModeChange?.("manual")}
+            data-testid="studio-prompt-mode-manual"
+          >
+            Manual
+          </button>
+        </div>
+      ) : null}
+
       {pkg.status === "research_required" ? (
         <div
           className="studio-prompt-card studio-prompt-card--notice"
@@ -204,6 +250,15 @@ export function StudioPromptRail({
         </Button>
       ) : null}
 
+      {fieldsReadOnly ? (
+        <p
+          className="shrink-0 text-[10px] text-text-muted"
+          data-testid="studio-prompt-mode-hint"
+        >
+          Generated baseline — switch to Manual to edit durable prompts.
+        </p>
+      ) : null}
+
       <PromptCard
         title="Visual metaphor"
         icon={<ImageIcon className="h-3 w-3" aria-hidden />}
@@ -211,6 +266,7 @@ export function StudioPromptRail({
         onChange={onImagePromptChange}
         maxHint={800}
         copyTestId="studio-copy-visual-metaphor"
+        readOnly={fieldsReadOnly}
       />
       <PromptCard
         title="VO / voiceover"
@@ -219,6 +275,7 @@ export function StudioPromptRail({
         onChange={onVoiceoverPromptChange}
         maxHint={2000}
         copyTestId="studio-copy-voiceover"
+        readOnly={fieldsReadOnly}
       />
       <PromptCard
         title="Content / script"
@@ -228,6 +285,7 @@ export function StudioPromptRail({
         maxHint={4000}
         grow="script"
         copyTestId="studio-copy-script"
+        readOnly={fieldsReadOnly}
       />
 
       <div className="studio-prompt-card studio-prompt-card--compact">
@@ -269,7 +327,7 @@ export function StudioPromptRail({
         <button
           type="button"
           className="h-8 rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground disabled:opacity-50"
-          disabled={!dirty}
+          disabled={!dirty || fieldsReadOnly}
           onClick={onSave}
           data-testid="studio-save-format"
         >

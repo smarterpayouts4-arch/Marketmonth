@@ -13,6 +13,7 @@ import type {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import type { StudioPromptMode } from "../hooks/use-atom-content-studio";
 import { AtomReviewPanel } from "../atom-review-panel";
 import { buildExternalVideoPrompt } from "./build-external-prompt";
 import { StudioPlatformToolbar } from "./platform-toolbar";
@@ -36,6 +37,8 @@ type VisionShellProps = {
   activePackage: ContentFormatPackage | null;
   selectedSceneId: string | null;
   onSelectScene: (id: string) => void;
+  promptMode: StudioPromptMode;
+  onPromptModeChange: (mode: StudioPromptMode) => void;
   imagePrompt: string;
   voiceoverPrompt: string;
   script: string;
@@ -69,6 +72,8 @@ export function VisionContentStudioShell({
   activePackage,
   selectedSceneId,
   onSelectScene,
+  promptMode,
+  onPromptModeChange,
   imagePrompt,
   voiceoverPrompt,
   script,
@@ -224,6 +229,12 @@ export function VisionContentStudioShell({
           <div className="studio-workspace__rail">
             <StudioPromptRail
               pkg={activePackage}
+              promptMode={
+                formatId === "youtube_short" ? promptMode : undefined
+              }
+              onPromptModeChange={
+                formatId === "youtube_short" ? onPromptModeChange : undefined
+              }
               imagePrompt={imagePrompt}
               voiceoverPrompt={voiceoverPrompt}
               script={script}
