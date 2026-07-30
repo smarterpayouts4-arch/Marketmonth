@@ -13,7 +13,11 @@ import type {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-import type { StudioPromptMode } from "../hooks/use-atom-content-studio";
+import type {
+  SceneAssetType,
+  SceneEditFields,
+  StudioPromptMode,
+} from "../hooks/use-atom-content-studio";
 import { AtomReviewPanel } from "../atom-review-panel";
 import { buildExternalVideoPrompt } from "./build-external-prompt";
 import { StudioPlatformToolbar } from "./platform-toolbar";
@@ -39,6 +43,12 @@ type VisionShellProps = {
   onSelectScene: (id: string) => void;
   promptMode: StudioPromptMode;
   onPromptModeChange: (mode: StudioPromptMode) => void;
+  sceneEdits: SceneEditFields;
+  onSceneVisualPromptChange: (v: string) => void;
+  onSceneNarrationChange: (v: string) => void;
+  onSceneOnScreenTextChange: (v: string) => void;
+  onSceneAssetTypeChange: (v: SceneAssetType) => void;
+  onResetScene: () => void | Promise<void>;
   imagePrompt: string;
   voiceoverPrompt: string;
   script: string;
@@ -74,6 +84,12 @@ export function VisionContentStudioShell({
   onSelectScene,
   promptMode,
   onPromptModeChange,
+  sceneEdits,
+  onSceneVisualPromptChange,
+  onSceneNarrationChange,
+  onSceneOnScreenTextChange,
+  onSceneAssetTypeChange,
+  onResetScene,
   imagePrompt,
   voiceoverPrompt,
   script,
@@ -234,6 +250,35 @@ export function VisionContentStudioShell({
               }
               onPromptModeChange={
                 formatId === "youtube_short" ? onPromptModeChange : undefined
+              }
+              selectedSceneId={
+                formatId === "youtube_short" ? selectedSceneId : undefined
+              }
+              sceneEdits={
+                formatId === "youtube_short" ? sceneEdits : undefined
+              }
+              onSceneVisualPromptChange={
+                formatId === "youtube_short"
+                  ? onSceneVisualPromptChange
+                  : undefined
+              }
+              onSceneNarrationChange={
+                formatId === "youtube_short"
+                  ? onSceneNarrationChange
+                  : undefined
+              }
+              onSceneOnScreenTextChange={
+                formatId === "youtube_short"
+                  ? onSceneOnScreenTextChange
+                  : undefined
+              }
+              onSceneAssetTypeChange={
+                formatId === "youtube_short"
+                  ? onSceneAssetTypeChange
+                  : undefined
+              }
+              onResetScene={
+                formatId === "youtube_short" ? onResetScene : undefined
               }
               imagePrompt={imagePrompt}
               voiceoverPrompt={voiceoverPrompt}

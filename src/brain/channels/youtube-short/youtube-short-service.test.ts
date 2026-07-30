@@ -18,9 +18,12 @@ import {
 } from "./to-youtube-short-draft";
 import {
   applyDurableEditsToShortPackage,
+  mergeDurableEdits,
   patchYouTubeShortDurableEdits,
   produceYouTubeShortFormatPackage,
   resetShortPackageToGeneratedBaseline,
+  resetShortSceneToGeneratedBaseline,
+  resolveEffectiveScene,
 } from "./youtube-short-service";
 
 const sampleSelected = {
@@ -248,6 +251,252 @@ describe("YouTube Short channel service", () => {
     assert.notEqual(
       regen.package.generatedBaseline?.imagePrompt,
       "Survive regen image"
+    );
+
+    try {
+      rmSync(
+        path.join(
+          bundlesDir,
+          `${atom.atom_id.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 100)}_r${revision}.json`
+        ),
+        { force: true }
+      );
+    } catch {
+      /* ignore */
+    }
+  });
+
+  it("merges sparse scene field overrides without wiping sibling scenes", () => {
+    const existing = mergeDurableEdits(undefined, {
+      scenes: {
+        s1_hook: { visualPrompt: "Scene 1 visual A" },
+        s2_context: { narration: "Scene 2 narration A" },
+      },
+    });
+    const merged = mergeDurableEdits(existing, {
+      scenes: {
+        s1_hook: { onScreenText: "HOOK" },
+        s3_claim: { assetType: "video" },
+      },
+    });
+    assert.equal(merged.scenes?.s1_hook?.visualPrompt, "Scene 1 visual A");
+    assert.equal(merged.scenes?.s1_hook?.onScreenText, "HOOK");
+    assert.equal(merged.scenes?.s2_context?.narration, "Scene 2 narration A");
+    assert.equal(merged.scenes?.s3_claim?.assetType, "video");
+  });
+
+  it("resolves effective scene field-by-field", () => {
+    const generated = {
+      id: "s1_hook",
+      order: 0,
+      durationSeconds: 3,
+      narration: "gen narration",
+      onScreenText: "gen ost",
+      visualPrompt: "gen visual",
+      assetType: "image" as const,
+    };
+    const baseline = {
+      visualPrompt: "base visual",
+      narration: "base narration",
+      onScreenText: "base ost",
+      assetType: "image" as const,
+    };
+    const durable = { visualPrompt: "edit visual" };
+    const effective = resolveEffectiveScene(generated, baseline, durable);
+    assert.equal(effective.visualPrompt, "edit visual");
+    assert.equal(effective.narration, "base narration");
+    assert.equal(effective.onScreenText, "base ost");
+    assert.equal(effective.assetType, "image");
+  });
+
+  it("persists nine independent scene edit sets; resetScene and reset-all", async () => {
+    const base = await lockedAtomFromFixture();
+    const atom = {
+      ...base,
+      atom_id: `atom_phase3b_${Date.now().toString(36)}`,
+      atom_version: 1,
+    };
+    const repo = createAtomRepository();
+    const stored = await repo.save(atom, {
+      validationReport: null,
+      buildKey: `test|${atom.atom_id}|phase3b`,
+    });
+    const revision = stored.record_revision;
+
+    const produced = await produceYouTubeShortFormatPackage({
+      atom: stored.atom,
+      validationReport: null,
+      atomRevision: revision,
+    });
+    assert.equal(produced.ok, true);
+    if (!produced.ok) return;
+
+    // Expand to 9 stable scenes for acceptance (specialist may emit fewer).
+    const nineScenes = Array.from({ length: 9 }, (_, i) => {
+      const id = `s${i + 1}_scene`;
+      return {
+        id,
+        order: i,
+        durationSeconds: 3,
+        narration: `Generated narration ${i + 1}`,
+        onScreenText: `OST ${i + 1}`,
+        visualPrompt: `Generated visual ${i + 1}`,
+        assetType: "image" as const,
+      };
+    });
+    const sceneBaselines = Object.fromEntries(
+      nineScenes.map((s) => [
+        s.id,
+        {
+          visualPrompt: s.visualPrompt,
+          narration: s.narration,
+          onScreenText: s.onScreenText,
+          assetType: s.assetType,
+        },
+      ])
+    );
+    const pkgWithNine = {
+      ...produced.package,
+      scenes: nineScenes,
+      durationSeconds: 27,
+      generatedBaseline: {
+        imagePrompt: produced.package.imagePrompt,
+        voiceoverPrompt: produced.package.voiceoverPrompt,
+        script: produced.package.script,
+        scenes: sceneBaselines,
+      },
+    };
+
+    const bundle: ContentProductionBundle = {
+      atomId: atom.atom_id,
+      atomRevision: revision,
+      buildKey: stored.build_key ?? `test|${atom.atom_id}|${revision}`,
+      companyId: stored.company_id,
+      packages: [pkgWithNine],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    await saveProductionBundle(bundle);
+
+    const sceneEdits = Object.fromEntries(
+      nineScenes.map((s, i) => [
+        s.id,
+        {
+          visualPrompt: `EDIT visual ${i + 1}`,
+          narration: `EDIT narration ${i + 1}`,
+          onScreenText: `EDIT OST ${i + 1}`,
+          assetType: i % 2 === 0 ? ("image" as const) : ("video" as const),
+        },
+      ])
+    );
+
+    const patched = await patchYouTubeShortDurableEdits({
+      atomId: atom.atom_id,
+      companyIdHint: stored.company_id,
+      edits: { scenes: sceneEdits },
+    });
+    assert.equal(patched.ok, true);
+    if (!patched.ok) return;
+    assert.equal(patched.package.scenes.length, 9);
+    for (let i = 0; i < 9; i++) {
+      const expectedId = `s${i + 1}_scene`;
+      assert.equal(patched.package.scenes[i]?.id, expectedId);
+      assert.equal(
+        patched.package.scenes[i]?.visualPrompt,
+        `EDIT visual ${i + 1}`
+      );
+      assert.equal(
+        patched.package.scenes[i]?.narration,
+        `EDIT narration ${i + 1}`
+      );
+      assert.equal(
+        patched.package.scenes[i]?.onScreenText,
+        `EDIT OST ${i + 1}`
+      );
+      assert.equal(
+        patched.package.scenes[i]?.assetType,
+        i % 2 === 0 ? "image" : "video"
+      );
+    }
+
+    // Partial patch on one scene must not wipe others.
+    const partial = await patchYouTubeShortDurableEdits({
+      atomId: atom.atom_id,
+      companyIdHint: stored.company_id,
+      edits: {
+        scenes: {
+          s1_scene: { visualPrompt: "ONLY visual change on scene 1" },
+        },
+      },
+    });
+    assert.equal(partial.ok, true);
+    if (!partial.ok) return;
+    assert.equal(
+      partial.package.scenes.find((s) => s.id === "s1_scene")?.visualPrompt,
+      "ONLY visual change on scene 1"
+    );
+    assert.equal(
+      partial.package.scenes.find((s) => s.id === "s1_scene")?.narration,
+      "EDIT narration 1"
+    );
+    assert.equal(
+      partial.package.scenes.find((s) => s.id === "s2_scene")?.narration,
+      "EDIT narration 2"
+    );
+
+    const resetOne = await patchYouTubeShortDurableEdits({
+      atomId: atom.atom_id,
+      companyIdHint: stored.company_id,
+      resetSceneId: "s1_scene",
+    });
+    assert.equal(resetOne.ok, true);
+    if (!resetOne.ok) return;
+    assert.equal(
+      resetOne.package.scenes.find((s) => s.id === "s1_scene")?.visualPrompt,
+      "Generated visual 1"
+    );
+    assert.equal(
+      resetOne.package.scenes.find((s) => s.id === "s2_scene")?.visualPrompt,
+      "EDIT visual 2"
+    );
+
+    const regen = await produceYouTubeShortFormatPackage({
+      atom: stored.atom,
+      validationReport: null,
+      atomRevision: revision,
+      priorPackage: {
+        ...resetOne.package,
+        // Keep nine-scene package shape for merge proof on overlapping ids.
+        scenes: resetOne.package.scenes,
+        generatedBaseline: resetOne.package.generatedBaseline,
+      },
+      forceRegenerate: true,
+    });
+    assert.equal(regen.ok, true);
+    if (!regen.ok) return;
+    // Durable overrides for specialist scene ids that still exist are re-applied.
+    assert.ok(regen.package.durableEdits?.scenes);
+
+    const resetAll = resetShortSceneToGeneratedBaseline(
+      applyDurableEditsToShortPackage(pkgWithNine, { scenes: sceneEdits }),
+      "s3_scene"
+    );
+    assert.equal(
+      resetAll.scenes.find((s) => s.id === "s3_scene")?.visualPrompt,
+      "Generated visual 3"
+    );
+    assert.equal(
+      resetAll.scenes.find((s) => s.id === "s4_scene")?.visualPrompt,
+      "EDIT visual 4"
+    );
+
+    const cleared = resetShortPackageToGeneratedBaseline(
+      applyDurableEditsToShortPackage(pkgWithNine, { scenes: sceneEdits })
+    );
+    assert.equal(cleared.durableEdits, undefined);
+    assert.equal(
+      cleared.scenes.find((s) => s.id === "s5_scene")?.visualPrompt,
+      "Generated visual 5"
     );
 
     try {

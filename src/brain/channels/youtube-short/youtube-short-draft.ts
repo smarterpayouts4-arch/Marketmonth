@@ -12,9 +12,8 @@ import {
  *                  ├→ YouTube Short channel → Renderer
  *   Content atom ──┘
  *
- * Phase 1: schema + types only. Atom path still produces via specialist +
- * Studio adapter; manual path is not wired. Both must eventually emit this
- * shape (or a strict superset) before render.
+ * Package-level script remains the master script. Scene narration is the
+ * spoken line for that scene only (not a full-script duplicate).
  */
 
 export const youtubeShortDraftProvenanceSchema = z.discriminatedUnion(
@@ -33,6 +32,8 @@ export const youtubeShortDraftProvenanceSchema = z.discriminatedUnion(
   ]
 );
 
+export const youtubeShortSceneAssetTypeSchema = z.enum(["image", "video"]);
+
 export const youtubeShortDraftSceneSchema = z.object({
   id: z.string().min(1),
   order: z.number().int().nonnegative(),
@@ -43,17 +44,73 @@ export const youtubeShortDraftSceneSchema = z.object({
   narration: z.string().min(1).max(1200),
   onScreenText: z.string().max(160).optional(),
   visualPrompt: z.string().min(1).max(800),
+  assetType: youtubeShortSceneAssetTypeSchema.default("image"),
 });
 
 /**
- * Durable prompt/script edits persisted on the Short format package inside
- * the existing ContentProductionBundle (not a parallel client-only draft, not a
- * second store). Phase 2+: PATCH merges these fields onto the package in place.
+ * Complete scene production snapshot stored on generatedBaseline.scenes.
+ * Every scene id present at generate time gets a full entry.
  */
-export const youtubeShortDurableEditsSchema = z.object({
+export const youtubeShortDurableSceneBaselineSchema = z.object({
+  visualPrompt: z.string().min(1).max(800),
+  narration: z.string().min(1).max(1200),
+  onScreenText: z.string().max(160).optional(),
+  assetType: youtubeShortSceneAssetTypeSchema,
+});
+
+/**
+ * Field-level partial override for one scene (durableEdits.scenes[id]).
+ * At least one field must be present.
+ */
+export const youtubeShortDurableSceneEditSchema = z
+  .object({
+    visualPrompt: z.string().min(1).max(800).optional(),
+    narration: z.string().min(1).max(1200).optional(),
+    onScreenText: z.string().max(160).optional(),
+    assetType: youtubeShortSceneAssetTypeSchema.optional(),
+  })
+  .refine(
+    (value) =>
+      value.visualPrompt !== undefined ||
+      value.narration !== undefined ||
+      value.onScreenText !== undefined ||
+      value.assetType !== undefined,
+    { message: "scene edit must include at least one field" }
+  );
+
+/**
+ * Durable edits persisted on the Short format package inside the existing
+ * ContentProductionBundle. Package-level fields and scene overrides are all
+ * optional so PATCH can send sparse updates; the service merges into existing
+ * durableEdits (never replaces the whole scenes map blindly).
+ */
+export const youtubeShortDurableEditsSchema = z
+  .object({
+    imagePrompt: z.string().min(1).max(800).optional(),
+    voiceoverPrompt: z.string().min(1).max(2000).optional(),
+    script: z.string().min(1).max(6000).optional(),
+    scenes: z
+      .record(z.string().min(1), youtubeShortDurableSceneEditSchema)
+      .optional(),
+  })
+  .refine(
+    (value) =>
+      value.imagePrompt !== undefined ||
+      value.voiceoverPrompt !== undefined ||
+      value.script !== undefined ||
+      (value.scenes != null && Object.keys(value.scenes).length > 0),
+    { message: "edits must include at least one field" }
+  );
+
+/**
+ * Recoverable generate snapshot. Package prompt fields are complete; scenes
+ * map is a complete snapshot keyed by stable scene id.
+ */
+export const youtubeShortGeneratedBaselineSchema = z.object({
   imagePrompt: z.string().min(1).max(800),
   voiceoverPrompt: z.string().min(1).max(2000),
   script: z.string().min(1).max(6000),
+  scenes: z.record(z.string().min(1), youtubeShortDurableSceneBaselineSchema),
 });
 
 export const youtubeShortDraftSchema = z.object({
@@ -86,8 +143,20 @@ export const youtubeShortDraftSchema = z.object({
 export type YouTubeShortDraftProvenance = z.infer<
   typeof youtubeShortDraftProvenanceSchema
 >;
+export type YouTubeShortSceneAssetType = z.infer<
+  typeof youtubeShortSceneAssetTypeSchema
+>;
 export type YouTubeShortDraftScene = z.infer<typeof youtubeShortDraftSceneSchema>;
+export type YouTubeShortDurableSceneBaseline = z.infer<
+  typeof youtubeShortDurableSceneBaselineSchema
+>;
+export type YouTubeShortDurableSceneEdit = z.infer<
+  typeof youtubeShortDurableSceneEditSchema
+>;
 export type YouTubeShortDurableEdits = z.infer<
   typeof youtubeShortDurableEditsSchema
+>;
+export type YouTubeShortGeneratedBaseline = z.infer<
+  typeof youtubeShortGeneratedBaselineSchema
 >;
 export type YouTubeShortDraft = z.infer<typeof youtubeShortDraftSchema>;

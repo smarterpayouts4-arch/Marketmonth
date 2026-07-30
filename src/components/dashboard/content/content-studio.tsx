@@ -84,6 +84,20 @@ function AtomDeepLinkStudio({ atomId }: { atomId: string }) {
       onSelectScene={atomStudio.setSelectedSceneId}
       promptMode={atomStudio.promptMode}
       onPromptModeChange={atomStudio.setPromptMode}
+      sceneEdits={atomStudio.selectedSceneEdits}
+      onSceneVisualPromptChange={(v) =>
+        atomStudio.setSceneEditField("visualPrompt", v)
+      }
+      onSceneNarrationChange={(v) =>
+        atomStudio.setSceneEditField("narration", v)
+      }
+      onSceneOnScreenTextChange={(v) =>
+        atomStudio.setSceneEditField("onScreenText", v)
+      }
+      onSceneAssetTypeChange={(v) =>
+        atomStudio.setSceneEditField("assetType", v)
+      }
+      onResetScene={atomStudio.resetSelectedScene}
       imagePrompt={atomStudio.edits.imagePrompt}
       voiceoverPrompt={atomStudio.edits.voiceoverPrompt}
       script={atomStudio.edits.script}

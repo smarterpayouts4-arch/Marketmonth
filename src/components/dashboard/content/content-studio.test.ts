@@ -157,7 +157,14 @@ describe("Content Studio atomId-only entry", () => {
     const rail = readFileSync(
       path.join(
         root,
-        "src/components/dashboard/content/studio/prompt-rail.tsx"
+        "src/components/dashboard/content/studio/prompt-rail/studio-prompt-rail.tsx"
+      ),
+      "utf8"
+    );
+    const modeToggle = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/prompt-rail/prompt-mode-toggle.tsx"
       ),
       "utf8"
     );
@@ -193,11 +200,11 @@ describe("Content Studio atomId-only entry", () => {
     assert.doesNotMatch(hook, /manual-prompt/);
     assert.doesNotMatch(hook, /@\/brain\/channels/);
 
-    assert.match(rail, /studio-prompt-mode/);
-    assert.match(rail, /studio-prompt-mode-generated/);
-    assert.match(rail, /studio-prompt-mode-manual/);
-    assert.match(rail, /Generated/);
-    assert.match(rail, /Manual/);
+    assert.match(modeToggle, /studio-prompt-mode/);
+    assert.match(modeToggle, /studio-prompt-mode-generated/);
+    assert.match(modeToggle, /studio-prompt-mode-manual/);
+    assert.match(modeToggle, /Generated/);
+    assert.match(modeToggle, /Manual/);
     assert.match(rail, /readOnly=\{fieldsReadOnly\}/);
 
     assert.match(shell, /onPromptModeChange/);
@@ -207,6 +214,49 @@ describe("Content Studio atomId-only entry", () => {
     assert.match(preview, /studio-preview-voiceover-prompt/);
     assert.match(preview, /studio-preview-script/);
     assert.match(storyboard, /studio-storyboard-script/);
+  });
+
+  it("Phase 3B: scene-level durable editor wired on Short prompt rail", () => {
+    const hook = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/hooks/use-atom-content-studio.ts"
+      ),
+      "utf8"
+    );
+    const rail = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/prompt-rail/studio-prompt-rail.tsx"
+      ),
+      "utf8"
+    );
+    const sceneEditor = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/prompt-rail/scene-editor.tsx"
+      ),
+      "utf8"
+    );
+    const storyboard = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/storyboard.tsx"
+      ),
+      "utf8"
+    );
+
+    assert.match(hook, /resetSceneId/);
+    assert.match(hook, /setSceneEditField/);
+    assert.match(hook, /buildScenePatches/);
+    assert.match(rail, /SceneEditor/);
+    assert.match(sceneEditor, /studio-scene-editor/);
+    assert.match(sceneEditor, /studio-reset-scene/);
+    assert.match(sceneEditor, /studio-scene-asset-type/);
+    assert.match(sceneEditor, /visualPrompt/);
+    assert.match(sceneEditor, /narration/);
+    assert.match(sceneEditor, /onScreenText/);
+    assert.match(storyboard, /onScreenText/);
   });
 });
 

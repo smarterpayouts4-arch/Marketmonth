@@ -66,7 +66,9 @@ export function StudioStoryboard({
               </div>
               <div className="studio-storyboard__caption">
                 <p className="line-clamp-2 text-[10px] leading-snug text-text-secondary">
-                  {s.onScreenText || s.narration.slice(0, 48)}
+                  {s.onScreenText?.trim()
+                    ? s.onScreenText
+                    : s.narration.slice(0, 48)}
                 </p>
               </div>
             </button>

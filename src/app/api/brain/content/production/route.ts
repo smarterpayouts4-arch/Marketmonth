@@ -217,7 +217,13 @@ export async function POST(request: Request) {
 
 /**
  * PATCH — durable Short edits into existing production bundle.
- * Body: { atomId, formatId: "youtube_short", edits?, resetToGenerated? }
+ * Body: {
+ *   atomId,
+ *   formatId: "youtube_short",
+ *   edits?,              // sparse merge into existing durableEdits
+ *   resetToGenerated?,   // clear all package + scene overrides
+ *   resetSceneId?,       // clear one scene's sparse override only
+ * }
  */
 export async function PATCH(request: Request) {
   const session = await requireApiSession();
@@ -243,6 +249,7 @@ export async function PATCH(request: Request) {
     formatId?: string;
     edits?: unknown;
     resetToGenerated?: boolean;
+    resetSceneId?: string;
   };
 
   const atomId = raw.atomId?.trim();
@@ -257,7 +264,7 @@ export async function PATCH(request: Request) {
     return NextResponse.json(
       {
         ok: false,
-        error: "Only youtube_short durable edits are supported in Phase 2",
+        error: "Only youtube_short durable edits are supported",
       },
       { status: 400 }
     );
@@ -298,8 +305,11 @@ export async function PATCH(request: Request) {
     );
   }
 
+  const resetToGenerated = Boolean(raw.resetToGenerated);
+  const resetSceneId = raw.resetSceneId?.trim() || undefined;
+
   let edits;
-  if (!raw.resetToGenerated) {
+  if (!resetToGenerated && !resetSceneId) {
     const parsed = youtubeShortDurableEditsSchema.safeParse(raw.edits);
     if (!parsed.success) {
       return NextResponse.json(
@@ -314,7 +324,8 @@ export async function PATCH(request: Request) {
     atomId,
     companyIdHint: companyId,
     edits,
-    resetToGenerated: Boolean(raw.resetToGenerated),
+    resetToGenerated,
+    resetSceneId,
   });
 
   if (!outcome.ok) {

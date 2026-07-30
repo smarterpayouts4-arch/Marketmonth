@@ -35,6 +35,7 @@ export {
   type ContentFormatPackage,
   type ContentProductionBundle,
   type PackageStatus,
+  type SceneCard,
   type YouTubeShortFormatPackage,
   type YouTubeVideoFormatPackage,
 } from "./schemas/format-package";

@@ -1,7 +1,11 @@
 import { z } from "zod";
 
 import { YOUTUBE_SHORT_DURATION_MAX_SECONDS } from "@/brain/channels/youtube-short/duration-policy";
-import { youtubeShortDurableEditsSchema } from "@/brain/channels/youtube-short/youtube-short-draft";
+import {
+  youtubeShortDurableEditsSchema,
+  youtubeShortGeneratedBaselineSchema,
+  youtubeShortSceneAssetTypeSchema,
+} from "@/brain/channels/youtube-short/youtube-short-draft";
 
 export const packageStatusSchema = z.enum([
   "not_started",
@@ -31,6 +35,8 @@ export const sceneCardSchema = z.object({
   narration: z.string().min(1).max(1200),
   onScreenText: z.string().max(160).optional(),
   visualPrompt: z.string().min(1).max(800),
+  /** Short production asset kind; omitted on Video scenes. */
+  assetType: youtubeShortSceneAssetTypeSchema.optional(),
   transition: z.string().max(80).optional(),
   chapterId: z.string().optional(),
 });
@@ -61,9 +67,15 @@ export const youtubeShortFormatPackageSchema = z.object({
   unresolvedResearch: z.array(z.string()),
   warnings: z.array(z.string()),
   generation: generationMetaSchema,
-  /** Last generate output for image/voice/script — recoverable after durable edits. */
-  generatedBaseline: youtubeShortDurableEditsSchema.optional(),
-  /** Last saved durable edits; effective fields mirror these when present. */
+  /**
+   * Last generate snapshot (package prompts + complete per-scene production
+   * fields) — recoverable after durable edits / reset.
+   */
+  generatedBaseline: youtubeShortGeneratedBaselineSchema.optional(),
+  /**
+   * Sparse durable overrides. Package fields and scene entries are partial;
+   * effective values merge field-by-field over generatedBaseline.
+   */
   durableEdits: youtubeShortDurableEditsSchema.optional(),
 });
 
@@ -108,6 +120,7 @@ export const contentFormatPackageSchema = z.discriminatedUnion("formatId", [
   youtubeVideoFormatPackageSchema,
 ]);
 
+export type SceneCard = z.infer<typeof sceneCardSchema>;
 export type YouTubeShortFormatPackage = z.infer<
   typeof youtubeShortFormatPackageSchema
 >;

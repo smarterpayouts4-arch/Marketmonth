@@ -24,6 +24,7 @@ export type ShortFormatPackageDraftSource = {
     narration: string;
     onScreenText?: string;
     visualPrompt: string;
+    assetType?: "image" | "video";
   }>;
 };
 
@@ -41,6 +42,7 @@ export function channelPackageToYouTubeShortDraft(
     narration: s.spoken_line,
     onScreenText: s.on_screen_text,
     visualPrompt: s.visual_prompt,
+    assetType: "image" as const,
   }));
   const durationSeconds = scenes.reduce((sum, s) => sum + s.durationSeconds, 0);
   const draft = {
@@ -82,6 +84,7 @@ export function formatPackageToYouTubeShortDraft(
       narration: s.narration,
       onScreenText: s.onScreenText,
       visualPrompt: s.visualPrompt,
+      assetType: s.assetType ?? ("image" as const),
     })),
     imagePrompt: pkg.imagePrompt,
     voiceoverPrompt: pkg.voiceoverPrompt,

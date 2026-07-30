@@ -26,7 +26,7 @@ export function StudioPreviewCanvas({
     pkg?.scenes.find((s) => s.id === selectedSceneId) ?? pkg?.scenes[0];
   const isShort = pkg?.formatId === "youtube_short";
   const headline =
-    scene?.onScreenText ||
+    scene?.onScreenText?.trim() ||
     (pkg && "hook" in pkg
       ? pkg.hook
       : pkg && "openingHook" in pkg
@@ -72,12 +72,27 @@ export function StudioPreviewCanvas({
                 ? scene.narration
                 : "Select a scene to preview narration."}
             </p>
-            {pkg?.imagePrompt ? (
+            {scene?.visualPrompt ? (
+              <p
+                className="mt-1 max-w-[94%] line-clamp-2 text-[9px] leading-snug text-white/50"
+                data-testid="studio-preview-scene-visual"
+              >
+                Visual: {scene.visualPrompt}
+              </p>
+            ) : pkg?.imagePrompt ? (
               <p
                 className="mt-1 max-w-[94%] line-clamp-2 text-[9px] leading-snug text-white/50"
                 data-testid="studio-preview-image-prompt"
               >
                 Visual: {pkg.imagePrompt}
+              </p>
+            ) : null}
+            {isShort && scene?.assetType ? (
+              <p
+                className="text-[9px] uppercase tracking-[0.12em] text-white/40"
+                data-testid="studio-preview-scene-asset-type"
+              >
+                {scene.assetType}
               </p>
             ) : null}
             {pkg?.formatId === "youtube_short" && pkg.voiceoverPrompt ? (
