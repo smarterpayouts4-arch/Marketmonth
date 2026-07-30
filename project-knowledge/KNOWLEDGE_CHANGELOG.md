@@ -3,12 +3,20 @@ title: Knowledge Changelog
 status: active
 authority: supporting
 owner: engineering
-last_verified: 2026-07-29
+last_verified: 2026-07-30
 ---
 
 # KNOWLEDGE_CHANGELOG
 
 Meaningful **knowledge** events only (not ordinary code/style commits).
+
+## 2026-07-30
+
+- ADR **0006** Content Studio / channel ownership + Short draft contract accepted; MCP allowlist `adr0006`.
+- Phase 1: dual-registry comments corrected; Content Studio documented as transitional multi-format orchestrator; `YouTubeShortDraft` + durable-edits schemas; Short duration policy default 60s / max 180s (`duration-policy.ts`); architecture boundary tests UI↛channels/render/use-cases/bundle-store.
+- Phase 2: `youtube-short-service` + draft mapper; `PATCH /api/brain/content/production` durable edits into production bundle; `produceContentBundle` Short branch delegates to service; sessionStorage save removed. Baseline failures: `docs/ai/phase2-baseline-failures.md`.
+- Phase 2.1: deleted `src/brain/content-studio/adapters/youtube-short-adapter.ts` (zero live callers; Short path = UI → production API → youtube-short-service → bundle).
+- Living docs: CONTENT_BRAIN, CURRENT_STATE, DATA_MODEL, DOMAIN_GLOSSARY, FEATURES/content-brain, ownership matrix synced.
 
 ## 2026-07-29
 

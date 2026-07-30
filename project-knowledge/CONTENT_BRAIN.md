@@ -3,16 +3,18 @@ title: Content Brain
 status: active
 authority: canonical
 owner: engineering
-last_verified: 2026-07-29
+last_verified: 2026-07-30
 related_paths:
   - src/brain/**
   - src/brain/content-studio/**
+  - src/brain/channels/youtube-short/**
   - src/brain/craft/**
   - src/app/api/brain/**
   - src/components/dashboard/marketing-topic/**
   - src/components/dashboard/content/**
   - docs/ai/content-brain-stabilization.md
   - project-knowledge/DECISIONS/0005-content-atom-v2.md
+  - project-knowledge/DECISIONS/0006-content-studio-channel-ownership.md
 ---
 
 # Content Brain (Connected Content System)
@@ -115,10 +117,13 @@ Handoff: `ContentDirectionsHandoffV1` (Zod). Save navigates to `/content`.
 Ingest (CSV today) → compileBrandCore() → Brand Core
   → Directions (master + ≤6 ideas) → human selects ONE
   → Content Atom (channel-neutral; ready|invalid)
-  → Content Studio production orchestrator (YouTube Short + Video format adapters; other platforms coming soon)
-  → Channel specialists remain available (YouTube Short enabled; youtubeLong still not_connected in channelRegistry)
+  → Content Studio production orchestrator (transitional multi-format layer — ADR 0006)
+  → Channel specialists (YouTube Short enabled; youtubeLong still not_connected)
+  → Renderer shared worker (stub/dry-run until wired; UI never calls providers)
   → Studio preview + Gate 2 (Partial — see below)
 ```
+
+**Dependency direction (ADR 0006):** UI → thin API → use case / Content Studio orchestrator → channel or format specialist → renderer → providers. Dual registries intentional: `channelRegistry` = specialist enablement; `PLATFORM_REGISTRY` = Studio format tabs.
 
 | Stage | Path | Role |
 |-------|------|------|
@@ -135,8 +140,9 @@ Ingest (CSV today) → compileBrandCore() → Brand Core
 | StrategyLock | `src/brain/strategy-lock/` | Specialist immutability |
 | Channel registry | `src/brain/channels/channel-registry.ts` | Enabled / not_connected (Short enabled; Long not_connected) |
 | YouTube Short | `src/brain/channels/youtube-short/` | Enabled specialist |
-| Content Studio production | `src/brain/content-studio/` + `produce-content-bundle.ts` | Platform/format registry, Short+Video adapters, idempotent bundles |
-| Studio UI | `src/components/dashboard/content/` | Atom deep-link vision shell + Prompt Inspector (bare `/content` legacy Partial) |
+| Content Studio production | `src/brain/content-studio/` + `produce-content-bundle.ts` | **Transitional** multi-format orchestrator: platform/format registry, Video adapter, idempotent bundles (ADR 0006); Short adapter deleted Phase 2.1 |
+| YouTube Short domain | `src/brain/channels/youtube-short/` | `youtube-short-service` + specialist + duration policy + draft / durable-edits contracts |
+| Studio UI | `src/components/dashboard/content/` | Atom deep-link vision shell; must not import channels/render/use-cases/bundle-store |
 | Topic history | `src/brain/store/` | Eval + product history + atom repository |
 
 ## Six-Idea Contract (machine-testable)
@@ -198,7 +204,9 @@ Product Studio entry is **atomId-only**. Legacy handoff Studio + `produce-conten
 - Locked atoms freeze kernel + claim ledger + narrative + engagement.strategy + distribution; presentation fields stay mutable
 - Build trace = refs/metadata only (no second atom copy)
 - Specialists / Studio production require approve/lock (specialist-ready) — not a human claims checklist
-- **Dual registries:** `channelRegistry` (Short enabled; Long not_connected) vs content-studio format registry (Short + Video Live)
+- **Dual registries:** `channelRegistry` (Short enabled; Long not_connected) vs content-studio format registry (Short + Video Live). Studio reads format registry only (ADR 0006).
+- **Short duration policy:** `duration-policy.ts` — default 60s (product default), max 180s; shared by channel + Studio Short schemas
+- **Durable edits SoT:** same production bundle package fields (not a parallel store); sessionStorage until Phase 2 PATCH
 - Idea Lab surfaces Craft used + Craft tab (Test Inspector); approve must forward `limitationsAcknowledgement`
 - Acceptance gate: `npm run verify:select-to-atom` (P0–P2); inspect: `npm run inspect:content-atom`; eng walkthrough: `npm run walkthrough:company-to-atom`
 

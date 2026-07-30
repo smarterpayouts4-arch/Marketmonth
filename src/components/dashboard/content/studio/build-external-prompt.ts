@@ -1,5 +1,9 @@
 import type { ContentAtom } from "@/brain/atom/content-atom.schema";
-import type { ContentFormatPackage } from "@/brain/content-studio";
+import {
+  YOUTUBE_SHORT_DURATION_DEFAULT_SECONDS,
+  YOUTUBE_SHORT_DURATION_MAX_SECONDS,
+  type ContentFormatPackage,
+} from "@/brain/content-studio";
 
 /**
  * Paste-ready prompt for ChatGPT / external video tools.
@@ -16,7 +20,7 @@ export function buildExternalVideoPrompt(args: {
   const formatLabel =
     pkg?.formatId === "youtube_video"
       ? "YouTube Video (16:9, ~3–8 min)"
-      : "YouTube Short (9:16, ~30–60s)";
+      : `YouTube Short (9:16, default ${YOUTUBE_SHORT_DURATION_DEFAULT_SECONDS}s, max ${YOUTUBE_SHORT_DURATION_MAX_SECONDS}s)`;
   const hook =
     pkg && "hook" in pkg
       ? pkg.hook

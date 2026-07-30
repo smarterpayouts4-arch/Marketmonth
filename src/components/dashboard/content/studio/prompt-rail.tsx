@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-import { Copy, FileText, ImageIcon, Mic } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Check, Copy, FileText, ImageIcon, Mic } from "lucide-react";
 
 import type { ContentFormatPackage } from "@/brain/content-studio";
 import { Button } from "@/components/ui/button";
@@ -17,8 +17,8 @@ type PromptRailProps = {
   onScriptChange: (v: string) => void;
   dirty: boolean;
   saveLabel: string;
-  onSave: () => void;
-  onReset: () => void;
+  onSave: () => void | Promise<void>;
+  onReset: () => void | Promise<void>;
   onCopyExternalPrompt?: () => void;
   promptCopied?: boolean;
 };
@@ -30,6 +30,7 @@ function PromptCard({
   onChange,
   maxHint,
   grow,
+  copyTestId,
 }: {
   title: string;
   icon: ReactNode;
@@ -37,7 +38,30 @@ function PromptCard({
   onChange: (v: string) => void;
   maxHint?: number;
   grow?: "script" | "default";
+  copyTestId: string;
 }) {
+  const [copied, setCopied] = useState(false);
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimer.current) clearTimeout(copiedTimer.current);
+    };
+  }, []);
+
+  async function copyField() {
+    const text = value.trim();
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      if (copiedTimer.current) clearTimeout(copiedTimer.current);
+      copiedTimer.current = setTimeout(() => setCopied(false), 1600);
+    } catch {
+      setCopied(false);
+    }
+  }
+
   return (
     <div
       className={cn(
@@ -52,6 +76,23 @@ function PromptCard({
           {value.length}
           {maxHint != null ? ` / ${maxHint}` : ""}
         </p>
+        <button
+          type="button"
+          className="studio-prompt-card__copy"
+          onClick={() => {
+            void copyField();
+          }}
+          disabled={!value.trim()}
+          aria-label={copied ? `${title} copied` : `Copy ${title}`}
+          title={copied ? "Copied" : "Copy"}
+          data-testid={copyTestId}
+        >
+          {copied ? (
+            <Check className="h-3 w-3" aria-hidden />
+          ) : (
+            <Copy className="h-3 w-3" aria-hidden />
+          )}
+        </button>
       </div>
       <textarea
         className="studio-prompt-card__field"
@@ -169,6 +210,7 @@ export function StudioPromptRail({
         value={imagePrompt}
         onChange={onImagePromptChange}
         maxHint={800}
+        copyTestId="studio-copy-visual-metaphor"
       />
       <PromptCard
         title="VO / voiceover"
@@ -176,6 +218,7 @@ export function StudioPromptRail({
         value={voiceoverPrompt}
         onChange={onVoiceoverPromptChange}
         maxHint={2000}
+        copyTestId="studio-copy-voiceover"
       />
       <PromptCard
         title="Content / script"
@@ -184,6 +227,7 @@ export function StudioPromptRail({
         onChange={onScriptChange}
         maxHint={4000}
         grow="script"
+        copyTestId="studio-copy-script"
       />
 
       <div className="studio-prompt-card studio-prompt-card--compact">

@@ -16,13 +16,25 @@ import type {
 type AtomLoadState =
   | { status: "idle" }
   | { status: "loading" }
-  | { status: "ready"; atom: ContentAtom; validation: AtomValidationReport | null; recordRevision: number; companyId: string; buildKey: string | null }
+  | {
+      status: "ready";
+      atom: ContentAtom;
+      validation: AtomValidationReport | null;
+      recordRevision: number;
+      companyId: string;
+      buildKey: string | null;
+    }
   | { status: "error"; error: string; statusCode?: number };
 
 type BundleState =
   | { status: "idle" }
   | { status: "loading" }
-  | { status: "ready"; bundle: ContentProductionBundle; warnings: string[]; loadedExisting: boolean }
+  | {
+      status: "ready";
+      bundle: ContentProductionBundle;
+      warnings: string[];
+      loadedExisting: boolean;
+    }
   | { status: "error"; error: string };
 
 type FormatEdits = {
@@ -49,10 +61,11 @@ export function useAtomContentStudio(atomId: string | null) {
     Partial<Record<ContentFormatId, FormatEdits>>
   >({});
   const [saveLabel, setSaveLabel] = useState("Save draft");
-  const requestRef = useRef(0);
+  const atomRequestRef = useRef(0);
+  const bundleRequestRef = useRef(0);
 
   const loadAtom = useCallback(async (id: string) => {
-    const requestId = ++requestRef.current;
+    const requestId = ++atomRequestRef.current;
     setAtomState({ status: "loading" });
     try {
       const res = await fetch(
@@ -67,7 +80,7 @@ export function useAtomContentStudio(atomId: string | null) {
         companyId?: string;
         buildKey?: string | null;
       };
-      if (requestRef.current !== requestId) return;
+      if (atomRequestRef.current !== requestId) return;
       if (!res.ok || !data.ok || !data.atom) {
         setAtomState({
           status: "error",
@@ -85,7 +98,7 @@ export function useAtomContentStudio(atomId: string | null) {
         buildKey: data.buildKey ?? null,
       });
     } catch {
-      if (requestRef.current !== requestId) return;
+      if (atomRequestRef.current !== requestId) return;
       setAtomState({ status: "error", error: "Network error loading atom" });
     }
   }, []);
@@ -96,12 +109,14 @@ export function useAtomContentStudio(atomId: string | null) {
       forceRegenerate = false,
       formatIds: ContentFormatId[] = ["youtube_short", "youtube_video"]
     ) => {
+      const requestId = ++bundleRequestRef.current;
       setBundleState({ status: "loading" });
       try {
         if (!forceRegenerate) {
           const getRes = await fetch(
             `/api/brain/content/production?atomId=${encodeURIComponent(id)}`
           );
+          if (bundleRequestRef.current !== requestId) return;
           if (getRes.ok) {
             const getData = (await getRes.json()) as {
               ok: boolean;
@@ -115,6 +130,7 @@ export function useAtomContentStudio(atomId: string | null) {
                 warnings: getData.warnings ?? [],
                 loadedExisting: true,
               });
+              setEditsByFormat({});
               return;
             }
           }
@@ -136,6 +152,7 @@ export function useAtomContentStudio(atomId: string | null) {
           warnings?: string[];
           loadedExisting?: boolean;
         };
+        if (bundleRequestRef.current !== requestId) return;
         if (!res.ok || !data.ok || !data.bundle) {
           setBundleState({
             status: "error",
@@ -149,22 +166,10 @@ export function useAtomContentStudio(atomId: string | null) {
           warnings: data.warnings ?? [],
           loadedExisting: Boolean(data.loadedExisting),
         });
-        // Clear stale client edits for regenerated formats so rail matches source.
-        if (forceRegenerate) {
-          setEditsByFormat((prev) => {
-            const next = { ...prev };
-            for (const fid of formatIds) {
-              delete next[fid];
-              try {
-                sessionStorage.removeItem(`mm-format-edits:${id}:${fid}`);
-              } catch {
-                /* ignore */
-              }
-            }
-            return next;
-          });
-        }
+        // Reload edits from persisted package (merge policy may re-apply durable edits).
+        setEditsByFormat({});
       } catch {
+        if (bundleRequestRef.current !== requestId) return;
         setBundleState({
           status: "error",
           error: "Network error producing content",
@@ -198,29 +203,13 @@ export function useAtomContentStudio(atomId: string | null) {
     packages.find((p) => p.formatId === formatId) ?? null;
 
   useEffect(() => {
-    if (!activePackage || atomState.status !== "ready") return;
+    if (!activePackage) return;
     setEditsByFormat((prev) => {
       if (prev[formatId]) return prev;
-      const key = `mm-format-edits:${atomState.atom.atom_id}:${formatId}`;
-      try {
-        const raw = sessionStorage.getItem(key);
-        if (raw) {
-          const parsed = JSON.parse(raw) as FormatEdits;
-          if (
-            typeof parsed.imagePrompt === "string" &&
-            typeof parsed.voiceoverPrompt === "string" &&
-            typeof parsed.script === "string"
-          ) {
-            return { ...prev, [formatId]: parsed };
-          }
-        }
-      } catch {
-        /* ignore corrupt drafts */
-      }
       return { ...prev, [formatId]: editsFromPackage(activePackage) };
     });
     setSelectedSceneId((prev) => prev ?? activePackage.scenes[0]?.id ?? null);
-  }, [activePackage, atomState, formatId]);
+  }, [activePackage, formatId]);
 
   const edits =
     editsByFormat[formatId] ??
@@ -256,13 +245,44 @@ export function useAtomContentStudio(atomId: string | null) {
     [formatId]
   );
 
-  const saveEdits = useCallback(() => {
-    // Client-side draft persistence for the format (local to session).
-    // Server package body stays the generated source of truth until a future save API.
+  const saveEdits = useCallback(async () => {
+    if (atomState.status !== "ready") return;
+    if (formatId !== "youtube_short") {
+      setSaveLabel("Video edits not persisted yet");
+      return;
+    }
+    setSaveLabel("Saving…");
     try {
-      if (atomState.status === "ready") {
-        const key = `mm-format-edits:${atomState.atom.atom_id}:${formatId}`;
-        sessionStorage.setItem(key, JSON.stringify(edits));
+      const res = await fetch("/api/brain/content/production", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          atomId: atomState.atom.atom_id,
+          formatId: "youtube_short",
+          edits,
+        }),
+      });
+      const data = (await res.json()) as {
+        ok: boolean;
+        error?: string;
+        bundle?: ContentProductionBundle;
+      };
+      if (!res.ok || !data.ok || !data.bundle) {
+        setSaveLabel(data.error ?? "Save failed");
+        return;
+      }
+      setBundleState({
+        status: "ready",
+        bundle: data.bundle,
+        warnings: [],
+        loadedExisting: true,
+      });
+      const pkg = data.bundle.packages.find((p) => p.formatId === "youtube_short");
+      if (pkg) {
+        setEditsByFormat((prev) => ({
+          ...prev,
+          youtube_short: editsFromPackage(pkg),
+        }));
       }
       setSaveLabel("Saved");
     } catch {
@@ -270,14 +290,54 @@ export function useAtomContentStudio(atomId: string | null) {
     }
   }, [atomState, edits, formatId]);
 
-  const resetEdits = useCallback(() => {
-    if (!activePackage) return;
-    setEditsByFormat((prev) => ({
-      ...prev,
-      [formatId]: editsFromPackage(activePackage),
-    }));
-    setSaveLabel("Save draft");
-  }, [activePackage, formatId]);
+  const resetEdits = useCallback(async () => {
+    if (atomState.status !== "ready" || !activePackage) return;
+    if (formatId !== "youtube_short") {
+      setEditsByFormat((prev) => ({
+        ...prev,
+        [formatId]: editsFromPackage(activePackage),
+      }));
+      setSaveLabel("Save draft");
+      return;
+    }
+    setSaveLabel("Resetting…");
+    try {
+      const res = await fetch("/api/brain/content/production", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          atomId: atomState.atom.atom_id,
+          formatId: "youtube_short",
+          resetToGenerated: true,
+        }),
+      });
+      const data = (await res.json()) as {
+        ok: boolean;
+        error?: string;
+        bundle?: ContentProductionBundle;
+      };
+      if (!res.ok || !data.ok || !data.bundle) {
+        setSaveLabel(data.error ?? "Reset failed");
+        return;
+      }
+      setBundleState({
+        status: "ready",
+        bundle: data.bundle,
+        warnings: [],
+        loadedExisting: true,
+      });
+      const pkg = data.bundle.packages.find((p) => p.formatId === "youtube_short");
+      if (pkg) {
+        setEditsByFormat((prev) => ({
+          ...prev,
+          youtube_short: editsFromPackage(pkg),
+        }));
+      }
+      setSaveLabel("Save draft");
+    } catch {
+      setSaveLabel("Reset failed");
+    }
+  }, [activePackage, atomState, formatId]);
 
   const regenerate = useCallback(
     (formatIds?: ContentFormatId[]) => {

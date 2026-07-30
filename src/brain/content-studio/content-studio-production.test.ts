@@ -7,7 +7,11 @@ import { approveAtom, deriveLimitations, lockAtom } from "@/brain/atom";
 import { parseFixtureCsv } from "@/brain/content/repository/parse-fixture-csv";
 import { runCoreContentBrain } from "@/brain/pipeline";
 
-import { youtubeShortAdapter } from "./adapters/youtube-short-adapter";
+import {
+  produceYouTubeShortFormatPackage,
+  validateShortFormatPackage,
+} from "@/brain/channels/youtube-short/youtube-short-service";
+
 import { youtubeVideoAdapter } from "./adapters/youtube-video-adapter";
 import {
   buildIdempotencyKey,
@@ -124,7 +128,7 @@ describe("platform / format registry", () => {
   });
 });
 
-describe("YouTube Short + Video adapters", () => {
+describe("YouTube Short service + Video adapter parity", () => {
   it("produces distinct scripts, aspect ratios, and scene counts from one atom", async () => {
     const atom = await lockedAtomFromFixture();
     const inputBase = {
@@ -135,10 +139,16 @@ describe("YouTube Short + Video adapters", () => {
       forceRegenerate: true,
     };
 
-    const short = await youtubeShortAdapter.produce({
-      ...inputBase,
-      format: YOUTUBE_SHORT_FORMAT,
+    const shortResult = await produceYouTubeShortFormatPackage({
+      atom,
+      validationReport: null,
+      atomRevision: 1,
+      forceRegenerate: true,
     });
+    assert.equal(shortResult.ok, true);
+    if (!shortResult.ok) return;
+    const short = shortResult.package;
+
     const video = await youtubeVideoAdapter.produce({
       ...inputBase,
       format: YOUTUBE_VIDEO_FORMAT,
@@ -154,29 +164,26 @@ describe("YouTube Short + Video adapters", () => {
     assert.ok(video.scenes.length > short.scenes.length);
     assert.ok(video.durationSeconds > short.durationSeconds);
 
-    const shortOk = youtubeShortAdapter.validate(short, {
-      ...inputBase,
-      format: YOUTUBE_SHORT_FORMAT,
-    });
+    const shortErrors = validateShortFormatPackage(short, atom, 1);
     const videoOk = youtubeVideoAdapter.validate(video, {
       ...inputBase,
       format: YOUTUBE_VIDEO_FORMAT,
     });
-    assert.equal(shortOk.ok, true);
+    assert.equal(shortErrors.length, 0);
     assert.equal(videoOk.ok, true);
   });
 
   it("does not invent evidence refs outside the atom claim/proof set", async () => {
     const atom = await lockedAtomFromFixture();
     const allowed = new Set(evidenceRefsFromAtom(atom));
-    const short = await youtubeShortAdapter.produce({
+    const shortResult = await produceYouTubeShortFormatPackage({
       atom,
       validationReport: null,
       atomRevision: 1,
-      buildKey: "k",
-      format: YOUTUBE_SHORT_FORMAT,
     });
-    for (const id of short.evidenceRefs) {
+    assert.equal(shortResult.ok, true);
+    if (!shortResult.ok) return;
+    for (const id of shortResult.package.evidenceRefs) {
       assert.ok(allowed.has(id), `unexpected evidence ref ${id}`);
     }
   });

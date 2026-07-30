@@ -133,6 +133,18 @@ describe("Content Studio atomId-only entry", () => {
     assert.match(barrel, /ContentStudio/);
     assert.equal(barrel.includes("PromptInspector"), false);
   });
+
+  it("persists Short edits via production PATCH (no sessionStorage save path)", () => {
+    const hook = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/hooks/use-atom-content-studio.ts"
+      ),
+      "utf8"
+    );
+    assert.match(hook, /method:\s*["']PATCH["']/);
+    assert.doesNotMatch(hook, /sessionStorage/);
+  });
 });
 
 describe("platform registry (canonical Studio formats)", () => {

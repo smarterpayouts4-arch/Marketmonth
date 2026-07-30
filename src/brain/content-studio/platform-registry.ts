@@ -1,6 +1,13 @@
+import {
+  YOUTUBE_SHORT_DURATION_DEFAULT_SECONDS,
+  YOUTUBE_SHORT_DURATION_MAX_SECONDS,
+} from "@/brain/channels/youtube-short/duration-policy";
+
 /**
  * Platform (social destination) vs Format (output shape).
- * Studio tabs read this — unfinished platforms never fake generation.
+ * Studio tabs read THIS registry (`PLATFORM_REGISTRY`) for format tabs.
+ * Do not confuse with `channelRegistry` (specialist enablement).
+ * Unfinished platforms stay `coming_soon` — never fake generation.
  */
 
 export type PlatformId =
@@ -37,9 +44,9 @@ export const YOUTUBE_SHORT_FORMAT: ContentFormatDefinition = {
   id: "youtube_short",
   platformId: "youtube",
   label: "YouTube Short",
-  description: "9:16 · approximately 30–60 seconds",
+  description: `9:16 · default ${YOUTUBE_SHORT_DURATION_DEFAULT_SECONDS}s · max ${YOUTUBE_SHORT_DURATION_MAX_SECONDS}s`,
   status: "active",
-  defaultDurationSeconds: 45,
+  defaultDurationSeconds: YOUTUBE_SHORT_DURATION_DEFAULT_SECONDS,
   supportedAspectRatios: ["9:16"],
 };
 

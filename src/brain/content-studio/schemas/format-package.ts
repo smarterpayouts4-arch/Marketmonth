@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+import { YOUTUBE_SHORT_DURATION_MAX_SECONDS } from "@/brain/channels/youtube-short/duration-policy";
+import { youtubeShortDurableEditsSchema } from "@/brain/channels/youtube-short/youtube-short-draft";
+
 export const packageStatusSchema = z.enum([
   "not_started",
   "generating",
@@ -39,7 +42,11 @@ export const youtubeShortFormatPackageSchema = z.object({
   formatId: z.literal("youtube_short"),
   status: packageStatusSchema,
   title: z.string().min(1).max(100),
-  durationSeconds: z.number().positive().max(90),
+  /** Total duration; ceiling from canonical Short duration policy (not a local constant). */
+  durationSeconds: z
+    .number()
+    .positive()
+    .max(YOUTUBE_SHORT_DURATION_MAX_SECONDS),
   aspectRatio: z.literal("9:16"),
   hook: z.string().min(1).max(280),
   voiceoverPrompt: z.string().min(1).max(2000),
@@ -54,6 +61,10 @@ export const youtubeShortFormatPackageSchema = z.object({
   unresolvedResearch: z.array(z.string()),
   warnings: z.array(z.string()),
   generation: generationMetaSchema,
+  /** Last generate output for image/voice/script — recoverable after durable edits. */
+  generatedBaseline: youtubeShortDurableEditsSchema.optional(),
+  /** Last saved durable edits; effective fields mirror these when present. */
+  durableEdits: youtubeShortDurableEditsSchema.optional(),
 });
 
 export const videoChapterSchema = z.object({

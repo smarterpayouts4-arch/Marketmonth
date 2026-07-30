@@ -1,6 +1,10 @@
 import type { ContentAtom } from "@/brain/atom";
 import type { AtomValidationReport } from "@/brain/atom/validate/types";
-import { youtubeShortAdapter } from "@/brain/content-studio/adapters/youtube-short-adapter";
+import {
+  produceYouTubeShortFormatPackage,
+  YOUTUBE_SHORT_SERVICE_VERSION,
+  YOUTUBE_SHORT_TEMPLATE_VERSION,
+} from "@/brain/channels/youtube-short/youtube-short-service";
 import { youtubeVideoAdapter } from "@/brain/content-studio/adapters/youtube-video-adapter";
 import type { ContentFormatAdapter } from "@/brain/content-studio/adapters/types";
 import {
@@ -16,16 +20,11 @@ import {
 import type {
   ContentFormatPackage,
   ContentProductionBundle,
+  YouTubeShortFormatPackage,
 } from "@/brain/content-studio/schemas/format-package";
 import { createAtomRepository } from "@/brain/store";
 
-const ADAPTERS: Record<
-  ContentFormatId,
-  ContentFormatAdapter<ContentFormatPackage>
-> = {
-  youtube_short: youtubeShortAdapter as ContentFormatAdapter<ContentFormatPackage>,
-  youtube_video: youtubeVideoAdapter as ContentFormatAdapter<ContentFormatPackage>,
-};
+const VIDEO_ADAPTER = youtubeVideoAdapter as ContentFormatAdapter<ContentFormatPackage>;
 
 export type ProduceContentBundleInput = {
   atomId: string;
@@ -127,8 +126,7 @@ export async function produceContentBundle(
 
   for (const formatId of formatIds) {
     const format = getFormat(formatId);
-    const adapter = ADAPTERS[formatId];
-    if (!format || format.status !== "active" || !adapter) {
+    if (!format || format.status !== "active") {
       warnings.push(`Format ${formatId} is not active`);
       continue;
     }
@@ -137,6 +135,47 @@ export async function produceContentBundle(
       (p) => p.formatId === formatId
     );
 
+    if (formatId === "youtube_short") {
+      if (
+        !input.forceRegenerate &&
+        priorPackage &&
+        priorPackage.atomRevision === atomRevision &&
+        priorPackage.generation.adapterVersion ===
+          YOUTUBE_SHORT_SERVICE_VERSION &&
+        priorPackage.generation.templateVersion ===
+          YOUTUBE_SHORT_TEMPLATE_VERSION
+      ) {
+        packages.push(priorPackage);
+        continue;
+      }
+
+      const priorShort =
+        priorPackage?.formatId === "youtube_short"
+          ? (priorPackage as YouTubeShortFormatPackage)
+          : undefined;
+
+      const shortResult = await produceYouTubeShortFormatPackage({
+        atom,
+        validationReport,
+        atomRevision,
+        priorPackage: priorShort,
+        forceRegenerate: input.forceRegenerate,
+      });
+      if (!shortResult.ok) {
+        return {
+          ok: false,
+          error: `Validation failed for youtube_short: ${shortResult.errors.join("; ")}`,
+          status: 422,
+          atom,
+          validationReport,
+        };
+      }
+      packages.push(shortResult.package);
+      continue;
+    }
+
+    // YouTube Video — unchanged adapter path (Phase 2 must not touch Video).
+    const adapter = VIDEO_ADAPTER;
     if (
       !input.forceRegenerate &&
       priorPackage &&

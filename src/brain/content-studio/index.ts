@@ -1,7 +1,10 @@
 /**
- * Client-safe Content Studio public surface.
+ * Client-safe Content Studio public surface (transitional multi-format layer — ADR 0006).
  * Server-only modules (bundle-store, adapters) must be imported from their
  * deep paths — never re-exported here (node:fs / Turbopack).
+ *
+ * Studio UI may import this barrel for registry + format types only.
+ * Do not re-export channels, render, or use-cases here.
  */
 
 export {
@@ -17,6 +20,12 @@ export {
   type PlatformDefinition,
   type PlatformId,
 } from "./platform-registry";
+
+/** Re-export Short duration policy for client-safe Studio copy (canonical file remains under channels/youtube-short). */
+export {
+  YOUTUBE_SHORT_DURATION_DEFAULT_SECONDS,
+  YOUTUBE_SHORT_DURATION_MAX_SECONDS,
+} from "@/brain/channels/youtube-short/duration-policy";
 
 export {
   contentFormatPackageSchema,

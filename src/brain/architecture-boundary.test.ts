@@ -213,4 +213,103 @@ describe("Brain ownership architecture boundaries", () => {
       );
     }
   });
+
+  it("Content Studio UI does not import channels, render, use-cases, or bundle-store", () => {
+    const uiRoot = path.join(root, "components", "dashboard", "content");
+    const forbidden = [
+      {
+        re: /from\s+["']@\/brain\/channels/,
+        label: "@/brain/channels",
+      },
+      {
+        re: /from\s+["']@\/brain\/render/,
+        label: "@/brain/render",
+      },
+      {
+        re: /from\s+["']@\/brain\/use-cases/,
+        label: "@/brain/use-cases",
+      },
+      {
+        re: /bundle-store/,
+        label: "bundle-store",
+      },
+      {
+        re: /from\s+["']@\/brain\/content-studio\/adapters/,
+        label: "content-studio/adapters",
+      },
+    ];
+    for (const file of walk(uiRoot)) {
+      if (file.includes(".test.")) continue;
+      const src = readFileSync(file, "utf8");
+      for (const { re, label } of forbidden) {
+        assert.doesNotMatch(
+          src,
+          re,
+          `${rel(file)} must not import ${label} (UI → API → brain only)`
+        );
+      }
+    }
+  });
+
+  it("produceContentBundle Short branch uses channel service; Short adapter file is deleted", () => {
+    const useCase = path.join(
+      root,
+      "brain",
+      "use-cases",
+      "produce-content-bundle.ts"
+    );
+    const src = readFileSync(useCase, "utf8");
+    assert.match(src, /produceYouTubeShortFormatPackage/);
+    assert.doesNotMatch(src, /youtube-short-adapter/);
+    const adapterGone = path.join(
+      root,
+      "brain",
+      "content-studio",
+      "adapters",
+      "youtube-short-adapter.ts"
+    );
+    assert.equal(
+      (() => {
+        try {
+          statSync(adapterGone);
+          return true;
+        } catch {
+          return false;
+        }
+      })(),
+      false,
+      "youtube-short-adapter.ts must remain deleted (Phase 2.1)"
+    );
+  });
+
+  it("YouTube Short duration caps import canonical duration-policy (no local 90s/60s literals in Short schemas)", () => {
+    const shortSchema = path.join(
+      root,
+      "brain",
+      "channels",
+      "youtube-short",
+      "package.schema.ts"
+    );
+    const formatSchema = path.join(
+      root,
+      "brain",
+      "content-studio",
+      "schemas",
+      "format-package.ts"
+    );
+    const shortSrc = readFileSync(shortSchema, "utf8");
+    const formatSrc = readFileSync(formatSchema, "utf8");
+    assert.match(shortSrc, /duration-policy/);
+    assert.match(formatSrc, /duration-policy/);
+    assert.doesNotMatch(
+      shortSrc,
+      /\.max\(60\)/,
+      "channel Short schema must not hardcode .max(60)"
+    );
+    assert.doesNotMatch(
+      formatSrc,
+      /\.max\(90\)/,
+      "format Short schema must not hardcode .max(90)"
+    );
+  });
 });

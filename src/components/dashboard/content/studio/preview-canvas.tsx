@@ -17,7 +17,7 @@ function formatClock(totalSeconds: number): string {
   return `${m}:${String(rem).padStart(2, "0")}`;
 }
 
-/** Preview band + frame sizes from globals.css --studio-preview-* */
+/** Preview band/stage/frame layout from globals.css `.studio-preview-*` */
 export function StudioPreviewCanvas({
   pkg,
   selectedSceneId,
@@ -25,7 +25,6 @@ export function StudioPreviewCanvas({
   const scene =
     pkg?.scenes.find((s) => s.id === selectedSceneId) ?? pkg?.scenes[0];
   const isShort = pkg?.formatId === "youtube_short";
-  const aspect = isShort ? "9 / 16" : "16 / 9";
   const headline =
     scene?.onScreenText ||
     (pkg && "hook" in pkg
@@ -50,7 +49,7 @@ export function StudioPreviewCanvas({
         </p>
       </div>
 
-      <div className="flex min-h-0 flex-1 items-center justify-center bg-subtle/40 px-2 py-2">
+      <div className="studio-preview-stage">
         <div
           className={cn(
             "studio-preview-frame",
@@ -58,7 +57,6 @@ export function StudioPreviewCanvas({
               ? "studio-preview-frame--short"
               : "studio-preview-frame--video"
           )}
-          style={{ aspectRatio: aspect }}
         >
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 p-2.5 text-center">
             <p className="text-[8px] uppercase tracking-[0.16em] text-white/55">
@@ -74,6 +72,14 @@ export function StudioPreviewCanvas({
                 ? scene.narration
                 : "Select a scene to preview narration."}
             </p>
+            {pkg?.imagePrompt ? (
+              <p
+                className="mt-1 max-w-[94%] line-clamp-2 text-[9px] leading-snug text-white/50"
+                data-testid="studio-preview-image-prompt"
+              >
+                Visual: {pkg.imagePrompt}
+              </p>
+            ) : null}
           </div>
           <div className="absolute right-1.5 bottom-7 left-1.5 h-0.5 overflow-hidden rounded-full bg-white/20">
             <div className="h-full w-[18%] rounded-full bg-white/80" />

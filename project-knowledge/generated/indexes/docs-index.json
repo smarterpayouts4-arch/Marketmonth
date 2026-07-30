@@ -210,6 +210,22 @@
       "generated": false
     },
     {
+      "id": "0006-content-studio-channel-ownership",
+      "path": "project-knowledge/DECISIONS/0006-content-studio-channel-ownership.md",
+      "title": "ADR 0006 — Content Studio / channel ownership and Short draft contract",
+      "description": "Phase 0 architecture audit found dual registries, dual Short schemas, Live Studio Video ≠ `youtubeLong`, session-only prompt edits, and an unused render layer. ",
+      "kind": "supporting",
+      "authority": "supporting",
+      "status": "accepted",
+      "owner": "engineering",
+      "audience": [
+        "human",
+        "coding-agent",
+        "mcp"
+      ],
+      "generated": false
+    },
+    {
       "id": "definition-of-done",
       "path": "project-knowledge/DEFINITION-OF-DONE.md",
       "title": "MarketMonth Definition of Done",

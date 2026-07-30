@@ -3,13 +3,15 @@ title: Data Model
 status: active
 authority: supporting
 owner: engineering
-last_verified: 2026-07-29
+last_verified: 2026-07-30
 related_paths:
   - src/db/schema.ts
   - src/engine/discovery/brand-profile.ts
   - src/db/migrations/
   - src/brain/atom/content-atom.schema.ts
   - src/brain/content-studio/schemas/format-package.ts
+  - src/brain/channels/youtube-short/duration-policy.ts
+  - src/brain/channels/youtube-short/youtube-short-draft.ts
 ---
 
 # DATA_MODEL
@@ -42,9 +44,19 @@ Defined in `src/engine/discovery/brand-profile.ts` (Zod): businessName, audience
 
 Neon table: `content_atoms` (migration `0008`). Canonical schema: `src/brain/atom/content-atom.schema.ts` (`schemaVersion: "content-atom-v2"`). Built via `buildContentAtom` / `POST /api/brain/content-atom`; reviewed via `POST /api/brain/content-atom/review`. Persistence: `createAtomRepository()` → Drizzle when `DATABASE_URL` is set (JSON fallback when the table is missing); includes `validation_report` + `build_key` for idempotency. Channel / Studio production consumes a locked `atomId` only (ADR 0005). Fields of record: lineage (incl. evidenceAdmissionPolicyVersion), kernel (claim + proof + hook_strategy), narrativeModules, engagementBlueprint (locked strategy + mutable presentation), distributionContract, claimLedger container (`claims[]` + boundary lists), buildStatus (`draft` \| `complete` \| `limited` \| `insufficient` \| `invalid`), approvalStatus, safety, missing_information. Build traces are refs/metadata only — not a second atom body.
 
-## Content Production Bundle (runtime file store — Live)
+## Content Production Bundle (runtime file store — Live / dev-scoped)
 
-Not a Neon table. Schema: `src/brain/content-studio/schemas/format-package.ts` (`ContentProductionBundle`, YouTube Short + Video format packages). Orchestration: `produceContentBundle` in `src/brain/use-cases/produce-content-bundle.ts`. Persistence: JSON under `data/runtime/production-bundles/` via `src/brain/content-studio/bundle-store.ts` (idempotent by atom). Export/render providers remain stubbed/Mocked — packages are structured drafts, not published media.
+Not a Neon table. Schema: `src/brain/content-studio/schemas/format-package.ts` (`ContentProductionBundle`, YouTube Short + Video format packages). Orchestration: `produceContentBundle` in `src/brain/use-cases/produce-content-bundle.ts`. Persistence: JSON under `data/runtime/production-bundles/` via `src/brain/content-studio/bundle-store.ts` (idempotent by atom).
+
+**Honesty (ADR 0006):** This file store is **dev / single-instance**. Underlying `json-store` is production-impossible. Multi-instance / serverless scale requires a company-scoped durable store (Neon or equivalent) — do not add a second Short-only file store.
+
+**Durable manual edits (Phase 2 Live):** `PATCH /api/brain/content/production` → `patchYouTubeShortDurableEdits`. Fields `imagePrompt` / `voiceoverPrompt` / `script` plus `durableEdits` + `generatedBaseline` on the Short format package. Regen re-applies `durableEdits` (merge policy). UI Save no longer uses sessionStorage.
+
+**YouTube Short duration policy:** Canonical constants in `src/brain/channels/youtube-short/duration-policy.ts` (default 60s, max 180s). Shared by channel + Studio Short schemas.
+
+**Normalized draft contract:** `YouTubeShortDraft` in `youtube-short-draft.ts` — convergence shape for atom-sourced and future manual paths (schema only in Phase 1).
+
+Export/render providers remain stubbed/Mocked — packages are structured drafts, not published media.
 
 ## Generated ownership
 

@@ -3,6 +3,7 @@ import {
   type ContentAtom,
 } from "@/brain/atom";
 import type { YouTubeShortPackage } from "@/brain/channels/youtube-short";
+import { YOUTUBE_SHORT_DURATION_MAX_SECONDS } from "@/brain/channels/youtube-short/duration-policy";
 import type { BrandCore } from "@/brain/core/brand-core.schema";
 import { assertStrategyLock } from "@/brain/strategy-lock";
 import type { ImageProviderConfig } from "@/brain/render/types";
@@ -89,8 +90,8 @@ export function runDeterministicQa(input: {
     );
     checks.push({
       id: "scene_duration_sum",
-      pass: sum <= 60,
-      detail: `Scene durations sum to ${sum}s (max 60)`,
+      pass: sum <= YOUTUBE_SHORT_DURATION_MAX_SECONDS,
+      detail: `Scene durations sum to ${sum}s (max ${YOUTUBE_SHORT_DURATION_MAX_SECONDS})`,
     });
   }
 

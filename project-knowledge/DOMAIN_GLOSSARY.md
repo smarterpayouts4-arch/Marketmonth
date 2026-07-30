@@ -3,7 +3,7 @@ title: Domain Glossary
 status: active
 authority: canonical
 owner: product
-last_verified: 2026-07-29
+last_verified: 2026-07-30
 related_paths:
   - project-knowledge/CONTENT_BRAIN.md
   - project-knowledge/PRODUCT.md
@@ -28,7 +28,9 @@ Canonical terminology for MarketMonth Content Brain and product loop. Prefer the
 | Commercial term | Published transacting mechanic (price, guarantee, trial, shipping) | CSV `offer` rows, `commercialTerms` on Brand Core | Product name, capability copy |
 | Content Atom | Channel-neutral strategic package (`content-atom-v2`) | After direction select | Platform caption dump |
 | Craft DNA | Shared operational craft clauses + optional fact-locked atom polish (`CRAFT_DNA_VERSION`) | Atom / topic / discovery writing stages | Copyrighted playbook extracts; always-on polish as product default |
-| Content Production Bundle | Idempotent Short + Video format packages from a locked atom (`produceContentBundle`) | Content Studio `/content?atomId=` | Treating Studio Video as `youtubeLong` channel |
+| Content Production Bundle | Idempotent Short + Video format packages from a locked atom (`produceContentBundle`); JSON under `production-bundles/` (dev/single-instance; ADR 0006) | Content Studio `/content?atomId=` | Treating Studio Video as `youtubeLong` channel; inventing a second Short edit store |
+| YouTubeShortDraft | Normalized Short draft for atom ∥ manual → channel → renderer (`youtube-short-draft.ts`) | Channel service / future PATCH | Parallel ad-hoc UI draft shapes that skip the contract |
+| Short duration policy | Default 60s / max 180s in `duration-policy.ts` only | Channel + Studio Short schemas | Duplicating 60/90 literals in schemas |
 | limitationsAcknowledgement | Human ack of pipeline-derived atom limitations before approve | Limited atom approve/lock | Approving insufficient/invalid atoms |
 | StrategyLock | Semantic immutability for channel specialists | Produce stage | Specialist rewriting strategy |
 | generation_id | Canonical run identity | History / handoff | decision_set_id (removed) |

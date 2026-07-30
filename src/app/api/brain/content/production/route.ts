@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { youtubeShortDurableEditsSchema } from "@/brain/channels/youtube-short/youtube-short-draft";
+import { patchYouTubeShortDurableEdits } from "@/brain/channels/youtube-short/youtube-short-service";
 import { PLATFORM_REGISTRY } from "@/brain/content-studio";
 import type { ContentFormatId } from "@/brain/content-studio";
 import { createAtomRepository } from "@/brain/store";
@@ -209,6 +211,127 @@ export async function POST(request: Request) {
     recordRevision: outcome.recordRevision,
     warnings: outcome.warnings,
     loadedExisting: outcome.loadedExisting,
+    platforms: PLATFORM_REGISTRY,
+  });
+}
+
+/**
+ * PATCH — durable Short edits into existing production bundle.
+ * Body: { atomId, formatId: "youtube_short", edits?, resetToGenerated? }
+ */
+export async function PATCH(request: Request) {
+  const session = await requireApiSession();
+  if (!session.ok) {
+    return NextResponse.json(
+      { ok: false, error: session.error },
+      { status: session.status }
+    );
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { ok: false, error: "Invalid JSON body" },
+      { status: 400 }
+    );
+  }
+
+  const raw = body as {
+    atomId?: string;
+    formatId?: string;
+    edits?: unknown;
+    resetToGenerated?: boolean;
+  };
+
+  const atomId = raw.atomId?.trim();
+  if (!atomId) {
+    return NextResponse.json(
+      { ok: false, error: "atomId is required" },
+      { status: 400 }
+    );
+  }
+
+  if (raw.formatId != null && raw.formatId !== "youtube_short") {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Only youtube_short durable edits are supported in Phase 2",
+      },
+      { status: 400 }
+    );
+  }
+
+  const stored = await createAtomRepository().findLatestByAtomId(atomId);
+  if (!stored) {
+    return NextResponse.json(
+      { ok: false, error: "Atom not found" },
+      { status: 404 }
+    );
+  }
+
+  const companyId = stored.company_id;
+  const access = await requireCompanyAccess(session.userId, companyId);
+  if (!access.ok) {
+    return NextResponse.json(
+      { ok: false, error: access.error },
+      { status: access.status }
+    );
+  }
+
+  const rate = await enforceRateLimit(
+    "brain.content.production.patch",
+    tenantScopedRateLimitKey({
+      userId: session.userId,
+      companyId,
+      request,
+    })
+  );
+  if (!rate.ok) {
+    return NextResponse.json(
+      { ok: false, error: "Rate limit exceeded" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rate.retryAfterSec) },
+      }
+    );
+  }
+
+  let edits;
+  if (!raw.resetToGenerated) {
+    const parsed = youtubeShortDurableEditsSchema.safeParse(raw.edits);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { ok: false, error: "Invalid edits payload" },
+        { status: 400 }
+      );
+    }
+    edits = parsed.data;
+  }
+
+  const outcome = await patchYouTubeShortDurableEdits({
+    atomId,
+    companyIdHint: companyId,
+    edits,
+    resetToGenerated: Boolean(raw.resetToGenerated),
+  });
+
+  if (!outcome.ok) {
+    return NextResponse.json(
+      { ok: false, error: outcome.error },
+      { status: outcome.status }
+    );
+  }
+
+  return NextResponse.json({
+    ok: true,
+    bundle: outcome.bundle,
+    package: outcome.package,
+    draft: outcome.draft,
+    atom: outcome.atom,
+    validation: outcome.validationReport,
+    recordRevision: outcome.recordRevision,
     platforms: PLATFORM_REGISTRY,
   });
 }

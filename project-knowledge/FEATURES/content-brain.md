@@ -3,7 +3,7 @@ title: Content Brain
 status: active
 authority: supporting
 owner: engineering
-last_verified: 2026-07-29
+last_verified: 2026-07-30
 related_paths:
   - src/brain/content/**
   - src/brain/atom/**
@@ -54,7 +54,7 @@ Canonical Content Brain pipeline: Brand Core → editorial directions → Conten
 - **LLM-as-judge always-on** for Idea Lab topic candidate runs (advisory)
 - Approval/lock before channel specialists; production from locked `atomId`
 - Product MT + Idea Lab: approve/lock → `/content?atomId=` (auth via atom owner `companyId`); no localStorage Studio handoff
-- `ContentProductionBundle` via `produceContentBundle`: YouTube Short (9:16) + YouTube Video (16:9) adapters; idempotent refresh; export/render stubbed
+- `ContentProductionBundle` via `produceContentBundle`: YouTube Short via `youtube-short-service` (9:16) + YouTube Video adapter (16:9); idempotent refresh; export/render stubbed
 - Evidence admission + claim capabilities; limited approve needs limitations ack; revise vs redirect
 - Atom build trace = refs/metadata only; inspector reports word count (not a validity gate)
 - Gate: `npm run verify:select-to-atom` (P0–P2)
@@ -64,6 +64,8 @@ Canonical Content Brain pipeline: Brand Core → editorial directions → Conten
 - Do not invent Gate 2 as fully Live — multi-package review shells remain Partial (see CURRENT_STATE / CONTENT_BRAIN).
 - Studio must stay honest (no fake generation). Entry is atomId-only.
 - Do not confuse content-studio **Video** format with `channelRegistry.youtubeLong` (`not_connected`).
+- Content Studio is the **transitional** multi-format orchestrator (ADR 0006); Studio UI must not import channels/render/use-cases/bundle-store.
+- Short duration: import `duration-policy.ts` only (default 60s / max 180s).
 - Discovery UI must not import Content Brain engine paths.
 
 ## Status

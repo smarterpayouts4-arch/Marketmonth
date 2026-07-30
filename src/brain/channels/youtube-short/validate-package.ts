@@ -1,6 +1,7 @@
 import type { ContentAtom } from "@/brain/atom";
 import { assertStrategyLock } from "@/brain/strategy-lock";
 
+import { youtubeShortDurationPolicyError } from "./duration-policy";
 import type { YouTubeShortPackage } from "./package.schema";
 import { computeYouTubeShortPackageHash } from "./hash-package";
 
@@ -76,8 +77,9 @@ export function validateYouTubeShortPackage(
   }
 
   const duration = pkg.scenes.reduce((s, sc) => s + sc.duration_seconds, 0);
-  if (duration > 60) {
-    errors.push(`total scene duration ${duration}s exceeds 60s`);
+  const durationError = youtubeShortDurationPolicyError(duration);
+  if (durationError) {
+    errors.push(durationError);
   }
 
   if (errors.length > 0) return { ok: false, errors };

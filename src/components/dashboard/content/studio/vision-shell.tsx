@@ -44,8 +44,8 @@ type VisionShellProps = {
   onScriptChange: (v: string) => void;
   dirty: boolean;
   saveLabel: string;
-  onSave: () => void;
-  onReset: () => void;
+  onSave: () => void | Promise<void>;
+  onReset: () => void | Promise<void>;
   onRegenerate: () => void;
   productionLocked: boolean;
 };

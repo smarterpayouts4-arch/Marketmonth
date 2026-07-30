@@ -18,8 +18,17 @@ export type ChannelRegistryEntry = {
 };
 
 /**
- * Sole source of which channels exist and whether they are operational.
- * Studio tabs MUST read this registry. Only `enabled` may call generate.
+ * Specialist enablement registry: which channel specialists exist and may generate.
+ *
+ * - Only `enabled` specialists may call generate (YouTube Short today).
+ * - `not_connected` folders are honesty scaffolds — never fake generation.
+ *
+ * Studio format tabs do NOT read this file. They use
+ * `src/brain/content-studio/platform-registry.ts` (`PLATFORM_REGISTRY`), where
+ * YouTube Short + YouTube Video formats are active. Studio Video ≠ `youtubeLong`.
+ *
+ * Dual registries are intentional until Video graduates to an enabled
+ * `youtube-long` specialist (Short adapter pattern + ADR).
  */
 export const channelRegistry = {
   youtubeShort: {

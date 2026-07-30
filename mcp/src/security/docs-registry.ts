@@ -35,6 +35,7 @@ export const PROJECT_DOCS = {
   adr0003: "project-knowledge/DECISIONS/0003-selected-topic-context-for-directions.md",
   adr0004: "project-knowledge/DECISIONS/0004-topic-category-model.md",
   adr0005: "project-knowledge/DECISIONS/0005-content-atom-v2.md",
+  adr0006: "project-knowledge/DECISIONS/0006-content-studio-channel-ownership.md",
 
   qualityRubric: "project-knowledge/QUALITY_RUBRIC.md",
   ownershipRules: "project-knowledge/ownership-rules.json",
