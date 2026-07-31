@@ -10,7 +10,10 @@ import {
 import type { YouTubeShortFormatPackage } from "@/brain/content-studio/schemas/format-package";
 import { wordSafeClamp } from "@/brain/lib/word-safe-clamp";
 
-import { applyDurableEditsToShortPackage } from "./durable-edits";
+import {
+  applyDurableEditsToShortPackage,
+  baselineFromPackage,
+} from "./durable-edits";
 import { youtubeShortDurationPolicyError } from "./duration-policy";
 import {
   YOUTUBE_SHORT_SERVICE_VERSION,
@@ -27,6 +30,55 @@ import {
   type YouTubeShortDraft,
   type YouTubeShortDurableSceneBaseline,
 } from "./youtube-short-draft";
+
+/**
+ * Keep Manual scene scaffolding (stable IDs / count) across regenerate.
+ * Overlapping IDs refresh from the new specialist output; unique Manual
+ * scene cards (sm_*) are preserved with their prior baseline.
+ */
+function preservePriorSceneStructure(
+  next: YouTubeShortFormatPackage,
+  prior: YouTubeShortFormatPackage
+): YouTubeShortFormatPackage {
+  if (prior.scenes.length === 0) return next;
+  const nextById = new Map(next.scenes.map((s) => [s.id, s]));
+  const nextBaseline = next.generatedBaseline ?? baselineFromPackage(next);
+  const priorBaseline = prior.generatedBaseline ?? baselineFromPackage(prior);
+
+  const scenes = prior.scenes.map((priorScene) => {
+    const regenerated = nextById.get(priorScene.id);
+    return regenerated ?? priorScene;
+  });
+
+  const sceneBaselines: Record<string, YouTubeShortDurableSceneBaseline> = {};
+  for (const scene of scenes) {
+    sceneBaselines[scene.id] =
+      nextBaseline.scenes[scene.id] ??
+      priorBaseline.scenes[scene.id] ?? {
+        visualPrompt: scene.visualPrompt,
+        narration: scene.narration,
+        onScreenText: scene.onScreenText,
+        assetType: scene.assetType ?? "image",
+      };
+  }
+
+  const durationSeconds = scenes.reduce(
+    (sum, scene) => sum + scene.durationSeconds,
+    0
+  );
+
+  return {
+    ...next,
+    scenes,
+    durationSeconds,
+    generatedBaseline: {
+      ...nextBaseline,
+      globalVisualStyle:
+        nextBaseline.globalVisualStyle ?? priorBaseline.globalVisualStyle,
+      scenes: sceneBaselines,
+    },
+  };
+}
 
 function clamp(value: string, max: number): string {
   return wordSafeClamp(value, max);
@@ -155,8 +207,11 @@ export async function produceYouTubeShortFormatPackage(
     }),
   };
 
-  // Merge policy: keep human durable edits across regenerate / version bumps.
+  // Merge policy: preserve Manual scene structure, then re-apply durable edits.
   void forceRegenerate;
+  if (priorPackage) {
+    formatPkg = preservePriorSceneStructure(formatPkg, priorPackage);
+  }
   if (priorPackage?.durableEdits) {
     formatPkg = applyDurableEditsToShortPackage(
       formatPkg,

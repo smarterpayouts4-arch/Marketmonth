@@ -18,7 +18,22 @@ export function validateShortFormatPackage(
   if (output.aspectRatio !== "9:16") {
     errors.push("youtube_short must be 9:16");
   }
-  if (!output.scenes[0]?.narration.trim()) {
+  const hasAnyFilledScene = output.scenes.some(
+    (s) => s.narration.trim() || s.visualPrompt.trim()
+  );
+  const opening = output.scenes[0];
+  const openingBaselineNarration =
+    opening &&
+    output.generatedBaseline?.scenes?.[opening.id]?.narration?.trim();
+  // Manual scaffolding may create empty scenes (Phase 3D/3E). Empty Manual
+  // baselines must allow Reset Scene on the opening beat while other scenes
+  // still hold durable copy. Only require opening narration when the generated
+  // baseline itself had opening narration (produced Shorts).
+  if (
+    hasAnyFilledScene &&
+    openingBaselineNarration &&
+    !opening?.narration.trim()
+  ) {
     errors.push("opening scene narration required");
   }
   if (
@@ -33,11 +48,6 @@ export function validateShortFormatPackage(
   }
   if (!output.audienceAction.trim()) {
     errors.push("audienceAction required");
-  }
-  for (const s of output.scenes) {
-    if (!s.visualPrompt.trim()) {
-      errors.push(`scene ${s.id} missing visualPrompt`);
-    }
   }
   return errors;
 }

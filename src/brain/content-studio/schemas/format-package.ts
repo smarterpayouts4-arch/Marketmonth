@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import { YOUTUBE_SHORT_DURATION_MAX_SECONDS } from "@/brain/channels/youtube-short/duration-policy";
 import {
+  YOUTUBE_SHORT_SCENE_COUNT_MAX,
+  YOUTUBE_SHORT_SCENE_COUNT_MIN,
   youtubeShortDurableEditsSchema,
   youtubeShortGeneratedBaselineSchema,
   youtubeShortSceneAssetTypeSchema,
@@ -32,9 +34,11 @@ export const sceneCardSchema = z.object({
   id: z.string().min(1),
   order: z.number().int().nonnegative(),
   durationSeconds: z.number().positive(),
-  narration: z.string().min(1).max(1200),
+  /** Empty allowed for Short Manual scaffolding (Phase 3D). */
+  narration: z.string().max(1200),
   onScreenText: z.string().max(160).optional(),
-  visualPrompt: z.string().min(1).max(800),
+  /** Empty allowed for Short Manual scaffolding (Phase 3D). */
+  visualPrompt: z.string().max(800),
   /** Short production asset kind; omitted on Video scenes. */
   assetType: youtubeShortSceneAssetTypeSchema.optional(),
   transition: z.string().max(80).optional(),
@@ -58,7 +62,14 @@ export const youtubeShortFormatPackageSchema = z.object({
   voiceoverPrompt: z.string().min(1).max(2000),
   imagePrompt: z.string().min(1).max(800),
   script: z.string().min(1).max(6000),
-  scenes: z.array(sceneCardSchema).min(2).max(12),
+  /**
+   * Effective project-level visual continuity (merged from durable / baseline).
+   */
+  globalVisualStyle: z.string().max(2000).optional(),
+  scenes: z
+    .array(sceneCardSchema)
+    .min(YOUTUBE_SHORT_SCENE_COUNT_MIN)
+    .max(YOUTUBE_SHORT_SCENE_COUNT_MAX),
   caption: z.string().max(500).optional(),
   audienceAction: z.string().min(1).max(280),
   brandBridge: z.string().max(280).optional(),

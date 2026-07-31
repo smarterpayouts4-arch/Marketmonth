@@ -1,13 +1,16 @@
 "use client";
 
-import { ImageIcon, Mic, Type } from "lucide-react";
+import { useState } from "react";
+import { ClipboardPaste, ImageIcon, Mic, Type } from "lucide-react";
 
 import type { ContentFormatPackage } from "@/brain/content-studio";
+import { Button } from "@/components/ui/button";
 
 import type {
   SceneAssetType,
   SceneEditFields,
 } from "../../hooks/use-atom-content-studio";
+import { PastePromptSheet } from "./paste-prompt-sheet";
 import { PromptCard } from "./prompt-card";
 
 type SceneEditorProps = {
@@ -15,6 +18,12 @@ type SceneEditorProps = {
   selectedSceneId: string;
   sceneEdits: SceneEditFields;
   fieldsReadOnly: boolean;
+  /** Compact Manual workspace (hides nested “Scene · id” chrome). */
+  manualWorkspace?: boolean;
+  ingestBusy?: boolean;
+  ingestError?: string | null;
+  onPastePromptFill?: (prompt: string) => Promise<boolean>;
+  onStartFromGenerated?: () => void;
   onSceneVisualPromptChange: (v: string) => void;
   onSceneNarrationChange: (v: string) => void;
   onSceneOnScreenTextChange: (v: string) => void;
@@ -27,26 +36,51 @@ export function SceneEditor({
   selectedSceneId,
   sceneEdits,
   fieldsReadOnly,
+  manualWorkspace = false,
+  ingestBusy = false,
+  ingestError = null,
+  onPastePromptFill,
+  onStartFromGenerated,
   onSceneVisualPromptChange,
   onSceneNarrationChange,
   onSceneOnScreenTextChange,
   onSceneAssetTypeChange,
   onResetScene,
 }: SceneEditorProps) {
+  const [pasteOpen, setPasteOpen] = useState(false);
   const selectedScene = pkg.scenes.find((s) => s.id === selectedSceneId);
+  const sceneIndex = selectedScene ? selectedScene.order + 1 : null;
+  const sceneCount = pkg.scenes.length;
+  const sceneLabel =
+    sceneIndex != null
+      ? `Scene ${sceneIndex} of ${sceneCount}`
+      : "Selected scene";
+
+  const generateDisabledReason = !sceneEdits.visualPrompt.trim()
+    ? "Add a visual prompt first"
+    : "Generation not connected";
 
   return (
     <div
-      className="studio-prompt-card studio-prompt-card--compact"
+      className={
+        manualWorkspace
+          ? "space-y-2"
+          : "studio-prompt-card studio-prompt-card--compact"
+      }
       data-testid="studio-scene-editor"
       data-scene-id={selectedSceneId}
+      data-manual-workspace={manualWorkspace ? "true" : "false"}
     >
       <div className="flex items-center justify-between gap-2">
-        <p className="studio-prompt-card__title">
-          Scene {selectedScene ? selectedScene.order + 1 : "—"} ·{" "}
-          {selectedSceneId}
+        <p
+          className="studio-prompt-card__title"
+          data-testid="studio-scene-label"
+        >
+          {manualWorkspace
+            ? sceneLabel
+            : `Scene ${sceneIndex ?? "—"} · ${selectedSceneId}`}
         </p>
-        {onResetScene ? (
+        {!manualWorkspace && onResetScene ? (
           <button
             type="button"
             className="text-[10px] text-text-muted underline-offset-2 hover:underline"
@@ -59,9 +93,41 @@ export function SceneEditor({
           </button>
         ) : null}
       </div>
-      <div className="mt-1.5 space-y-1.5 border-t border-border/50 pt-1.5">
+
+      {manualWorkspace && onPastePromptFill && !fieldsReadOnly ? (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-8 rounded-xl px-2.5 text-xs"
+            onClick={() => setPasteOpen(true)}
+            data-testid="studio-paste-prompt"
+          >
+            <ClipboardPaste className="mr-1.5 h-3.5 w-3.5" aria-hidden />
+            Paste Prompt
+          </Button>
+          {onStartFromGenerated ? (
+            <button
+              type="button"
+              className="text-[10px] text-text-muted underline-offset-2 hover:underline"
+              onClick={onStartFromGenerated}
+              data-testid="studio-start-from-generated"
+            >
+              Start from generated scene
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+
+      <div
+        className={
+          manualWorkspace
+            ? "space-y-1.5"
+            : "mt-1.5 space-y-1.5 border-t border-border/50 pt-1.5"
+        }
+      >
         <PromptCard
-          title="Scene visual prompt"
+          title="Visual Prompt"
           icon={<ImageIcon className="h-3 w-3" aria-hidden />}
           value={sceneEdits.visualPrompt}
           onChange={onSceneVisualPromptChange}
@@ -71,7 +137,7 @@ export function SceneEditor({
           compact
         />
         <PromptCard
-          title="Scene narration"
+          title="Narration"
           icon={<Mic className="h-3 w-3" aria-hidden />}
           value={sceneEdits.narration}
           onChange={onSceneNarrationChange}
@@ -81,7 +147,7 @@ export function SceneEditor({
           compact
         />
         <PromptCard
-          title="On-screen text"
+          title="On-Screen Text"
           icon={<Type className="h-3 w-3" aria-hidden />}
           value={sceneEdits.onScreenText}
           onChange={onSceneOnScreenTextChange}
@@ -94,7 +160,7 @@ export function SceneEditor({
           className="flex items-center justify-between gap-2 text-xs"
           data-testid="studio-scene-asset-type"
         >
-          <span className="text-text-muted">Asset type</span>
+          <span className="text-text-muted">Asset Type</span>
           <div className="studio-prompt-mode" role="group" aria-label="Asset type">
             <button
               type="button"
@@ -120,7 +186,46 @@ export function SceneEditor({
             </button>
           </div>
         </div>
+
+        {manualWorkspace && !fieldsReadOnly ? (
+          <button
+            type="button"
+            className="h-8 w-full rounded-lg border border-dashed border-border px-3 text-xs text-text-muted disabled:opacity-60"
+            disabled
+            title={generateDisabledReason}
+            data-testid="studio-generate-image-shell"
+          >
+            Generate Image — Generation not connected
+          </button>
+        ) : null}
+
+        {manualWorkspace && onResetScene && !fieldsReadOnly ? (
+          <button
+            type="button"
+            className="text-[10px] text-text-muted underline-offset-2 hover:underline"
+            onClick={() => {
+              void onResetScene();
+            }}
+            data-testid="studio-reset-scene"
+          >
+            Reset Scene
+          </button>
+        ) : null}
       </div>
+
+      {onPastePromptFill ? (
+        <PastePromptSheet
+          open={pasteOpen}
+          onOpenChange={setPasteOpen}
+          sceneLabel={sceneLabel}
+          busy={ingestBusy}
+          error={ingestError}
+          onFillScene={async (prompt) => {
+            const ok = await onPastePromptFill(prompt);
+            if (ok) setPasteOpen(false);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

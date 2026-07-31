@@ -49,6 +49,14 @@ type VisionShellProps = {
   onSceneOnScreenTextChange: (v: string) => void;
   onSceneAssetTypeChange: (v: SceneAssetType) => void;
   onResetScene: () => void | Promise<void>;
+  onRemoveScene?: () => void | Promise<void>;
+  onAddScene?: () => void | Promise<void>;
+  globalVisualStyle?: string;
+  onGlobalVisualStyleChange?: (v: string) => void;
+  onPastePromptFill?: (prompt: string) => Promise<boolean>;
+  onStartFromGenerated?: () => void;
+  ingestBusy?: boolean;
+  ingestError?: string | null;
   imagePrompt: string;
   voiceoverPrompt: string;
   script: string;
@@ -90,6 +98,14 @@ export function VisionContentStudioShell({
   onSceneOnScreenTextChange,
   onSceneAssetTypeChange,
   onResetScene,
+  onRemoveScene,
+  onAddScene,
+  globalVisualStyle,
+  onGlobalVisualStyleChange,
+  onPastePromptFill,
+  onStartFromGenerated,
+  ingestBusy,
+  ingestError,
   imagePrompt,
   voiceoverPrompt,
   script,
@@ -280,6 +296,26 @@ export function VisionContentStudioShell({
               onResetScene={
                 formatId === "youtube_short" ? onResetScene : undefined
               }
+              globalVisualStyle={
+                formatId === "youtube_short" ? globalVisualStyle : undefined
+              }
+              onGlobalVisualStyleChange={
+                formatId === "youtube_short"
+                  ? onGlobalVisualStyleChange
+                  : undefined
+              }
+              onPastePromptFill={
+                formatId === "youtube_short" ? onPastePromptFill : undefined
+              }
+              onStartFromGenerated={
+                formatId === "youtube_short" ? onStartFromGenerated : undefined
+              }
+              ingestBusy={
+                formatId === "youtube_short" ? ingestBusy : undefined
+              }
+              ingestError={
+                formatId === "youtube_short" ? ingestError : undefined
+              }
               imagePrompt={imagePrompt}
               voiceoverPrompt={voiceoverPrompt}
               script={script}
@@ -311,6 +347,15 @@ export function VisionContentStudioShell({
               pkg={activePackage}
               selectedSceneId={selectedSceneId}
               onSelectScene={onSelectScene}
+              promptMode={
+                formatId === "youtube_short" ? promptMode : undefined
+              }
+              onAddScene={
+                formatId === "youtube_short" ? onAddScene : undefined
+              }
+              onRemoveSelectedScene={
+                formatId === "youtube_short" ? onRemoveScene : undefined
+              }
             />
           </div>
         </div>

@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { youtubeShortDurableEditsSchema } from "@/brain/channels/youtube-short/youtube-short-draft";
+import {
+  youtubeShortDurableEditsSchema,
+  youtubeShortSceneStructureActionSchema,
+} from "@/brain/channels/youtube-short/youtube-short-draft";
 import { patchYouTubeShortDurableEdits } from "@/brain/channels/youtube-short/youtube-short-service";
 import { PLATFORM_REGISTRY } from "@/brain/content-studio";
 import type { ContentFormatId } from "@/brain/content-studio";
@@ -223,6 +226,7 @@ export async function POST(request: Request) {
  *   edits?,              // sparse merge into existing durableEdits
  *   resetToGenerated?,   // clear all package + scene overrides
  *   resetSceneId?,       // clear one scene's sparse override only
+ *   sceneStructure?,     // setCount | addScene | removeSceneId
  * }
  */
 export async function PATCH(request: Request) {
@@ -250,6 +254,7 @@ export async function PATCH(request: Request) {
     edits?: unknown;
     resetToGenerated?: boolean;
     resetSceneId?: string;
+    sceneStructure?: unknown;
   };
 
   const atomId = raw.atomId?.trim();
@@ -309,7 +314,18 @@ export async function PATCH(request: Request) {
   const resetSceneId = raw.resetSceneId?.trim() || undefined;
 
   let edits;
-  if (!resetToGenerated && !resetSceneId) {
+  let sceneStructure;
+  if (raw.sceneStructure != null) {
+    const parsedStructure =
+      youtubeShortSceneStructureActionSchema.safeParse(raw.sceneStructure);
+    if (!parsedStructure.success) {
+      return NextResponse.json(
+        { ok: false, error: "Invalid sceneStructure payload" },
+        { status: 400 }
+      );
+    }
+    sceneStructure = parsedStructure.data;
+  } else if (!resetToGenerated && !resetSceneId) {
     const parsed = youtubeShortDurableEditsSchema.safeParse(raw.edits);
     if (!parsed.success) {
       return NextResponse.json(
@@ -326,6 +342,7 @@ export async function PATCH(request: Request) {
     edits,
     resetToGenerated,
     resetSceneId,
+    sceneStructure,
   });
 
   if (!outcome.ok) {
@@ -343,6 +360,7 @@ export async function PATCH(request: Request) {
     atom: outcome.atom,
     validation: outcome.validationReport,
     recordRevision: outcome.recordRevision,
+    selectedSceneIdHint: outcome.selectedSceneIdHint,
     platforms: PLATFORM_REGISTRY,
   });
 }

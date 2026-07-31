@@ -35,6 +35,7 @@ export function baselineFromPackage(
     imagePrompt: pkg.imagePrompt,
     voiceoverPrompt: pkg.voiceoverPrompt,
     script: pkg.script,
+    globalVisualStyle: pkg.globalVisualStyle,
     scenes,
   });
 }
@@ -69,12 +70,16 @@ export function applyEffectiveFieldsToShortPackage(
     )
   );
 
+  const globalVisualStyle =
+    durable?.globalVisualStyle ?? baseline.globalVisualStyle;
+
   return {
     ...pkg,
     generatedBaseline: baseline,
     imagePrompt: durable?.imagePrompt ?? baseline.imagePrompt,
     voiceoverPrompt: durable?.voiceoverPrompt ?? baseline.voiceoverPrompt,
     script: durable?.script ?? baseline.script,
+    globalVisualStyle,
     scenes,
   };
 }
@@ -121,6 +126,9 @@ export function mergeDurableEdits(
   if (parsedIncoming.script !== undefined) {
     merged.script = parsedIncoming.script;
   }
+  if (parsedIncoming.globalVisualStyle !== undefined) {
+    merged.globalVisualStyle = parsedIncoming.globalVisualStyle;
+  }
   if (Object.keys(mergedScenes).length > 0) {
     merged.scenes = mergedScenes;
   } else {
@@ -162,6 +170,7 @@ export function resetShortPackageToGeneratedBaseline(
     imagePrompt: baseline.imagePrompt,
     voiceoverPrompt: baseline.voiceoverPrompt,
     script: baseline.script,
+    globalVisualStyle: baseline.globalVisualStyle,
     scenes,
     generatedBaseline: baseline,
   };
@@ -192,7 +201,8 @@ export function resetShortSceneToGeneratedBaseline(
     const hasPackageOverride =
       durableEdits.imagePrompt !== undefined ||
       durableEdits.voiceoverPrompt !== undefined ||
-      durableEdits.script !== undefined;
+      durableEdits.script !== undefined ||
+      durableEdits.globalVisualStyle !== undefined;
     if (!hasPackageOverride && !durableEdits.scenes) {
       durableEdits = undefined;
     } else if (durableEdits) {

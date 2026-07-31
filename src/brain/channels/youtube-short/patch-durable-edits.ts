@@ -17,12 +17,15 @@ import {
   resetShortPackageToGeneratedBaseline,
   resetShortSceneToGeneratedBaseline,
 } from "./durable-edits";
+import { applyShortSceneStructureAction } from "./scene-structure";
 import { formatPackageToYouTubeShortDraft } from "./to-youtube-short-draft";
 import { validateShortFormatPackage } from "./validate-format-package";
 import {
   youtubeShortDurableEditsSchema,
+  youtubeShortSceneStructureActionSchema,
   type YouTubeShortDraft,
   type YouTubeShortDurableEdits,
+  type YouTubeShortSceneStructureAction,
 } from "./youtube-short-draft";
 
 export type PatchShortEditsInput = {
@@ -33,6 +36,8 @@ export type PatchShortEditsInput = {
   resetToGenerated?: boolean;
   /** When set, remove only that scene's sparse override entry. */
   resetSceneId?: string;
+  /** Manual scene count / add / remove (mutually exclusive action). */
+  sceneStructure?: YouTubeShortSceneStructureAction;
 };
 
 export type PatchShortEditsResult =
@@ -44,11 +49,13 @@ export type PatchShortEditsResult =
       atom: ContentAtom;
       validationReport: AtomValidationReport | null;
       recordRevision: number;
+      selectedSceneIdHint?: string;
     }
   | { ok: false; error: string; status: number };
 
 /**
- * PATCH durable edits into the Short package inside the existing production bundle.
+ * PATCH durable edits / scene structure into the Short package inside the
+ * existing production bundle.
  */
 export async function patchYouTubeShortDurableEdits(
   input: PatchShortEditsInput
@@ -104,15 +111,27 @@ export async function patchYouTubeShortDurableEdits(
   }
 
   const resetSceneId = input.resetSceneId?.trim();
-  if (input.resetToGenerated && resetSceneId) {
+  const hasStructure = input.sceneStructure != null;
+  const hasEdits = input.edits != null;
+  const actionCount = [
+    Boolean(input.resetToGenerated),
+    Boolean(resetSceneId),
+    hasStructure,
+    hasEdits,
+  ].filter(Boolean).length;
+
+  if (actionCount !== 1) {
     return {
       ok: false,
-      error: "resetToGenerated and resetSceneId are mutually exclusive",
+      error:
+        "Provide exactly one of edits, resetToGenerated, resetSceneId, or sceneStructure",
       status: 400,
     };
   }
 
   let nextPkg: YouTubeShortFormatPackage;
+  let selectedSceneIdHint: string | undefined;
+
   if (input.resetToGenerated) {
     nextPkg = resetShortPackageToGeneratedBaseline(shortPkg);
   } else if (resetSceneId) {
@@ -124,6 +143,22 @@ export async function patchYouTubeShortDurableEdits(
       };
     }
     nextPkg = resetShortSceneToGeneratedBaseline(shortPkg, resetSceneId);
+  } else if (hasStructure) {
+    const parsedStructure = youtubeShortSceneStructureActionSchema.safeParse(
+      input.sceneStructure
+    );
+    if (!parsedStructure.success) {
+      return { ok: false, error: "Invalid sceneStructure payload", status: 400 };
+    }
+    const structured = applyShortSceneStructureAction(
+      shortPkg,
+      parsedStructure.data
+    );
+    if (!structured.ok) {
+      return { ok: false, error: structured.error, status: 400 };
+    }
+    nextPkg = structured.package;
+    selectedSceneIdHint = structured.selectedSceneIdHint;
   } else {
     if (!input.edits) {
       return { ok: false, error: "edits are required", status: 400 };
@@ -180,5 +215,6 @@ export async function patchYouTubeShortDurableEdits(
     atom: stored.atom,
     validationReport: stored.validation_report ?? null,
     recordRevision: atomRevision,
+    selectedSceneIdHint,
   };
 }

@@ -11,6 +11,7 @@ import type {
   StudioPromptMode,
 } from "../../hooks/use-atom-content-studio";
 import { FormatPrefs } from "./format-prefs";
+import { GlobalVisualStyleField } from "./global-visual-style";
 import { PromptCard } from "./prompt-card";
 import { PromptModeToggle } from "./prompt-mode-toggle";
 import { PromptRailActions } from "./prompt-rail-actions";
@@ -28,6 +29,12 @@ export type StudioPromptRailProps = {
   onSceneOnScreenTextChange?: (v: string) => void;
   onSceneAssetTypeChange?: (v: SceneAssetType) => void;
   onResetScene?: () => void | Promise<void>;
+  globalVisualStyle?: string;
+  onGlobalVisualStyleChange?: (v: string) => void;
+  onPastePromptFill?: (prompt: string) => Promise<boolean>;
+  onStartFromGenerated?: () => void;
+  ingestBusy?: boolean;
+  ingestError?: string | null;
   imagePrompt: string;
   voiceoverPrompt: string;
   script: string;
@@ -53,6 +60,12 @@ export function StudioPromptRail({
   onSceneOnScreenTextChange,
   onSceneAssetTypeChange,
   onResetScene,
+  globalVisualStyle,
+  onGlobalVisualStyleChange,
+  onPastePromptFill,
+  onStartFromGenerated,
+  ingestBusy,
+  ingestError,
   imagePrompt,
   voiceoverPrompt,
   script,
@@ -81,6 +94,7 @@ export function StudioPromptRail({
   const mode = promptMode ?? "manual";
   const fieldsReadOnly = isShort && mode === "generated";
   const showModeToggle = isShort && Boolean(onPromptModeChange);
+  const isManualWorkspace = isShort && mode === "manual";
   const selectedScene =
     isShort && selectedSceneId
       ? pkg.scenes.find((s) => s.id === selectedSceneId)
@@ -93,7 +107,11 @@ export function StudioPromptRail({
     Boolean(selectedSceneId);
 
   return (
-    <aside className="studio-prompt-rail" data-testid="studio-prompt-rail">
+    <aside
+      className="studio-prompt-rail"
+      data-testid="studio-prompt-rail"
+      data-prompt-mode={isShort ? mode : "n/a"}
+    >
       {showModeToggle && onPromptModeChange ? (
         <PromptModeToggle
           mode={mode}
@@ -101,11 +119,22 @@ export function StudioPromptRail({
         />
       ) : null}
 
-      {pkg.status === "research_required" ? (
+      {isManualWorkspace &&
+      onGlobalVisualStyleChange &&
+      globalVisualStyle !== undefined ? (
+        <GlobalVisualStyleField
+          value={globalVisualStyle}
+          onChange={onGlobalVisualStyleChange}
+          readOnly={fieldsReadOnly}
+        />
+      ) : null}
+
+      {/* Package-level clutter: Generated mode (and non-Short) only */}
+      {!isManualWorkspace && pkg.status === "research_required" ? (
         <ResearchNotice unresolvedResearch={pkg.unresolvedResearch} />
       ) : null}
 
-      {onCopyExternalPrompt ? (
+      {!isManualWorkspace && onCopyExternalPrompt ? (
         <Button
           type="button"
           variant="outline"
@@ -129,34 +158,38 @@ export function StudioPromptRail({
         </p>
       ) : null}
 
-      <PromptCard
-        title="Visual metaphor"
-        icon={<ImageIcon className="h-3 w-3" aria-hidden />}
-        value={imagePrompt}
-        onChange={onImagePromptChange}
-        maxHint={800}
-        copyTestId="studio-copy-visual-metaphor"
-        readOnly={fieldsReadOnly}
-      />
-      <PromptCard
-        title="VO / voiceover"
-        icon={<Mic className="h-3 w-3" aria-hidden />}
-        value={voiceoverPrompt}
-        onChange={onVoiceoverPromptChange}
-        maxHint={2000}
-        copyTestId="studio-copy-voiceover"
-        readOnly={fieldsReadOnly}
-      />
-      <PromptCard
-        title="Content / script"
-        icon={<FileText className="h-3 w-3" aria-hidden />}
-        value={script}
-        onChange={onScriptChange}
-        maxHint={4000}
-        grow="script"
-        copyTestId="studio-copy-script"
-        readOnly={fieldsReadOnly}
-      />
+      {!isManualWorkspace ? (
+        <>
+          <PromptCard
+            title="Visual metaphor"
+            icon={<ImageIcon className="h-3 w-3" aria-hidden />}
+            value={imagePrompt}
+            onChange={onImagePromptChange}
+            maxHint={800}
+            copyTestId="studio-copy-visual-metaphor"
+            readOnly={fieldsReadOnly}
+          />
+          <PromptCard
+            title="VO / voiceover"
+            icon={<Mic className="h-3 w-3" aria-hidden />}
+            value={voiceoverPrompt}
+            onChange={onVoiceoverPromptChange}
+            maxHint={2000}
+            copyTestId="studio-copy-voiceover"
+            readOnly={fieldsReadOnly}
+          />
+          <PromptCard
+            title="Content / script"
+            icon={<FileText className="h-3 w-3" aria-hidden />}
+            value={script}
+            onChange={onScriptChange}
+            maxHint={4000}
+            grow="script"
+            copyTestId="studio-copy-script"
+            readOnly={fieldsReadOnly}
+          />
+        </>
+      ) : null}
 
       {showSceneEditor &&
       sceneEdits &&
@@ -170,6 +203,15 @@ export function StudioPromptRail({
           selectedSceneId={selectedSceneId}
           sceneEdits={sceneEdits}
           fieldsReadOnly={fieldsReadOnly}
+          manualWorkspace={isManualWorkspace}
+          ingestBusy={ingestBusy}
+          ingestError={ingestError}
+          onPastePromptFill={
+            isManualWorkspace ? onPastePromptFill : undefined
+          }
+          onStartFromGenerated={
+            isManualWorkspace ? onStartFromGenerated : undefined
+          }
           onSceneVisualPromptChange={onSceneVisualPromptChange}
           onSceneNarrationChange={onSceneNarrationChange}
           onSceneOnScreenTextChange={onSceneOnScreenTextChange}
@@ -178,15 +220,21 @@ export function StudioPromptRail({
         />
       ) : null}
 
-      <FormatPrefs
-        aspectRatio={pkg.aspectRatio}
-        durationSeconds={pkg.durationSeconds}
-      />
+      {!isManualWorkspace ? (
+        <FormatPrefs
+          aspectRatio={pkg.aspectRatio}
+          durationSeconds={pkg.durationSeconds}
+        />
+      ) : null}
 
       <PromptRailActions
         dirty={dirty}
         fieldsReadOnly={fieldsReadOnly}
-        saveLabel={saveLabel}
+        saveLabel={
+          isManualWorkspace && saveLabel === "Save draft"
+            ? "Save Scene"
+            : saveLabel
+        }
         onSave={onSave}
         onReset={onReset}
       />

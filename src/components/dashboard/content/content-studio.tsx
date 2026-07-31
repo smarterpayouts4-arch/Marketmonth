@@ -98,6 +98,16 @@ function AtomDeepLinkStudio({ atomId }: { atomId: string }) {
         atomStudio.setSceneEditField("assetType", v)
       }
       onResetScene={atomStudio.resetSelectedScene}
+      onRemoveScene={atomStudio.removeSelectedScene}
+      onAddScene={atomStudio.addScene}
+      globalVisualStyle={atomStudio.edits.globalVisualStyle}
+      onGlobalVisualStyleChange={(v) =>
+        atomStudio.setEditField("globalVisualStyle", v)
+      }
+      onPastePromptFill={atomStudio.ingestScenePrompt}
+      onStartFromGenerated={atomStudio.startFromGeneratedScene}
+      ingestBusy={atomStudio.ingestBusy}
+      ingestError={atomStudio.ingestError}
       imagePrompt={atomStudio.edits.imagePrompt}
       voiceoverPrompt={atomStudio.edits.voiceoverPrompt}
       script={atomStudio.edits.script}

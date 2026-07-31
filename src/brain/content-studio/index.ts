@@ -27,6 +27,12 @@ export {
   YOUTUBE_SHORT_DURATION_MAX_SECONDS,
 } from "@/brain/channels/youtube-short/duration-policy";
 
+/** Scene-count bounds for Manual scaffolding (canonical: youtube-short-draft). */
+export {
+  YOUTUBE_SHORT_SCENE_COUNT_MAX,
+  YOUTUBE_SHORT_SCENE_COUNT_MIN,
+} from "@/brain/channels/youtube-short/youtube-short-draft";
+
 export {
   contentFormatPackageSchema,
   contentProductionBundleSchema,

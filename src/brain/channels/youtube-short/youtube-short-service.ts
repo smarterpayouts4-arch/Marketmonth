@@ -32,3 +32,22 @@ export {
   type PatchShortEditsInput,
   type PatchShortEditsResult,
 } from "./patch-durable-edits";
+
+export {
+  ingestYouTubeShortScenePrompt,
+  setSceneIngestLlmAdapterForTests,
+  type IngestScenePromptInput,
+  type IngestScenePromptResult,
+  type SceneIngestLlmAdapter,
+} from "./ingest-scene-prompt";
+
+export {
+  addShortScene,
+  applyShortSceneStructureAction,
+  createEmptySceneCard,
+  increaseShortSceneCount,
+  newManualSceneId,
+  removeShortScene,
+} from "./scene-structure";
+
+export { composeEffectiveImagePrompt } from "./compose-effective-image-prompt";
