@@ -131,18 +131,22 @@ export async function POST(request: Request) {
         error: outcome.error,
         code: outcome.code,
         render: outcome.render,
+        bundle: outcome.bundle,
       },
       { status: outcome.status }
     );
   }
 
+  const liveSucceeded = outcome.render.status === "succeeded";
   return NextResponse.json({
     ok: true,
     atomId: outcome.atom.atom_id,
     sceneId: outcome.sceneId,
     render: outcome.render,
     bundle: outcome.bundle,
-    mode: "dry_run",
-    message: "Renderer path verified — no image generated",
+    mode: outcome.render.mode ?? "dry_run",
+    message: liveSucceeded
+      ? "Image generated"
+      : "Renderer path verified — no image generated",
   });
 }

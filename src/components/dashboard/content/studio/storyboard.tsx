@@ -167,6 +167,18 @@ export function StudioStoryboard({
               data-testid={`storyboard-scene-${s.id}`}
             >
               <div className="studio-storyboard__thumb">
+                {"render" in s && s.render?.assetUrl ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={s.render.assetUrl}
+                      alt=""
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover"
+                      data-testid={`storyboard-scene-image-${s.id}`}
+                    />
+                  </>
+                ) : null}
                 <span className="studio-storyboard__badge studio-storyboard__badge--order">
                   {i + 1}
                 </span>

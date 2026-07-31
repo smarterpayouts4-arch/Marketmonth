@@ -7,6 +7,29 @@ export {
   defaultDryRunAdapter,
 } from "./adapters/dry-run-adapter";
 export {
+  createLiveImageAdapter,
+  defaultLiveImageAdapter,
+} from "./adapters/live-image-adapter";
+export {
+  generateGeminiImage,
+  type GeneratedImageMedia,
+  type GeminiGenerateDeps,
+} from "./adapters/gemini-image-generate";
+export {
+  uploadGeneratedImageToImageKit,
+  buildImageKitObjectPath,
+  type StoredImageAsset,
+  type ImageKitUploadDeps,
+} from "./adapters/imagekit-upload";
+export {
+  ImageConfigError,
+  requireGeminiImageConfig,
+  requireImageKitConfig,
+  resolveImageProviderConfig,
+  toSafeConfigSummary,
+  type ImageProviderConfigResolved,
+} from "./config/image-provider-config";
+export {
   genericRenderRequestSchema,
   normalizedRenderErrorSchema,
   normalizedRenderResultSchema,
@@ -27,6 +50,7 @@ export {
   generateVoice,
 } from "./generate-voice";
 export { renderMedia, type RenderMediaOptions } from "./render-media";
+export { resolveDefaultRenderAdapter } from "./resolve-render-adapter";
 export {
   imageProviderConfigSchema,
   type AssetSpec,

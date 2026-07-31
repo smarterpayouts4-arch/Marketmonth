@@ -1,13 +1,13 @@
-import { defaultDryRunAdapter } from "./adapters/dry-run-adapter";
 import {
   genericRenderRequestSchema,
   type GenericRenderRequest,
   type NormalizedRenderResult,
   type RenderMediaAdapter,
 } from "./contracts";
+import { resolveDefaultRenderAdapter } from "./resolve-render-adapter";
 
 export type RenderMediaOptions = {
-  /** Inject adapter for tests; default is dry-run (Phase 4A). */
+  /** Inject adapter for tests; default resolves from server config. */
   adapter?: RenderMediaAdapter;
 };
 
@@ -20,6 +20,6 @@ export async function renderMedia(
   options: RenderMediaOptions = {}
 ): Promise<NormalizedRenderResult> {
   const parsed = genericRenderRequestSchema.parse(request);
-  const adapter = options.adapter ?? defaultDryRunAdapter;
+  const adapter = options.adapter ?? resolveDefaultRenderAdapter();
   return adapter.render(parsed);
 }

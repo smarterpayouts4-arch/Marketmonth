@@ -75,19 +75,28 @@ export function SceneEditor({
     selectedScene && "render" in selectedScene
       ? selectedScene.render
       : undefined;
-  const durableDryRunOk = durableRender?.status === "dry_run_succeeded";
+  const hasDurableImage = Boolean(durableRender?.assetUrl);
+  const durableDryRunOk =
+    durableRender?.status === "dry_run_succeeded" && !hasDurableImage;
   const durableFailed = durableRender?.status === "failed";
+  const liveSucceeded = durableRender?.status === "succeeded" && hasDurableImage;
 
-  const dryRunDisabledReason = !sceneEdits.visualPrompt.trim()
+  const actionDisabledReason = !sceneEdits.visualPrompt.trim()
     ? "Add a visual prompt first"
     : sceneEdits.assetType !== "image"
       ? "Only image asset scenes can be prepared in this phase"
       : dirty
-        ? "Save this scene before preparing its render."
+        ? "Save this scene before generating its image."
         : renderBusy
-          ? "Validating render path…"
+          ? "Generating image…"
           : null;
-  const dryRunDisabled = Boolean(dryRunDisabledReason) || !onValidateImageRender;
+  const actionDisabled =
+    Boolean(actionDisabledReason) || !onValidateImageRender;
+  const actionLabel = renderBusy
+    ? "Generating image…"
+    : hasDurableImage
+      ? "Regenerate Image"
+      : "Generate Image";
 
   return (
     <div
@@ -218,34 +227,24 @@ export function SceneEditor({
 
         {manualWorkspace && !fieldsReadOnly ? (
           <div className="space-y-1" data-testid="studio-validate-image-render">
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                className="h-8 flex-1 rounded-lg border border-dashed border-border px-3 text-xs text-text-muted disabled:opacity-60"
-                disabled={dryRunDisabled}
-                title={dryRunDisabledReason ?? "Validate dry-run renderer path"}
-                onClick={() => {
-                  void onValidateImageRender?.();
-                }}
-                data-testid="studio-generate-image-shell"
-              >
-                {renderBusy
-                  ? "Validating Image Render…"
-                  : "Validate Image Render"}
-              </button>
-              <span
-                className="shrink-0 rounded border border-border px-1.5 py-0.5 text-[10px] text-text-muted"
-                data-testid="studio-dry-run-badge"
-              >
-                Dry run
-              </span>
-            </div>
+            <button
+              type="button"
+              className="h-8 w-full rounded-lg border border-dashed border-border px-3 text-xs text-text-muted disabled:opacity-60"
+              disabled={actionDisabled}
+              title={actionDisabledReason ?? actionLabel}
+              onClick={() => {
+                void onValidateImageRender?.();
+              }}
+              data-testid="studio-generate-image-shell"
+            >
+              {actionLabel}
+            </button>
             {dirty ? (
               <p
                 className="text-[10px] text-text-muted"
                 data-testid="studio-render-save-hint"
               >
-                Save this scene before preparing its render.
+                Save this scene before generating its image.
               </p>
             ) : null}
             {renderBusy ? (
@@ -253,7 +252,7 @@ export function SceneEditor({
                 className="text-[10px] text-text-muted"
                 data-testid="studio-render-loading"
               >
-                Checking renderer path…
+                Generating image…
               </p>
             ) : null}
             {renderError ? (
@@ -264,13 +263,15 @@ export function SceneEditor({
                 {renderError}
               </p>
             ) : null}
-            {renderMessage || durableDryRunOk ? (
+            {renderMessage || liveSucceeded || durableDryRunOk ? (
               <p
                 className="text-[10px] text-text-secondary"
                 data-testid="studio-render-success"
               >
                 {renderMessage ??
-                  "Renderer path verified — no image generated"}
+                  (liveSucceeded
+                    ? "Image generated"
+                    : "Renderer path verified — no image generated")}
               </p>
             ) : null}
             {!renderError && durableFailed && durableRender?.error ? (

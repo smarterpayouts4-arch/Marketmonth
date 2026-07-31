@@ -410,7 +410,7 @@ export function useStudioEditActions({
     if (formatId !== "youtube_short" || promptMode !== "manual") return false;
     if (!selectedSceneId) return false;
     if (dirty) {
-      setRenderError("Save this scene before preparing its render.");
+      setRenderError("Save this scene before generating its image.");
       setRenderMessage(null);
       return false;
     }
@@ -434,6 +434,10 @@ export function useStudioEditActions({
         sceneId: selectedSceneId,
       });
       if (!result.ok) {
+        if (result.bundle) {
+          applyReadyBundle(result.bundle);
+          setPromptModeState("manual");
+        }
         setRenderError(result.error);
         return false;
       }

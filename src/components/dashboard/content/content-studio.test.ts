@@ -376,8 +376,8 @@ describe("Content Studio atomId-only entry", () => {
 
     assert.match(sceneEditor, /studio-paste-prompt/);
     assert.match(sceneEditor, /studio-generate-image-shell/);
-    assert.match(sceneEditor, /Validate Image Render/);
-    assert.match(sceneEditor, /studio-dry-run-badge/);
+    assert.match(sceneEditor, /Generate Image/);
+    assert.match(sceneEditor, /Regenerate Image/);
     assert.match(sceneEditor, /Scene \$\{sceneIndex\} of \$\{sceneCount\}/);
 
     assert.match(pasteSheet, /Fill Scene/);
@@ -607,22 +607,24 @@ describe("Content Studio atomId-only entry", () => {
     assert.match(hook, /validateImageRender/);
     assert.match(api, /render-scene-image/);
     assert.match(api, /renderSavedSceneImageRequest/);
-    assert.match(sceneEditor, /Validate Image Render/);
-    assert.match(sceneEditor, /Dry run/);
-    assert.match(sceneEditor, /no image generated/i);
-    assert.match(sceneEditor, /Save this scene before preparing its render/);
+    assert.match(sceneEditor, /Generate Image/);
+    assert.match(sceneEditor, /Regenerate Image/);
+    assert.match(sceneEditor, /Save this scene before generating its image/);
     assert.match(sceneEditor, /dirty/);
 
     assert.match(route, /requireApiSession/);
     assert.match(route, /requireCompanyAccess/);
     assert.match(route, /renderYouTubeShortSavedSceneImage/);
-    assert.doesNotMatch(route, /createDryRunAdapter|from ["']@\/brain\/render/);
+    assert.doesNotMatch(route, /createLiveImageAdapter|createDryRunAdapter/);
+    assert.doesNotMatch(route, /from ["']@\/brain\/render["']/);
+    assert.doesNotMatch(route, /@google\/genai|@imagekit\/nodejs/);
     assert.doesNotMatch(route, /composeShortSceneEffectiveImagePrompt/);
     assert.doesNotMatch(route, /saveProductionBundle/);
 
     assert.doesNotMatch(renderMedia, /bundle-store|youtube-short/);
     assert.doesNotMatch(hook, /from ["']@\/brain\/render/);
     assert.doesNotMatch(api, /from ["']@\/brain\/render/);
+    assert.doesNotMatch(hook, /@google\/genai|@imagekit\/nodejs/);
   });
 });
 

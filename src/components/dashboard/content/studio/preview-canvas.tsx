@@ -25,6 +25,10 @@ export function StudioPreviewCanvas({
   const scene =
     pkg?.scenes.find((s) => s.id === selectedSceneId) ?? pkg?.scenes[0];
   const isShort = pkg?.formatId === "youtube_short";
+  const assetUrl =
+    scene && "render" in scene && scene.render?.assetUrl
+      ? scene.render.assetUrl
+      : null;
   const headline =
     scene?.onScreenText?.trim() ||
     (pkg && "hook" in pkg
@@ -58,35 +62,63 @@ export function StudioPreviewCanvas({
               : "studio-preview-frame--video"
           )}
         >
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 p-2.5 text-center">
-            <p className="text-[8px] uppercase tracking-[0.16em] text-white/55">
-              {pkg?.formatId === "youtube_video"
-                ? "YouTube Video"
-                : "YouTube Short"}
-            </p>
-            <p className="max-w-[94%] line-clamp-3 font-heading text-xs font-semibold leading-snug tracking-tight sm:text-sm">
-              {headline}
-            </p>
-            <p className="max-w-[92%] line-clamp-2 text-[10px] leading-relaxed text-white/75">
-              {scene?.narration
-                ? scene.narration
-                : "Select a scene to preview narration."}
-            </p>
-            {scene?.visualPrompt ? (
+          {assetUrl ? (
+            <>
+              {/* Durable CDN URL from production bundle — not a local upload. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={assetUrl}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+                data-testid="studio-preview-scene-image"
+              />
+            </>
+          ) : null}
+          <div
+            className={cn(
+              "absolute inset-0 flex flex-col items-center justify-center gap-1 p-2.5 text-center",
+              assetUrl && "bg-black/25"
+            )}
+          >
+            {!assetUrl ? (
+              <>
+                <p className="text-[8px] uppercase tracking-[0.16em] text-white/55">
+                  {pkg?.formatId === "youtube_video"
+                    ? "YouTube Video"
+                    : "YouTube Short"}
+                </p>
+                <p className="max-w-[94%] line-clamp-3 font-heading text-xs font-semibold leading-snug tracking-tight sm:text-sm">
+                  {headline}
+                </p>
+                <p className="max-w-[92%] line-clamp-2 text-[10px] leading-relaxed text-white/75">
+                  {scene?.narration
+                    ? scene.narration
+                    : "Select a scene to preview narration."}
+                </p>
+                {scene?.visualPrompt ? (
+                  <p
+                    className="mt-1 max-w-[94%] line-clamp-2 text-[9px] leading-snug text-white/50"
+                    data-testid="studio-preview-scene-visual"
+                  >
+                    Visual: {scene.visualPrompt}
+                  </p>
+                ) : pkg?.imagePrompt ? (
+                  <p
+                    className="mt-1 max-w-[94%] line-clamp-2 text-[9px] leading-snug text-white/50"
+                    data-testid="studio-preview-image-prompt"
+                  >
+                    Visual: {pkg.imagePrompt}
+                  </p>
+                ) : null}
+              </>
+            ) : (
               <p
-                className="mt-1 max-w-[94%] line-clamp-2 text-[9px] leading-snug text-white/50"
-                data-testid="studio-preview-scene-visual"
+                className="pointer-events-none absolute top-2 left-2 rounded bg-black/50 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.12em] text-white/85"
+                data-testid="studio-preview-image-label"
               >
-                Visual: {scene.visualPrompt}
+                Generated still
               </p>
-            ) : pkg?.imagePrompt ? (
-              <p
-                className="mt-1 max-w-[94%] line-clamp-2 text-[9px] leading-snug text-white/50"
-                data-testid="studio-preview-image-prompt"
-              >
-                Visual: {pkg.imagePrompt}
-              </p>
-            ) : null}
+            )}
             {isShort && scene?.assetType ? (
               <p
                 className="text-[9px] uppercase tracking-[0.12em] text-white/40"
@@ -95,7 +127,9 @@ export function StudioPreviewCanvas({
                 {scene.assetType}
               </p>
             ) : null}
-            {pkg?.formatId === "youtube_short" && pkg.voiceoverPrompt ? (
+            {!assetUrl &&
+            pkg?.formatId === "youtube_short" &&
+            pkg.voiceoverPrompt ? (
               <p
                 className="max-w-[94%] line-clamp-1 text-[9px] leading-snug text-white/40"
                 data-testid="studio-preview-voiceover-prompt"
@@ -103,7 +137,7 @@ export function StudioPreviewCanvas({
                 VO: {pkg.voiceoverPrompt}
               </p>
             ) : null}
-            {pkg?.formatId === "youtube_short" && pkg.script ? (
+            {!assetUrl && pkg?.formatId === "youtube_short" && pkg.script ? (
               <p
                 className="max-w-[94%] line-clamp-1 text-[9px] leading-snug text-white/40"
                 data-testid="studio-preview-script"

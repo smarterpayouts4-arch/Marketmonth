@@ -212,9 +212,13 @@ export type RenderSceneImageResult =
       bundle: ContentProductionBundle;
       message: string;
     }
-  | { ok: false; error: string };
+  | {
+      ok: false;
+      error: string;
+      bundle?: ContentProductionBundle;
+    };
 
-/** Phase 4A dry-run — validates renderer path; no image generated. */
+/** Generate/regenerate a saved Short scene image (live or dry-run by server config). */
 export async function renderSavedSceneImageRequest(input: {
   atomId: string;
   sceneId: string;
@@ -234,15 +238,19 @@ export async function renderSavedSceneImageRequest(input: {
     bundle?: ContentProductionBundle;
     message?: string;
   };
-  if (!res.ok || !data.ok || !data.bundle) {
+  if (!res.ok || !data.ok) {
     return {
       ok: false,
-      error: data.error ?? "Could not prepare scene render",
+      error: data.error ?? "Could not generate scene image",
+      bundle: data.bundle,
     };
+  }
+  if (!data.bundle) {
+    return { ok: false, error: "Could not generate scene image" };
   }
   return {
     ok: true,
     bundle: data.bundle,
-    message: data.message ?? "Renderer path verified — no image generated",
+    message: data.message ?? "Image generated",
   };
 }

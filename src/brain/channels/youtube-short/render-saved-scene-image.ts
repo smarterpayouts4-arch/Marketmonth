@@ -12,6 +12,7 @@ import type {
   SceneCard,
   YouTubeShortFormatPackage,
 } from "@/brain/content-studio/schemas/format-package";
+import { resolveImageProviderConfig } from "@/brain/render/config/image-provider-config";
 import {
   renderMedia,
   type NormalizedRenderResult,
@@ -24,6 +25,7 @@ import {
   hashEffectiveImagePrompt,
   hashSceneRenderSource,
 } from "./compose-effective-image-prompt";
+import { mapRendererResultToSceneRender } from "./map-renderer-result-to-scene-render";
 import {
   httpStatusForShortRenderError,
   SHORT_RENDER_ERROR_CODES,
@@ -44,9 +46,39 @@ export type RenderSavedSceneImageInput = {
   formatId?: "youtube_short";
   sceneId: string;
   companyIdHint?: string;
-  /** Test injection — default dry-run adapter via renderMedia. */
+  /** Test injection — default adapter resolves from server config. */
   adapter?: RenderMediaAdapter;
 };
+
+function priorAssetFields(prior: SceneRenderState | undefined) {
+  if (!prior?.assetUrl && !prior?.assetRef) return {};
+  return {
+    assetRef: prior.assetRef,
+    assetUrl: prior.assetUrl,
+    mimeType: prior.mimeType,
+    width: prior.width,
+    height: prior.height,
+    storageProvider: prior.storageProvider,
+    storageFileId: prior.storageFileId,
+  };
+}
+
+function expectedRenderMode(
+  adapter: RenderMediaAdapter | undefined
+): "dry_run" | "live" {
+  if (adapter) {
+    return adapter.id.includes("live") ? "live" : "dry_run";
+  }
+  return resolveImageProviderConfig().mode;
+}
+
+function expectedProvider(adapter: RenderMediaAdapter | undefined): string {
+  if (adapter) {
+    return adapter.id.includes("live") ? "gemini" : "dry-run";
+  }
+  const config = resolveImageProviderConfig();
+  return config.mode === "live" ? config.provider : "dry-run";
+}
 
 export type RenderSavedSceneImageResult =
   | {
@@ -117,27 +149,8 @@ async function persistShortPackage(
   return next;
 }
 
-function mapRendererFailure(
-  result: Extract<NormalizedRenderResult, { status: "failed" }>
-): SceneRenderState {
-  const now = new Date().toISOString();
-  return {
-    status: "failed",
-    requestId: result.requestId,
-    jobId: result.rendererJobId,
-    mode: result.mode,
-    provider: result.provider,
-    mediaKind: "image",
-    error: result.error,
-    requestedAt: result.requestedAt,
-    startedAt: result.startedAt,
-    completedAt: result.completedAt ?? now,
-    updatedAt: now,
-  };
-}
-
 /**
- * Render one durable saved Short scene image via the shared dry-run renderer.
+ * Render one durable saved Short scene image via the shared renderer.
  * Loads saved scene from the production bundle — never trusts client prompts.
  */
 export async function renderYouTubeShortSavedSceneImage(
@@ -230,17 +243,23 @@ export async function renderYouTubeShortSavedSceneImage(
     requestedAt,
   });
 
+  const priorRender = scene.render;
+  const mode = expectedRenderMode(input.adapter);
+  const provider = expectedProvider(input.adapter);
+
   const queued: SceneRenderState = {
+    ...priorAssetFields(priorRender),
     status: "queued",
     requestId,
-    mode: "dry_run",
-    provider: "dry-run",
+    mode,
+    provider,
     mediaKind: "image",
     promptHash,
     sourceRevision,
     attempt,
     requestedAt,
     updatedAt: requestedAt,
+    error: undefined,
   };
 
   shortPkg = withSceneRender(shortPkg, sceneId, queued);
@@ -276,10 +295,11 @@ export async function renderYouTubeShortSavedSceneImage(
     const message =
       err instanceof Error ? err.message.slice(0, 400) : "Renderer unavailable";
     const failed: SceneRenderState = {
+      ...priorAssetFields(priorRender),
       status: "failed",
       requestId,
-      mode: "dry_run",
-      provider: "dry-run",
+      mode,
+      provider,
       mediaKind: "image",
       promptHash,
       sourceRevision,
@@ -375,96 +395,16 @@ export async function renderYouTubeShortSavedSceneImage(
     });
   }
 
-  let finalRender: SceneRenderState;
-  if (rendererResult.status === "failed") {
-    finalRender = {
-      ...mapRendererFailure(rendererResult),
-      promptHash,
-      sourceRevision,
-      attempt,
-    };
-  } else if (rendererResult.status === "succeeded") {
-    if (rendererResult.mode !== "dry_run") {
-      finalRender = {
-        status: "failed",
-        requestId,
-        jobId: rendererResult.rendererJobId,
-        mode: rendererResult.mode,
-        provider: rendererResult.provider,
-        mediaKind: "image",
-        promptHash,
-        sourceRevision,
-        attempt,
-        requestedAt,
-        startedAt: rendererResult.startedAt,
-        completedAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        error: {
-          code: SHORT_RENDER_ERROR_CODES.RENDERER_REJECTED_INPUT,
-          message: "Unexpected live render mode in Phase 4A",
-          retryable: false,
-        },
-      };
-    } else if (rendererResult.assetRef || rendererResult.assetUrl) {
-      finalRender = {
-        status: "failed",
-        requestId,
-        jobId: rendererResult.rendererJobId,
-        mode: "dry_run",
-        provider: rendererResult.provider,
-        mediaKind: "image",
-        promptHash,
-        sourceRevision,
-        attempt,
-        requestedAt,
-        startedAt: rendererResult.startedAt,
-        completedAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        error: {
-          code: SHORT_RENDER_ERROR_CODES.RENDERER_REJECTED_INPUT,
-          message: "Dry-run result must not include media assets",
-          retryable: false,
-        },
-      };
-    } else {
-      finalRender = {
-        status: "dry_run_succeeded",
-        requestId,
-        jobId: rendererResult.rendererJobId,
-        mode: "dry_run",
-        provider: rendererResult.provider,
-        mediaKind: "image",
-        promptHash,
-        sourceRevision,
-        attempt,
-        requestedAt,
-        startedAt: rendererResult.startedAt,
-        completedAt: rendererResult.completedAt ?? new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-    }
-  } else {
-    finalRender = {
-      status: "failed",
-      requestId,
-      jobId: rendererResult.rendererJobId,
-      mode: rendererResult.mode,
-      provider: rendererResult.provider,
-      mediaKind: "image",
-      promptHash,
-      sourceRevision,
-      attempt,
-      requestedAt,
-      startedAt: rendererResult.startedAt,
-      completedAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      error: {
-        code: SHORT_RENDER_ERROR_CODES.RENDERER_FAILED,
-        message: `Unexpected renderer status: ${rendererResult.status}`,
-        retryable: true,
-      },
-    };
-  }
+  const finalRender = mapRendererResultToSceneRender({
+    result: rendererResult,
+    prior: priorRender,
+    promptHash,
+    sourceRevision,
+    attempt,
+    requestId,
+    requestedAt,
+    startedAt: running.startedAt,
+  });
 
   shortPkg = withSceneRender(shortPkg, sceneId, finalRender);
   try {
