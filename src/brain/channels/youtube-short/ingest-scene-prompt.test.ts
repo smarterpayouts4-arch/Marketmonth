@@ -12,12 +12,18 @@ import { createAtomRepository } from "@/brain/store";
 import { runtimeRoot } from "@/brain/store/paths";
 import { getContentBundle } from "@/brain/use-cases/produce-content-bundle";
 
+import { contentProductionBundleSchema } from "@/brain/content-studio/schemas/format-package";
+
 import {
   ingestYouTubeShortScenePrompt,
   setSceneIngestLlmAdapterForTests,
 } from "./ingest-scene-prompt";
 import { patchYouTubeShortDurableEdits } from "./patch-durable-edits";
 import { produceYouTubeShortFormatPackage } from "./produce-format-package";
+import {
+  SCENE_PASTE_PROMPT_MAX_CHARS,
+  SCENE_VISUAL_PROMPT_MAX_CHARS,
+} from "./scene-field-limits";
 import { youtubeShortSceneIngestExtractSchema } from "./youtube-short-draft";
 
 const sampleSelected = {
@@ -252,6 +258,120 @@ describe("YouTube Short scene prompt ingestion", () => {
       "visualPrompt",
     ]);
     assert.equal("globalVisualStyle" in shape, false);
+  });
+
+  it("rejects paste source over 16000 characters before LLM", async () => {
+    const { atomId, companyId, sceneId } = await seedBundle();
+    let calls = 0;
+    setSceneIngestLlmAdapterForTests(async () => {
+      calls += 1;
+      return { ok: true, raw: "{}" };
+    });
+    const over = "p".repeat(SCENE_PASTE_PROMPT_MAX_CHARS + 1);
+    const result = await ingestYouTubeShortScenePrompt({
+      atomId,
+      companyIdHint: companyId,
+      sceneId,
+      prompt: over,
+      apiKey: "test-key",
+    });
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(result.status, 400);
+    assert.match(result.error, /16000/);
+    assert.equal(calls, 0);
+  });
+
+  it("accepts paste source of exactly 16000 characters at the gate", async () => {
+    const { atomId, companyId, sceneId } = await seedBundle();
+    setSceneIngestLlmAdapterForTests(async () => ({
+      ok: true,
+      raw: JSON.stringify({
+        visualPrompt: "Exact paste ceiling visual",
+        narration: "Exact paste ceiling narration",
+        onScreenText: "OST",
+        assetType: "image",
+      }),
+    }));
+    const result = await ingestYouTubeShortScenePrompt({
+      atomId,
+      companyIdHint: companyId,
+      sceneId,
+      prompt: "p".repeat(SCENE_PASTE_PROMPT_MAX_CHARS),
+      apiKey: "test-key",
+    });
+    assert.equal(result.ok, true);
+  });
+
+  it("long extracted visual fills extract and persists through PATCH + bundle parse", async () => {
+    const { atomId, companyId, sceneId } = await seedBundle();
+    const longVisual = "L".repeat(4169);
+    setSceneIngestLlmAdapterForTests(async () => ({
+      ok: true,
+      raw: JSON.stringify({
+        visualPrompt: longVisual,
+        narration: "Why is magnesium getting so much attention?",
+        onScreenText: "Why is magnesium getting so much attention?",
+        assetType: "image",
+      }),
+    }));
+
+    const extracted = await ingestYouTubeShortScenePrompt({
+      atomId,
+      companyIdHint: companyId,
+      sceneId,
+      prompt: `SCENE 1\n\nVISUAL PROMPT\n${longVisual}\n\nNARRATION\nWhy?\n\nON-SCREEN TEXT\nWhy?\n\nASSET TYPE\nimage`,
+      apiKey: "test-key",
+    });
+    assert.equal(extracted.ok, true);
+    if (!extracted.ok) return;
+    assert.equal(extracted.extracted.visualPrompt.length, 4169);
+    assert.equal(extracted.extracted.visualPrompt, longVisual);
+
+    const patched = await patchYouTubeShortDurableEdits({
+      atomId,
+      companyIdHint: companyId,
+      edits: {
+        scenes: {
+          [sceneId]: extracted.extracted,
+        },
+      },
+    });
+    assert.equal(patched.ok, true);
+    if (!patched.ok) return;
+    const scene = patched.package.scenes.find((s) => s.id === sceneId);
+    assert.ok(scene);
+    assert.equal(scene!.visualPrompt, longVisual);
+    assert.equal(scene!.visualPrompt.length, 4169);
+
+    const reparsed = contentProductionBundleSchema.safeParse(patched.bundle);
+    assert.equal(reparsed.success, true);
+  });
+
+  it("reject extract when visualPrompt exceeds 8000 (no silent truncate)", async () => {
+    const { atomId, companyId, sceneId } = await seedBundle();
+    const tooLong = "x".repeat(SCENE_VISUAL_PROMPT_MAX_CHARS + 1);
+    setSceneIngestLlmAdapterForTests(async () => ({
+      ok: true,
+      raw: JSON.stringify({
+        visualPrompt: tooLong,
+        narration: "Narration line",
+        onScreenText: "OST",
+        assetType: "image",
+      }),
+    }));
+    const result = await ingestYouTubeShortScenePrompt({
+      atomId,
+      companyIdHint: companyId,
+      sceneId,
+      prompt: "A long visual brief.",
+      apiKey: "test-key",
+    });
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(result.status, 422);
+    assert.match(result.error, /Could not extract valid scene fields/);
+    assert.match(result.error, /<=8000 characters/);
   });
 
   it("saving extracted fields uses existing durable PATCH", async () => {

@@ -2,6 +2,11 @@ import { z } from "zod";
 
 import { YOUTUBE_SHORT_DURATION_MAX_SECONDS } from "@/brain/channels/youtube-short/duration-policy";
 import {
+  SCENE_NARRATION_MAX_CHARS,
+  SCENE_ON_SCREEN_TEXT_MAX_CHARS,
+  SCENE_VISUAL_PROMPT_MAX_CHARS,
+  SHORT_PACKAGE_IMAGE_PROMPT_MAX_CHARS,
+  VIDEO_CHAPTER_VISUAL_PROMPT_MAX_CHARS,
   YOUTUBE_SHORT_SCENE_COUNT_MAX,
   YOUTUBE_SHORT_SCENE_COUNT_MIN,
   youtubeShortDurableEditsSchema,
@@ -35,10 +40,10 @@ export const sceneCardSchema = z.object({
   order: z.number().int().nonnegative(),
   durationSeconds: z.number().positive(),
   /** Empty allowed for Short Manual scaffolding (Phase 3D). */
-  narration: z.string().max(1200),
-  onScreenText: z.string().max(160).optional(),
+  narration: z.string().max(SCENE_NARRATION_MAX_CHARS),
+  onScreenText: z.string().max(SCENE_ON_SCREEN_TEXT_MAX_CHARS).optional(),
   /** Empty allowed for Short Manual scaffolding (Phase 3D). */
-  visualPrompt: z.string().max(800),
+  visualPrompt: z.string().max(SCENE_VISUAL_PROMPT_MAX_CHARS),
   /** Short production asset kind; omitted on Video scenes. */
   assetType: youtubeShortSceneAssetTypeSchema.optional(),
   transition: z.string().max(80).optional(),
@@ -60,7 +65,7 @@ export const youtubeShortFormatPackageSchema = z.object({
   aspectRatio: z.literal("9:16"),
   hook: z.string().min(1).max(280),
   voiceoverPrompt: z.string().min(1).max(2000),
-  imagePrompt: z.string().min(1).max(800),
+  imagePrompt: z.string().min(1).max(SHORT_PACKAGE_IMAGE_PROMPT_MAX_CHARS),
   script: z.string().min(1).max(6000),
   /**
    * Effective project-level visual continuity (merged from durable / baseline).
@@ -96,7 +101,8 @@ export const videoChapterSchema = z.object({
   title: z.string().min(1).max(120),
   durationSeconds: z.number().positive(),
   narration: z.string().min(1).max(4000),
-  visualPrompt: z.string().min(1).max(800),
+  /** Unchanged by Phase 3F scene visual expansion. */
+  visualPrompt: z.string().min(1).max(VIDEO_CHAPTER_VISUAL_PROMPT_MAX_CHARS),
   keyPoint: z.string().min(1).max(280),
 });
 

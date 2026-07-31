@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { ClipboardPaste, ImageIcon, Mic, Type } from "lucide-react";
 
-import type { ContentFormatPackage } from "@/brain/content-studio";
+import {
+  SCENE_NARRATION_MAX_CHARS,
+  SCENE_ON_SCREEN_TEXT_MAX_CHARS,
+  SCENE_VISUAL_PROMPT_MAX_CHARS,
+  type ContentFormatPackage,
+} from "@/brain/content-studio";
 import { Button } from "@/components/ui/button";
 
 import type {
@@ -131,7 +136,7 @@ export function SceneEditor({
           icon={<ImageIcon className="h-3 w-3" aria-hidden />}
           value={sceneEdits.visualPrompt}
           onChange={onSceneVisualPromptChange}
-          maxHint={800}
+          maxHint={SCENE_VISUAL_PROMPT_MAX_CHARS}
           copyTestId="studio-copy-scene-visual"
           readOnly={fieldsReadOnly}
           compact
@@ -141,7 +146,7 @@ export function SceneEditor({
           icon={<Mic className="h-3 w-3" aria-hidden />}
           value={sceneEdits.narration}
           onChange={onSceneNarrationChange}
-          maxHint={1200}
+          maxHint={SCENE_NARRATION_MAX_CHARS}
           copyTestId="studio-copy-scene-narration"
           readOnly={fieldsReadOnly}
           compact
@@ -151,7 +156,7 @@ export function SceneEditor({
           icon={<Type className="h-3 w-3" aria-hidden />}
           value={sceneEdits.onScreenText}
           onChange={onSceneOnScreenTextChange}
-          maxHint={160}
+          maxHint={SCENE_ON_SCREEN_TEXT_MAX_CHARS}
           copyTestId="studio-copy-scene-onscreen"
           readOnly={fieldsReadOnly}
           compact

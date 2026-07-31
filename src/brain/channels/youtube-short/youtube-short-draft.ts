@@ -5,6 +5,21 @@ import {
   YOUTUBE_SHORT_DURATION_MAX_SECONDS,
   YOUTUBE_SHORT_SCENE_DURATION_MAX_SECONDS,
 } from "./duration-policy";
+import {
+  SCENE_NARRATION_MAX_CHARS,
+  SCENE_ON_SCREEN_TEXT_MAX_CHARS,
+  SCENE_VISUAL_PROMPT_MAX_CHARS,
+  SHORT_PACKAGE_IMAGE_PROMPT_MAX_CHARS,
+} from "./scene-field-limits";
+
+export {
+  SCENE_NARRATION_MAX_CHARS,
+  SCENE_ON_SCREEN_TEXT_MAX_CHARS,
+  SCENE_PASTE_PROMPT_MAX_CHARS,
+  SCENE_VISUAL_PROMPT_MAX_CHARS,
+  SHORT_PACKAGE_IMAGE_PROMPT_MAX_CHARS,
+  VIDEO_CHAPTER_VISUAL_PROMPT_MAX_CHARS,
+} from "./scene-field-limits";
 
 /**
  * Normalized YouTube Short draft — convergence contract for:
@@ -49,10 +64,10 @@ export const youtubeShortDraftSceneSchema = z.object({
     .positive()
     .max(YOUTUBE_SHORT_SCENE_DURATION_MAX_SECONDS),
   /** Empty allowed for Manual scaffolding (Phase 3D). */
-  narration: z.string().max(1200),
-  onScreenText: z.string().max(160).optional(),
+  narration: z.string().max(SCENE_NARRATION_MAX_CHARS),
+  onScreenText: z.string().max(SCENE_ON_SCREEN_TEXT_MAX_CHARS).optional(),
   /** Empty allowed for Manual scaffolding (Phase 3D). */
-  visualPrompt: z.string().max(800),
+  visualPrompt: z.string().max(SCENE_VISUAL_PROMPT_MAX_CHARS),
   assetType: youtubeShortSceneAssetTypeSchema.default("image"),
 });
 
@@ -62,9 +77,9 @@ export const youtubeShortDraftSceneSchema = z.object({
  * Empty strings allowed for Manual empty-scene scaffolding.
  */
 export const youtubeShortDurableSceneBaselineSchema = z.object({
-  visualPrompt: z.string().max(800),
-  narration: z.string().max(1200),
-  onScreenText: z.string().max(160).optional(),
+  visualPrompt: z.string().max(SCENE_VISUAL_PROMPT_MAX_CHARS),
+  narration: z.string().max(SCENE_NARRATION_MAX_CHARS),
+  onScreenText: z.string().max(SCENE_ON_SCREEN_TEXT_MAX_CHARS).optional(),
   assetType: youtubeShortSceneAssetTypeSchema,
 });
 
@@ -74,9 +89,9 @@ export const youtubeShortDurableSceneBaselineSchema = z.object({
  */
 export const youtubeShortDurableSceneEditSchema = z
   .object({
-    visualPrompt: z.string().max(800).optional(),
-    narration: z.string().max(1200).optional(),
-    onScreenText: z.string().max(160).optional(),
+    visualPrompt: z.string().max(SCENE_VISUAL_PROMPT_MAX_CHARS).optional(),
+    narration: z.string().max(SCENE_NARRATION_MAX_CHARS).optional(),
+    onScreenText: z.string().max(SCENE_ON_SCREEN_TEXT_MAX_CHARS).optional(),
     assetType: youtubeShortSceneAssetTypeSchema.optional(),
   })
   .refine(
@@ -94,9 +109,9 @@ export const youtubeShortDurableSceneEditSchema = z
  * parallel schema family. All four keys required for structured output.
  */
 export const youtubeShortSceneIngestExtractSchema = z.object({
-  visualPrompt: z.string().min(1).max(800),
-  narration: z.string().min(1).max(1200),
-  onScreenText: z.string().max(160),
+  visualPrompt: z.string().min(1).max(SCENE_VISUAL_PROMPT_MAX_CHARS),
+  narration: z.string().min(1).max(SCENE_NARRATION_MAX_CHARS),
+  onScreenText: z.string().max(SCENE_ON_SCREEN_TEXT_MAX_CHARS),
   assetType: youtubeShortSceneAssetTypeSchema,
 });
 
@@ -124,7 +139,11 @@ export const YOUTUBE_SHORT_SCENE_INGEST_JSON_SCHEMA = {
  */
 export const youtubeShortDurableEditsSchema = z
   .object({
-    imagePrompt: z.string().min(1).max(800).optional(),
+    imagePrompt: z
+      .string()
+      .min(1)
+      .max(SHORT_PACKAGE_IMAGE_PROMPT_MAX_CHARS)
+      .optional(),
     voiceoverPrompt: z.string().min(1).max(2000).optional(),
     script: z.string().min(1).max(6000).optional(),
     /** Project-level visual continuity instruction (Manual). */
@@ -148,7 +167,7 @@ export const youtubeShortDurableEditsSchema = z
  * map is a complete snapshot keyed by stable scene id.
  */
 export const youtubeShortGeneratedBaselineSchema = z.object({
-  imagePrompt: z.string().min(1).max(800),
+  imagePrompt: z.string().min(1).max(SHORT_PACKAGE_IMAGE_PROMPT_MAX_CHARS),
   voiceoverPrompt: z.string().min(1).max(2000),
   script: z.string().min(1).max(6000),
   globalVisualStyle: z.string().max(2000).optional(),
@@ -207,7 +226,7 @@ export const youtubeShortDraftSchema = z.object({
     .array(youtubeShortDraftSceneSchema)
     .min(YOUTUBE_SHORT_SCENE_COUNT_MIN)
     .max(YOUTUBE_SHORT_SCENE_COUNT_MAX),
-  imagePrompt: z.string().min(1).max(800),
+  imagePrompt: z.string().min(1).max(SHORT_PACKAGE_IMAGE_PROMPT_MAX_CHARS),
   voiceoverPrompt: z.string().min(1).max(2000),
   audienceAction: z.string().min(1).max(280).optional(),
   provenance: youtubeShortDraftProvenanceSchema,

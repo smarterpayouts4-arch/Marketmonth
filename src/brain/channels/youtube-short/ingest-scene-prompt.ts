@@ -7,12 +7,14 @@ import { tokenBudget } from "@/brain/policy/token-budgets";
 import { getContentBundle } from "@/brain/use-cases/produce-content-bundle";
 
 import {
+  SCENE_NARRATION_MAX_CHARS,
+  SCENE_ON_SCREEN_TEXT_MAX_CHARS,
+  SCENE_PASTE_PROMPT_MAX_CHARS,
+  SCENE_VISUAL_PROMPT_MAX_CHARS,
   YOUTUBE_SHORT_SCENE_INGEST_JSON_SCHEMA,
   youtubeShortSceneIngestExtractSchema,
   type YouTubeShortSceneIngestExtract,
 } from "./youtube-short-draft";
-
-const MAX_PROMPT_CHARS = 8_000;
 
 export type IngestScenePromptInput = {
   atomId: string;
@@ -92,7 +94,8 @@ Return ONLY JSON matching the schema with these keys:
 
 Rules:
 - Stay faithful to the user's brief; do not invent brand claims.
-- Keep visualPrompt ≤ 800 chars, narration ≤ 1200 chars, onScreenText ≤ 160 chars.
+- Keep visualPrompt ≤ ${SCENE_VISUAL_PROMPT_MAX_CHARS} chars, narration ≤ ${SCENE_NARRATION_MAX_CHARS} chars, onScreenText ≤ ${SCENE_ON_SCREEN_TEXT_MAX_CHARS} chars.
+- Preserve detailed visual production language when present — do not compress or omit sections just to shorten the string when under the visualPrompt limit.
 - Prefer concrete visual language suitable for later image generation.`;
 
 function buildUserPrompt(prompt: string, sceneId: string): string {
@@ -167,11 +170,11 @@ export async function ingestYouTubeShortScenePrompt(
   if (!prompt) {
     return { ok: false, status: 400, error: "prompt is required", model };
   }
-  if (prompt.length > MAX_PROMPT_CHARS) {
+  if (prompt.length > SCENE_PASTE_PROMPT_MAX_CHARS) {
     return {
       ok: false,
       status: 400,
-      error: `prompt exceeds ${MAX_PROMPT_CHARS} characters`,
+      error: `prompt exceeds ${SCENE_PASTE_PROMPT_MAX_CHARS} characters`,
       model,
     };
   }

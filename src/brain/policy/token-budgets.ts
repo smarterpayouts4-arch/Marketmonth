@@ -12,6 +12,8 @@ export const TOKEN_BUDGETS = {
   discoveryProfile: 16_000,
   discoveryStrategy: 16_000,
   discoveryCopyPolish: 8_000,
+  /** Short Manual paste-prompt → four scene fields (Phase 3F: long visuals). */
+  shortSceneIngest: 4_000,
 } as const;
 
 export type TokenBudgetKey = keyof typeof TOKEN_BUDGETS;

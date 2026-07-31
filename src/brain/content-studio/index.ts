@@ -33,6 +33,16 @@ export {
   YOUTUBE_SHORT_SCENE_COUNT_MIN,
 } from "@/brain/channels/youtube-short/youtube-short-draft";
 
+/** Short scene field-size policy (canonical: scene-field-limits). */
+export {
+  SCENE_NARRATION_MAX_CHARS,
+  SCENE_ON_SCREEN_TEXT_MAX_CHARS,
+  SCENE_PASTE_PROMPT_MAX_CHARS,
+  SCENE_VISUAL_PROMPT_MAX_CHARS,
+  SHORT_PACKAGE_IMAGE_PROMPT_MAX_CHARS,
+  VIDEO_CHAPTER_VISUAL_PROMPT_MAX_CHARS,
+} from "@/brain/channels/youtube-short/scene-field-limits";
+
 export {
   contentFormatPackageSchema,
   contentProductionBundleSchema,
