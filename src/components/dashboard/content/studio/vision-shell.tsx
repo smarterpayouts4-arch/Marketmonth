@@ -55,8 +55,12 @@ type VisionShellProps = {
   onGlobalVisualStyleChange?: (v: string) => void;
   onPastePromptFill?: (prompt: string) => Promise<boolean>;
   onStartFromGenerated?: () => void;
+  onValidateImageRender?: () => void | Promise<boolean>;
   ingestBusy?: boolean;
   ingestError?: string | null;
+  renderBusy?: boolean;
+  renderMessage?: string | null;
+  renderError?: string | null;
   imagePrompt: string;
   voiceoverPrompt: string;
   script: string;
@@ -104,8 +108,12 @@ export function VisionContentStudioShell({
   onGlobalVisualStyleChange,
   onPastePromptFill,
   onStartFromGenerated,
+  onValidateImageRender,
   ingestBusy,
   ingestError,
+  renderBusy,
+  renderMessage,
+  renderError,
   imagePrompt,
   voiceoverPrompt,
   script,
@@ -310,11 +318,23 @@ export function VisionContentStudioShell({
               onStartFromGenerated={
                 formatId === "youtube_short" ? onStartFromGenerated : undefined
               }
+              onValidateImageRender={
+                formatId === "youtube_short" ? onValidateImageRender : undefined
+              }
               ingestBusy={
                 formatId === "youtube_short" ? ingestBusy : undefined
               }
               ingestError={
                 formatId === "youtube_short" ? ingestError : undefined
+              }
+              renderBusy={
+                formatId === "youtube_short" ? renderBusy : undefined
+              }
+              renderMessage={
+                formatId === "youtube_short" ? renderMessage : undefined
+              }
+              renderError={
+                formatId === "youtube_short" ? renderError : undefined
               }
               imagePrompt={imagePrompt}
               voiceoverPrompt={voiceoverPrompt}

@@ -106,8 +106,12 @@ function AtomDeepLinkStudio({ atomId }: { atomId: string }) {
       }
       onPastePromptFill={atomStudio.ingestScenePrompt}
       onStartFromGenerated={atomStudio.startFromGeneratedScene}
+      onValidateImageRender={atomStudio.validateImageRender}
       ingestBusy={atomStudio.ingestBusy}
       ingestError={atomStudio.ingestError}
+      renderBusy={atomStudio.renderBusy}
+      renderMessage={atomStudio.renderMessage}
+      renderError={atomStudio.renderError}
       imagePrompt={atomStudio.edits.imagePrompt}
       voiceoverPrompt={atomStudio.edits.voiceoverPrompt}
       script={atomStudio.edits.script}

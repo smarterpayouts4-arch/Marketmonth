@@ -33,8 +33,12 @@ export type StudioPromptRailProps = {
   onGlobalVisualStyleChange?: (v: string) => void;
   onPastePromptFill?: (prompt: string) => Promise<boolean>;
   onStartFromGenerated?: () => void;
+  onValidateImageRender?: () => void | Promise<boolean>;
   ingestBusy?: boolean;
   ingestError?: string | null;
+  renderBusy?: boolean;
+  renderMessage?: string | null;
+  renderError?: string | null;
   imagePrompt: string;
   voiceoverPrompt: string;
   script: string;
@@ -64,8 +68,12 @@ export function StudioPromptRail({
   onGlobalVisualStyleChange,
   onPastePromptFill,
   onStartFromGenerated,
+  onValidateImageRender,
   ingestBusy,
   ingestError,
+  renderBusy,
+  renderMessage,
+  renderError,
   imagePrompt,
   voiceoverPrompt,
   script,
@@ -204,13 +212,20 @@ export function StudioPromptRail({
           sceneEdits={sceneEdits}
           fieldsReadOnly={fieldsReadOnly}
           manualWorkspace={isManualWorkspace}
+          dirty={dirty}
           ingestBusy={ingestBusy}
           ingestError={ingestError}
+          renderBusy={renderBusy}
+          renderMessage={renderMessage}
+          renderError={renderError}
           onPastePromptFill={
             isManualWorkspace ? onPastePromptFill : undefined
           }
           onStartFromGenerated={
             isManualWorkspace ? onStartFromGenerated : undefined
+          }
+          onValidateImageRender={
+            isManualWorkspace ? onValidateImageRender : undefined
           }
           onSceneVisualPromptChange={onSceneVisualPromptChange}
           onSceneNarrationChange={onSceneNarrationChange}

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { YOUTUBE_SHORT_DURATION_MAX_SECONDS } from "@/brain/channels/youtube-short/duration-policy";
+import { sceneRenderStateSchema } from "@/brain/channels/youtube-short/scene-render-state";
 import {
   SCENE_NARRATION_MAX_CHARS,
   SCENE_ON_SCREEN_TEXT_MAX_CHARS,
@@ -48,6 +49,11 @@ export const sceneCardSchema = z.object({
   assetType: youtubeShortSceneAssetTypeSchema.optional(),
   transition: z.string().max(80).optional(),
   chapterId: z.string().optional(),
+  /**
+   * Provider-neutral per-scene render state (Phase 4A+). Optional for
+   * backward-compatible reads of older bundles.
+   */
+  render: sceneRenderStateSchema.optional(),
 });
 
 export const youtubeShortFormatPackageSchema = z.object({

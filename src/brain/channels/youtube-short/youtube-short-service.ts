@@ -50,4 +50,37 @@ export {
   removeShortScene,
 } from "./scene-structure";
 
-export { composeEffectiveImagePrompt } from "./compose-effective-image-prompt";
+export {
+  composeEffectiveImagePrompt,
+  composeShortSceneEffectiveImagePrompt,
+  hashEffectiveImagePrompt,
+  hashSceneRenderSource,
+  SHORT_IMAGE_PROMPT_EXCLUSIONS,
+} from "./compose-effective-image-prompt";
+
+export {
+  renderYouTubeShortSavedSceneImage,
+  getSceneRenderState,
+  type RenderSavedSceneImageInput,
+  type RenderSavedSceneImageResult,
+} from "./render-saved-scene-image";
+
+export {
+  shortRenderInputSchema,
+  shortRenderInputToGenericRequest,
+  type ShortRenderInput,
+} from "./short-render-input";
+
+export {
+  sceneRenderStateSchema,
+  sceneRenderStatusSchema,
+  type SceneRenderState,
+  type SceneRenderStatus,
+} from "./scene-render-state";
+
+export {
+  SHORT_RENDER_ERROR_CODES,
+  SHORT_RENDER_ERROR_MESSAGES,
+  httpStatusForShortRenderError,
+  type ShortRenderErrorCode,
+} from "./render-errors";

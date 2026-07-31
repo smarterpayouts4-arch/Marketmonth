@@ -25,10 +25,15 @@ type SceneEditorProps = {
   fieldsReadOnly: boolean;
   /** Compact Manual workspace (hides nested “Scene · id” chrome). */
   manualWorkspace?: boolean;
+  dirty?: boolean;
   ingestBusy?: boolean;
   ingestError?: string | null;
+  renderBusy?: boolean;
+  renderMessage?: string | null;
+  renderError?: string | null;
   onPastePromptFill?: (prompt: string) => Promise<boolean>;
   onStartFromGenerated?: () => void;
+  onValidateImageRender?: () => void | Promise<boolean>;
   onSceneVisualPromptChange: (v: string) => void;
   onSceneNarrationChange: (v: string) => void;
   onSceneOnScreenTextChange: (v: string) => void;
@@ -42,10 +47,15 @@ export function SceneEditor({
   sceneEdits,
   fieldsReadOnly,
   manualWorkspace = false,
+  dirty = false,
   ingestBusy = false,
   ingestError = null,
+  renderBusy = false,
+  renderMessage = null,
+  renderError = null,
   onPastePromptFill,
   onStartFromGenerated,
+  onValidateImageRender,
   onSceneVisualPromptChange,
   onSceneNarrationChange,
   onSceneOnScreenTextChange,
@@ -61,9 +71,23 @@ export function SceneEditor({
       ? `Scene ${sceneIndex} of ${sceneCount}`
       : "Selected scene";
 
-  const generateDisabledReason = !sceneEdits.visualPrompt.trim()
+  const durableRender =
+    selectedScene && "render" in selectedScene
+      ? selectedScene.render
+      : undefined;
+  const durableDryRunOk = durableRender?.status === "dry_run_succeeded";
+  const durableFailed = durableRender?.status === "failed";
+
+  const dryRunDisabledReason = !sceneEdits.visualPrompt.trim()
     ? "Add a visual prompt first"
-    : "Generation not connected";
+    : sceneEdits.assetType !== "image"
+      ? "Only image asset scenes can be prepared in this phase"
+      : dirty
+        ? "Save this scene before preparing its render."
+        : renderBusy
+          ? "Validating render path…"
+          : null;
+  const dryRunDisabled = Boolean(dryRunDisabledReason) || !onValidateImageRender;
 
   return (
     <div
@@ -193,15 +217,71 @@ export function SceneEditor({
         </div>
 
         {manualWorkspace && !fieldsReadOnly ? (
-          <button
-            type="button"
-            className="h-8 w-full rounded-lg border border-dashed border-border px-3 text-xs text-text-muted disabled:opacity-60"
-            disabled
-            title={generateDisabledReason}
-            data-testid="studio-generate-image-shell"
-          >
-            Generate Image — Generation not connected
-          </button>
+          <div className="space-y-1" data-testid="studio-validate-image-render">
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                className="h-8 flex-1 rounded-lg border border-dashed border-border px-3 text-xs text-text-muted disabled:opacity-60"
+                disabled={dryRunDisabled}
+                title={dryRunDisabledReason ?? "Validate dry-run renderer path"}
+                onClick={() => {
+                  void onValidateImageRender?.();
+                }}
+                data-testid="studio-generate-image-shell"
+              >
+                {renderBusy
+                  ? "Validating Image Render…"
+                  : "Validate Image Render"}
+              </button>
+              <span
+                className="shrink-0 rounded border border-border px-1.5 py-0.5 text-[10px] text-text-muted"
+                data-testid="studio-dry-run-badge"
+              >
+                Dry run
+              </span>
+            </div>
+            {dirty ? (
+              <p
+                className="text-[10px] text-text-muted"
+                data-testid="studio-render-save-hint"
+              >
+                Save this scene before preparing its render.
+              </p>
+            ) : null}
+            {renderBusy ? (
+              <p
+                className="text-[10px] text-text-muted"
+                data-testid="studio-render-loading"
+              >
+                Checking renderer path…
+              </p>
+            ) : null}
+            {renderError ? (
+              <p
+                className="text-[10px] text-red-600"
+                data-testid="studio-render-error"
+              >
+                {renderError}
+              </p>
+            ) : null}
+            {renderMessage || durableDryRunOk ? (
+              <p
+                className="text-[10px] text-text-secondary"
+                data-testid="studio-render-success"
+              >
+                {renderMessage ??
+                  "Renderer path verified — no image generated"}
+              </p>
+            ) : null}
+            {!renderError && durableFailed && durableRender?.error ? (
+              <p
+                className="text-[10px] text-red-600"
+                data-testid="studio-render-durable-error"
+              >
+                {durableRender.error.message}
+              </p>
+            ) : null}
+          </div>
         ) : null}
 
         {manualWorkspace && onResetScene && !fieldsReadOnly ? (

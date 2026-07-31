@@ -205,3 +205,44 @@ export async function ingestScenePromptRequest(input: {
   }
   return { ok: true, extracted: data.extracted };
 }
+
+export type RenderSceneImageResult =
+  | {
+      ok: true;
+      bundle: ContentProductionBundle;
+      message: string;
+    }
+  | { ok: false; error: string };
+
+/** Phase 4A dry-run — validates renderer path; no image generated. */
+export async function renderSavedSceneImageRequest(input: {
+  atomId: string;
+  sceneId: string;
+}): Promise<RenderSceneImageResult> {
+  const res = await fetch("/api/brain/content/production/render-scene-image", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      atomId: input.atomId,
+      formatId: "youtube_short",
+      sceneId: input.sceneId,
+    }),
+  });
+  const data = (await res.json()) as {
+    ok: boolean;
+    error?: string;
+    bundle?: ContentProductionBundle;
+    message?: string;
+  };
+  if (!res.ok || !data.ok || !data.bundle) {
+    return {
+      ok: false,
+      error: data.error ?? "Could not prepare scene render",
+    };
+  }
+  return {
+    ok: true,
+    bundle: data.bundle,
+    message: data.message ?? "Renderer path verified — no image generated",
+  };
+}

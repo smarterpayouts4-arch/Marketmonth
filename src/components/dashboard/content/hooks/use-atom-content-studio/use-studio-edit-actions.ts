@@ -25,6 +25,7 @@ import {
 import {
   ingestScenePromptRequest,
   patchShortDurableEdits,
+  renderSavedSceneImageRequest,
 } from "./studio-production-api";
 import {
   EMPTY_EDITS,
@@ -61,6 +62,9 @@ type StudioEditActionsDeps = {
   setSaveLabel: (label: string) => void;
   setIngestBusy: (busy: boolean) => void;
   setIngestError: (error: string | null) => void;
+  setRenderBusy: (busy: boolean) => void;
+  setRenderMessage: (message: string | null) => void;
+  setRenderError: (error: string | null) => void;
   applyReadyBundle: (
     bundle: ContentProductionBundle,
     preferredSceneId?: string | null
@@ -87,6 +91,9 @@ export function useStudioEditActions({
   setSaveLabel,
   setIngestBusy,
   setIngestError,
+  setRenderBusy,
+  setRenderMessage,
+  setRenderError,
   applyReadyBundle,
 }: StudioEditActionsDeps) {
   const activePackage =
@@ -398,6 +405,63 @@ export function useStudioEditActions({
     ]
   );
 
+  const validateImageRender = useCallback(async (): Promise<boolean> => {
+    if (atomState.status !== "ready") return false;
+    if (formatId !== "youtube_short" || promptMode !== "manual") return false;
+    if (!selectedSceneId) return false;
+    if (dirty) {
+      setRenderError("Save this scene before preparing its render.");
+      setRenderMessage(null);
+      return false;
+    }
+    if (!selectedSceneEdits.visualPrompt.trim()) {
+      setRenderError("Add a visual prompt first");
+      setRenderMessage(null);
+      return false;
+    }
+    if (selectedSceneEdits.assetType !== "image") {
+      setRenderError("Only image asset scenes can be prepared in this phase");
+      setRenderMessage(null);
+      return false;
+    }
+
+    setRenderBusy(true);
+    setRenderError(null);
+    setRenderMessage(null);
+    try {
+      const result = await renderSavedSceneImageRequest({
+        atomId: atomState.atom.atom_id,
+        sceneId: selectedSceneId,
+      });
+      if (!result.ok) {
+        setRenderError(result.error);
+        return false;
+      }
+      applyReadyBundle(result.bundle);
+      setPromptModeState("manual");
+      setRenderMessage(result.message);
+      return true;
+    } catch {
+      setRenderError("Network error preparing scene render");
+      return false;
+    } finally {
+      setRenderBusy(false);
+    }
+  }, [
+    applyReadyBundle,
+    atomState,
+    dirty,
+    formatId,
+    promptMode,
+    selectedSceneEdits.assetType,
+    selectedSceneEdits.visualPrompt,
+    selectedSceneId,
+    setPromptModeState,
+    setRenderBusy,
+    setRenderError,
+    setRenderMessage,
+  ]);
+
   const resetSelectedScene = useCallback(
     () =>
       resetSelectedSceneAction(
@@ -494,5 +558,6 @@ export function useStudioEditActions({
     removeSelectedScene,
     ingestScenePrompt,
     startFromGeneratedScene,
+    validateImageRender,
   };
 }

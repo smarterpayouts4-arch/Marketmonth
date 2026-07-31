@@ -25,6 +25,9 @@ export function useAtomContentStudio(atomId: string | null) {
   const [saveLabel, setSaveLabel] = useState("Save draft");
   const [ingestBusy, setIngestBusy] = useState(false);
   const [ingestError, setIngestError] = useState<string | null>(null);
+  const [renderBusy, setRenderBusy] = useState(false);
+  const [renderMessage, setRenderMessage] = useState<string | null>(null);
+  const [renderError, setRenderError] = useState<string | null>(null);
 
   const { atomState, bundleState, applyReadyBundle, regenerate, reloadAtom } =
     useStudioBundle({
@@ -58,6 +61,7 @@ export function useAtomContentStudio(atomId: string | null) {
     removeSelectedScene,
     ingestScenePrompt,
     startFromGeneratedScene,
+    validateImageRender,
   } = useStudioEditActions({
     atomState,
     packages,
@@ -74,6 +78,9 @@ export function useAtomContentStudio(atomId: string | null) {
     setSaveLabel,
     setIngestBusy,
     setIngestError,
+    setRenderBusy,
+    setRenderMessage,
+    setRenderError,
     applyReadyBundle,
   });
 
@@ -111,8 +118,12 @@ export function useAtomContentStudio(atomId: string | null) {
     removeSelectedScene,
     ingestScenePrompt,
     startFromGeneratedScene,
+    validateImageRender,
     ingestBusy,
     ingestError,
+    renderBusy,
+    renderMessage,
+    renderError,
     regenerate: regenerateFormats,
     reloadAtom,
   };

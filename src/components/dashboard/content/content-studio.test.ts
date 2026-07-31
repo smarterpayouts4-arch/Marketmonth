@@ -376,7 +376,8 @@ describe("Content Studio atomId-only entry", () => {
 
     assert.match(sceneEditor, /studio-paste-prompt/);
     assert.match(sceneEditor, /studio-generate-image-shell/);
-    assert.match(sceneEditor, /Generation not connected/);
+    assert.match(sceneEditor, /Validate Image Render/);
+    assert.match(sceneEditor, /studio-dry-run-badge/);
     assert.match(sceneEditor, /Scene \$\{sceneIndex\} of \$\{sceneCount\}/);
 
     assert.match(pasteSheet, /Fill Scene/);
@@ -567,7 +568,61 @@ describe("Content Studio atomId-only entry", () => {
         /ShortRenderInput|json2video|imagekit/i,
         `${file} must not import renderer bridge`
       );
+      assert.doesNotMatch(
+        src,
+        /@\/brain\/render/,
+        `${file} must not import shared renderer`
+      );
     }
+  });
+
+  it("Phase 4A: dry-run render path is API → channel; UI stays presentation-only", () => {
+    const hook = readStudioHookSurface();
+    const api = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/hooks/use-atom-content-studio/studio-production-api.ts"
+      ),
+      "utf8"
+    );
+    const sceneEditor = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/prompt-rail/scene-editor.tsx"
+      ),
+      "utf8"
+    );
+    const route = readFileSync(
+      path.join(
+        root,
+        "src/app/api/brain/content/production/render-scene-image/route.ts"
+      ),
+      "utf8"
+    );
+    const renderMedia = readFileSync(
+      path.join(root, "src/brain/render/render-media.ts"),
+      "utf8"
+    );
+
+    assert.match(hook, /validateImageRender/);
+    assert.match(api, /render-scene-image/);
+    assert.match(api, /renderSavedSceneImageRequest/);
+    assert.match(sceneEditor, /Validate Image Render/);
+    assert.match(sceneEditor, /Dry run/);
+    assert.match(sceneEditor, /no image generated/i);
+    assert.match(sceneEditor, /Save this scene before preparing its render/);
+    assert.match(sceneEditor, /dirty/);
+
+    assert.match(route, /requireApiSession/);
+    assert.match(route, /requireCompanyAccess/);
+    assert.match(route, /renderYouTubeShortSavedSceneImage/);
+    assert.doesNotMatch(route, /createDryRunAdapter|from ["']@\/brain\/render/);
+    assert.doesNotMatch(route, /composeShortSceneEffectiveImagePrompt/);
+    assert.doesNotMatch(route, /saveProductionBundle/);
+
+    assert.doesNotMatch(renderMedia, /bundle-store|youtube-short/);
+    assert.doesNotMatch(hook, /from ["']@\/brain\/render/);
+    assert.doesNotMatch(api, /from ["']@\/brain\/render/);
   });
 });
 
