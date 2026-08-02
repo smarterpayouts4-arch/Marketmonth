@@ -17,7 +17,7 @@ type StoryboardProps = {
   pkg: ContentFormatPackage | null;
   selectedSceneId: string | null;
   onSelectScene: (id: string) => void;
-  /** Manual Short only — storyboard owns Add / Remove. */
+  /** Generated mode may hide the script line; Add/Remove stay available for Shorts. */
   promptMode?: StudioPromptMode;
   onAddScene?: () => void | Promise<void>;
   onRemoveSelectedScene?: () => void | Promise<void>;
@@ -30,7 +30,7 @@ function formatClock(totalSeconds: number): string {
   return `${String(m).padStart(2, "0")}:${String(rem).padStart(2, "0")}`;
 }
 
-/** Scene cards: width/aspect from globals.css `.studio-storyboard[data-format]` */
+/** Scene cards: width/aspect from content-studio.css `.studio-storyboard[data-format]` */
 export function StudioStoryboard({
   pkg,
   selectedSceneId,
@@ -44,9 +44,10 @@ export function StudioStoryboard({
   if (!pkg) return null;
   const scenes = [...pkg.scenes].sort((a, b) => a.order - b.order);
   const format = pkg.formatId === "youtube_short" ? "short" : "video";
+  // Structure edits are independent of Generated/Manual prompt source.
+  // Reset edits forces Generated — hiding Add/Remove there left users stuck at min count.
   const showSceneControls =
     pkg.formatId === "youtube_short" &&
-    promptMode === "manual" &&
     Boolean(onAddScene) &&
     Boolean(onRemoveSelectedScene);
   const canAdd = scenes.length < YOUTUBE_SHORT_SCENE_COUNT_MAX;
@@ -138,6 +139,15 @@ export function StudioStoryboard({
           </div>
         ) : null}
       </div>
+      {showSceneControls && !canRemove ? (
+        <p
+          className="text-[10px] leading-snug text-text-muted"
+          data-testid="studio-storyboard-min-scenes-hint"
+        >
+          Minimum {YOUTUBE_SHORT_SCENE_COUNT_MIN} scenes — Remove is disabled.
+          Use Add Scene for scene {scenes.length + 1}.
+        </p>
+      ) : null}
 
       {pkg.formatId === "youtube_short" && promptMode !== "manual" ? (
         <p

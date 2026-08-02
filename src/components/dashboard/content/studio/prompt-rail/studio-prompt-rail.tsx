@@ -10,6 +10,7 @@ import type {
   SceneEditFields,
   StudioPromptMode,
 } from "../../hooks/use-atom-content-studio";
+import type { FullGenerateProgress } from "../../hooks/use-atom-content-studio/use-studio-edit-actions";
 import { FormatPrefs } from "./format-prefs";
 import { GlobalVisualStyleField } from "./global-visual-style";
 import { PromptCard } from "./prompt-card";
@@ -28,15 +29,24 @@ export type StudioPromptRailProps = {
   onSceneNarrationChange?: (v: string) => void;
   onSceneOnScreenTextChange?: (v: string) => void;
   onSceneAssetTypeChange?: (v: SceneAssetType) => void;
+  onSceneMotionPromptChange?: (v: string) => void;
   onResetScene?: () => void | Promise<void>;
   globalVisualStyle?: string;
   onGlobalVisualStyleChange?: (v: string) => void;
   onPastePromptFill?: (prompt: string) => Promise<boolean>;
   onStartFromGenerated?: () => void;
   onValidateImageRender?: () => void | Promise<boolean>;
+  onGenerateSceneVoice?: () => void | Promise<boolean>;
+  onClearSceneVoice?: () => void | Promise<boolean>;
+  onGenerateSceneVideo?: () => void | Promise<boolean>;
+  onClearSceneVideo?: () => void | Promise<boolean>;
+  onComposeSceneMp4?: () => void | Promise<boolean>;
+  onGenerateCompleteScene?: () => void | Promise<boolean>;
+  fullGenerateProgress?: FullGenerateProgress | null;
   ingestBusy?: boolean;
   ingestError?: string | null;
   renderBusy?: boolean;
+  renderBusyMap?: import("../../hooks/use-atom-content-studio/render-busy").RenderBusyMap;
   renderMessage?: string | null;
   renderError?: string | null;
   imagePrompt: string;
@@ -63,15 +73,24 @@ export function StudioPromptRail({
   onSceneNarrationChange,
   onSceneOnScreenTextChange,
   onSceneAssetTypeChange,
+  onSceneMotionPromptChange,
   onResetScene,
   globalVisualStyle,
   onGlobalVisualStyleChange,
   onPastePromptFill,
   onStartFromGenerated,
   onValidateImageRender,
+  onGenerateSceneVoice,
+  onClearSceneVoice,
+  onGenerateSceneVideo,
+  onClearSceneVideo,
+  onComposeSceneMp4,
+  onGenerateCompleteScene,
+  fullGenerateProgress,
   ingestBusy,
   ingestError,
   renderBusy,
+  renderBusyMap,
   renderMessage,
   renderError,
   imagePrompt,
@@ -205,7 +224,8 @@ export function StudioPromptRail({
       onSceneVisualPromptChange &&
       onSceneNarrationChange &&
       onSceneOnScreenTextChange &&
-      onSceneAssetTypeChange ? (
+      onSceneAssetTypeChange &&
+      onSceneMotionPromptChange ? (
         <SceneEditor
           pkg={pkg}
           selectedSceneId={selectedSceneId}
@@ -216,8 +236,12 @@ export function StudioPromptRail({
           ingestBusy={ingestBusy}
           ingestError={ingestError}
           renderBusy={renderBusy}
+          renderBusyMap={renderBusyMap}
           renderMessage={renderMessage}
           renderError={renderError}
+          saveLabel={saveLabel}
+          onSave={isManualWorkspace ? onSave : undefined}
+          onResetFormat={isManualWorkspace ? onReset : undefined}
           onPastePromptFill={
             isManualWorkspace ? onPastePromptFill : undefined
           }
@@ -227,10 +251,32 @@ export function StudioPromptRail({
           onValidateImageRender={
             isManualWorkspace ? onValidateImageRender : undefined
           }
+          onGenerateSceneVoice={
+            isManualWorkspace ? onGenerateSceneVoice : undefined
+          }
+          onClearSceneVoice={
+            isManualWorkspace ? onClearSceneVoice : undefined
+          }
+          onGenerateSceneVideo={
+            isManualWorkspace ? onGenerateSceneVideo : undefined
+          }
+          onClearSceneVideo={
+            isManualWorkspace ? onClearSceneVideo : undefined
+          }
+          onComposeSceneMp4={
+            isManualWorkspace ? onComposeSceneMp4 : undefined
+          }
+          onGenerateCompleteScene={
+            isManualWorkspace ? onGenerateCompleteScene : undefined
+          }
+          fullGenerateProgress={
+            isManualWorkspace ? fullGenerateProgress : undefined
+          }
           onSceneVisualPromptChange={onSceneVisualPromptChange}
           onSceneNarrationChange={onSceneNarrationChange}
           onSceneOnScreenTextChange={onSceneOnScreenTextChange}
           onSceneAssetTypeChange={onSceneAssetTypeChange}
+          onSceneMotionPromptChange={onSceneMotionPromptChange}
           onResetScene={onResetScene}
         />
       ) : null}
@@ -242,17 +288,17 @@ export function StudioPromptRail({
         />
       ) : null}
 
-      <PromptRailActions
-        dirty={dirty}
-        fieldsReadOnly={fieldsReadOnly}
-        saveLabel={
-          isManualWorkspace && saveLabel === "Save draft"
-            ? "Save Scene"
-            : saveLabel
-        }
-        onSave={onSave}
-        onReset={onReset}
-      />
+      {/* Manual Short embeds Save/Reset inside SceneAssetPanel footer. */}
+      {!isManualWorkspace || !showSceneEditor ? (
+        <PromptRailActions
+          dirty={dirty}
+          fieldsReadOnly={fieldsReadOnly}
+          isManualWorkspace={isManualWorkspace}
+          saveLabel={saveLabel}
+          onSave={onSave}
+          onReset={onReset}
+        />
+      ) : null}
     </aside>
   );
 }

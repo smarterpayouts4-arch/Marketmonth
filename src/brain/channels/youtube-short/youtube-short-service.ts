@@ -28,6 +28,12 @@ export {
 export { validateShortFormatPackage } from "./validate-format-package";
 
 export {
+  VISUAL_PROMPT_RESERVED_SECTION_HEADERS,
+  visualPromptContainsReservedSectionHeaders,
+  visualPromptReservedSectionHeaderError,
+} from "./visual-prompt-section-headers";
+
+export {
   patchYouTubeShortDurableEdits,
   type PatchShortEditsInput,
   type PatchShortEditsResult,
@@ -40,6 +46,15 @@ export {
   type IngestScenePromptResult,
   type SceneIngestLlmAdapter,
 } from "./ingest-scene-prompt";
+
+export {
+  parseLabeledScenePrompt,
+  pasteHasRecognizedSectionHeaders,
+  validateLabeledScenePrompt,
+  type LabeledSceneSectionId,
+  type ParseLabeledScenePromptResult,
+  type ValidateLabeledScenePromptResult,
+} from "./parse-labeled-scene-prompt";
 
 export {
   addShortScene,
@@ -64,6 +79,79 @@ export {
   type RenderSavedSceneImageInput,
   type RenderSavedSceneImageResult,
 } from "./render-saved-scene-image";
+
+export {
+  clearYouTubeShortSavedSceneVoice,
+  renderYouTubeShortSavedSceneVoice,
+  type ClearSavedSceneVoiceResult,
+  type RenderSavedSceneVoiceDeps,
+  type RenderSavedSceneVoiceInput,
+  type RenderSavedSceneVoiceResult,
+} from "./render-saved-scene-voice/index";
+
+export {
+  clearYouTubeShortSavedSceneVideo,
+  renderYouTubeShortSavedSceneVideo,
+  type ClearSavedSceneVideoResult,
+  type RenderSavedSceneVideoDeps,
+  type RenderSavedSceneVideoInput,
+  type RenderSavedSceneVideoResult,
+} from "./render-saved-scene-video/index";
+
+export {
+  renderYouTubeShortSavedSceneComposedVideo,
+  type RenderSavedSceneComposedVideoDeps,
+  type RenderSavedSceneComposedVideoInput,
+  type RenderSavedSceneComposedVideoResult,
+} from "./render-saved-scene-composed-video/index";
+
+export {
+  assembleYouTubeShortFinal,
+  type AssembleFinalShortDeps,
+  type AssembleFinalShortInput,
+  type AssembleFinalShortResult,
+} from "./assemble-final-short";
+
+export {
+  applyAssetStaleRules,
+  computeSceneStaleFlags,
+  isAssetCurrent,
+  isAssetStale,
+} from "./asset-stale-rules";
+
+export {
+  packageFinalShortStateSchema,
+  packageFinalShortStatusSchema,
+  type PackageFinalShortState,
+  type PackageFinalShortStatus,
+} from "./package-final-short-state";
+
+export {
+  sceneVoiceStateSchema,
+  sceneVoiceStatusSchema,
+  type SceneVoiceState,
+  type SceneVoiceStatus,
+} from "./scene-voice-state";
+
+export {
+  sceneVideoStateSchema,
+  sceneVideoStatusSchema,
+  type SceneVideoState,
+  type SceneVideoStatus,
+} from "./scene-video-state";
+
+export {
+  sceneComposedVideoStateSchema,
+  sceneComposedVideoStatusSchema,
+  type SceneComposedVideoState,
+  type SceneComposedVideoStatus,
+} from "./scene-composed-video-state";
+
+export {
+  buildOnScreenTextLayout,
+  splitOnScreenTextBlocks,
+  type OnScreenTextLayout,
+} from "./on-screen-text-layout";
 
 export {
   shortRenderInputSchema,

@@ -13,16 +13,27 @@ import { buildExternalVideoPrompt } from "./studio/build-external-prompt";
 
 const root = process.cwd();
 
+/** Concatenate .ts/.tsx files in a folder (non-recursive) for structural asserts. */
+function readFolderSurface(dir: string): string {
+  return readdirSync(dir)
+    .filter((name) => /\.(ts|tsx)$/.test(name) && !name.includes(".test."))
+    .sort()
+    .map((name) => readFileSync(path.join(dir, name), "utf8"))
+    .join("\n");
+}
+
 /** Concatenate studio hook modules so structural asserts survive folder splits. */
 function readStudioHookSurface(): string {
   const dir = path.join(
     root,
     "src/components/dashboard/content/hooks/use-atom-content-studio"
   );
-  return [
+  const editActions = readFolderSurface(
+    path.join(dir, "use-studio-edit-actions")
+  );
+  const topLevel = [
     "use-atom-content-studio.ts",
     "use-studio-bundle.ts",
-    "use-studio-edit-actions.ts",
     "studio-scene-actions.ts",
     "seed-short-editors.ts",
     "package-edit-helpers.ts",
@@ -30,6 +41,46 @@ function readStudioHookSurface(): string {
   ]
     .map((name) => readFileSync(path.join(dir, name), "utf8"))
     .join("\n");
+  return `${topLevel}\n${editActions}`;
+}
+
+/** Concatenate vision-shell folder so structural asserts survive the split. */
+function readVisionShellSurface(): string {
+  return readFolderSurface(
+    path.join(root, "src/components/dashboard/content/studio/vision-shell")
+  );
+}
+
+/** Orchestra + sibling folder for scene-asset-panel thin-split. */
+function readSceneAssetPanelSurface(): string {
+  const orchestra = readFileSync(
+    path.join(
+      root,
+      "src/components/dashboard/content/studio/prompt-rail/scene-asset-panel.tsx"
+    ),
+    "utf8"
+  );
+  const folder = readFolderSurface(
+    path.join(
+      root,
+      "src/components/dashboard/content/studio/prompt-rail/scene-asset-panel"
+    )
+  );
+  return `${orchestra}\n${folder}`;
+}
+
+/** Orchestra + sibling folder for studio-production-api thin-split. */
+function readStudioProductionApiSurface(): string {
+  const dir = path.join(
+    root,
+    "src/components/dashboard/content/hooks/use-atom-content-studio"
+  );
+  const orchestra = readFileSync(
+    path.join(dir, "studio-production-api.ts"),
+    "utf8"
+  );
+  const folder = readFolderSurface(path.join(dir, "studio-production-api"));
+  return `${orchestra}\n${folder}`;
 }
 
 describe("Content Studio atomId-only entry", () => {
@@ -47,13 +98,7 @@ describe("Content Studio atomId-only entry", () => {
   });
 
   it("ships dense vision shell: toolbar, header actions, overlay atom, prompt rail", () => {
-    const shell = readFileSync(
-      path.join(
-        root,
-        "src/components/dashboard/content/studio/vision-shell.tsx"
-      ),
-      "utf8"
-    );
+    const shell = readVisionShellSurface();
     assert.match(shell, /StudioPlatformToolbar/);
     assert.match(shell, /StudioPromptRail/);
     assert.match(shell, /StudioPreviewCanvas/);
@@ -67,7 +112,7 @@ describe("Content Studio atomId-only entry", () => {
     assert.match(shell, /studio-strategy-overlay/);
     assert.match(shell, /studio-copy-chatgpt-prompt/);
     assert.match(shell, /studio-regenerate/);
-    assert.match(shell, /studio-export-disabled/);
+    assert.match(shell, /studio-export-controls|studio-export-disabled|Assemble Final Short/);
     assert.match(shell, /data-studio-shell/);
     assert.match(shell, /AtomReviewPanel/);
     assert.match(shell, /buildExternalVideoPrompt/);
@@ -161,13 +206,7 @@ describe("Content Studio atomId-only entry", () => {
       ),
       "utf8"
     );
-    const api = readFileSync(
-      path.join(
-        root,
-        "src/components/dashboard/content/hooks/use-atom-content-studio/studio-production-api.ts"
-      ),
-      "utf8"
-    );
+    const api = readStudioProductionApiSurface();
     assert.match(api, /method:\s*["']PATCH["']/);
     assert.doesNotMatch(hook, /sessionStorage/);
     assert.doesNotMatch(api, /sessionStorage/);
@@ -182,13 +221,7 @@ describe("Content Studio atomId-only entry", () => {
       ),
       "utf8"
     );
-    const api = readFileSync(
-      path.join(
-        root,
-        "src/components/dashboard/content/hooks/use-atom-content-studio/studio-production-api.ts"
-      ),
-      "utf8"
-    );
+    const api = readStudioProductionApiSurface();
     const rail = readFileSync(
       path.join(
         root,
@@ -203,13 +236,7 @@ describe("Content Studio atomId-only entry", () => {
       ),
       "utf8"
     );
-    const shell = readFileSync(
-      path.join(
-        root,
-        "src/components/dashboard/content/studio/vision-shell.tsx"
-      ),
-      "utf8"
-    );
+    const shell = readVisionShellSurface();
     const preview = readFileSync(
       path.join(
         root,
@@ -248,6 +275,15 @@ describe("Content Studio atomId-only entry", () => {
     assert.match(preview, /studio-preview-image-prompt/);
     assert.match(preview, /studio-preview-voiceover-prompt/);
     assert.match(preview, /studio-preview-script/);
+    assert.match(preview, /studio-preview-zoom/);
+    assert.match(preview, /studio-preview-zoom-dialog/);
+    /* Checkpoint B: onScreenText DOM overlay over assetUrl (live Manual draft).
+     * Class/testid live in preview-onscreen-overlay.tsx; canvas must host the component. */
+    assert.match(preview, /SceneOnScreenOverlay/);
+    assert.match(preview, /preview-onscreen-overlay/);
+    assert.match(preview, /overlayTextTrimmed/);
+    assert.match(preview, /const overlayText =/);
+    assert.match(preview, /sceneEdits\?\.onScreenText/);
     assert.match(storyboard, /studio-storyboard-script/);
   });
 
@@ -266,13 +302,7 @@ describe("Content Studio atomId-only entry", () => {
       ),
       "utf8"
     );
-    const api = readFileSync(
-      path.join(
-        root,
-        "src/components/dashboard/content/hooks/use-atom-content-studio/studio-production-api.ts"
-      ),
-      "utf8"
-    );
+    const api = readStudioProductionApiSurface();
     const rail = readFileSync(
       path.join(
         root,
@@ -316,13 +346,7 @@ describe("Content Studio atomId-only entry", () => {
       ),
       "utf8"
     );
-    const api = readFileSync(
-      path.join(
-        root,
-        "src/components/dashboard/content/hooks/use-atom-content-studio/studio-production-api.ts"
-      ),
-      "utf8"
-    );
+    const api = readStudioProductionApiSurface();
     const rail = readFileSync(
       path.join(
         root,
@@ -375,13 +399,44 @@ describe("Content Studio atomId-only entry", () => {
     assert.match(rail, /Content \/ script/);
 
     assert.match(sceneEditor, /studio-paste-prompt/);
-    assert.match(sceneEditor, /studio-generate-image-shell/);
-    assert.match(sceneEditor, /Generate Image/);
-    assert.match(sceneEditor, /Regenerate Image/);
+    assert.match(sceneEditor, /SceneAssetPanel/);
     assert.match(sceneEditor, /Scene \$\{sceneIndex\} of \$\{sceneCount\}/);
+    const sceneAssetPanel = readSceneAssetPanelSurface();
+    assert.match(sceneAssetPanel, /studio-generate-image-shell/);
+    assert.match(sceneAssetPanel, /Generate Image/);
+    assert.match(sceneAssetPanel, /Regenerate Image/);
+    assert.match(sceneAssetPanel, /Motion Prompt/);
+    assert.match(sceneAssetPanel, /studio-motion-prompt-field/);
+    assert.match(
+      sceneAssetPanel,
+      /Add and save Motion Prompt instructions before generating video\./
+    );
+    assert.match(
+      sceneAssetPanel,
+      /Describe what the subject does during this video/
+    );
+    assert.doesNotMatch(sceneAssetPanel, /Optional Veo/);
+    // Layout: Asset Type toggle → Motion Prompt → Generate Video
+    const assetVideoBtn = sceneAssetPanel.indexOf("studio-scene-asset-video");
+    const motionField = sceneAssetPanel.indexOf("studio-motion-prompt-field");
+    const generateVideo = sceneAssetPanel.indexOf("studio-generate-video");
+    assert.ok(assetVideoBtn >= 0 && motionField > assetVideoBtn);
+    assert.ok(generateVideo > motionField);
+    assert.match(sceneAssetPanel, /showMotionPrompt/);
+    assert.match(sceneAssetPanel, /assetType === "video"/);
+    assert.match(sceneAssetPanel, /Voiceover/);
+    assert.match(sceneAssetPanel, /Final Scene Video/);
+    assert.match(sceneAssetPanel, /Create Scene MP4/);
+    assert.doesNotMatch(sceneAssetPanel, /studio-scene-image-thumb/);
+    assert.doesNotMatch(
+      sceneAssetPanel,
+      /The image used as the visual foundation for this scene/
+    );
 
     assert.match(pasteSheet, /Fill Scene/);
     assert.match(pasteSheet, /studio-paste-prompt-textarea/);
+    assert.match(pasteSheet, /Motion Prompt/);
+    assert.match(pasteSheet, /nothing is\s+generated until you Save Scene/i);
 
     assert.match(ingestRoute, /requireApiSession/);
     assert.match(ingestRoute, /requireCompanyAccess/);
@@ -397,13 +452,7 @@ describe("Content Studio atomId-only entry", () => {
 
   it("Phase 3D: durable scene structure + global style + lint-safe hook (backend retained)", () => {
     const hook = readStudioHookSurface();
-    const api = readFileSync(
-      path.join(
-        root,
-        "src/components/dashboard/content/hooks/use-atom-content-studio/studio-production-api.ts"
-      ),
-      "utf8"
-    );
+    const api = readStudioProductionApiSurface();
     const rail = readFileSync(
       path.join(
         root,
@@ -494,18 +543,15 @@ describe("Content Studio atomId-only entry", () => {
       ),
       "utf8"
     );
-    const shell = readFileSync(
-      path.join(
-        root,
-        "src/components/dashboard/content/studio/vision-shell.tsx"
-      ),
-      "utf8"
-    );
+    const shell = readVisionShellSurface();
     const studio = readFileSync(
       path.join(root, "src/components/dashboard/content/content-studio.tsx"),
       "utf8"
     );
-    const css = readFileSync(path.join(root, "src/app/globals.css"), "utf8");
+    const css = readFileSync(
+      path.join(root, "src/styles/content-studio.css"),
+      "utf8"
+    );
 
     // Rail: no scene-count presets / Apply / Add / Remove
     assert.doesNotMatch(rail, /SceneSetup/);
@@ -519,18 +565,55 @@ describe("Content Studio atomId-only entry", () => {
     assert.match(sceneEditor, /studio-paste-prompt/);
     assert.match(sceneEditor, /studio-reset-scene/);
 
-    // Storyboard header owns Add / Remove Selected
+    // Storyboard header owns Add / Remove Selected (both prompt modes — not Manual-only)
     assert.match(storyboard, /studio-storyboard-actions/);
     assert.match(storyboard, /studio-add-scene/);
     assert.match(storyboard, /studio-remove-selected/);
     assert.match(storyboard, /studio-remove-scene-confirm/);
+    assert.match(storyboard, /studio-storyboard-min-scenes-hint/);
     assert.match(storyboard, /Add Scene/);
     assert.match(storyboard, /Remove Selected/);
+    assert.doesNotMatch(
+      storyboard,
+      /promptMode === "manual" &&\s*Boolean\(onAddScene\)/
+    );
     assert.match(storyboard, /data-selected=\{selected \? "true" : "false"\}/);
     assert.match(storyboard, /aria-pressed=\{selected\}/);
     assert.match(shell, /onRemoveSelectedScene/);
     assert.match(shell, /onAddScene/);
     assert.doesNotMatch(studio, /onApplySceneCount/);
+    assert.match(
+      readFileSync(
+        path.join(
+          root,
+          "src/components/dashboard/content/studio/prompt-rail/prompt-rail-actions.tsx"
+        ),
+        "utf8"
+      ),
+      /Reset to generated/
+    );
+    assert.match(
+      readFileSync(
+        path.join(
+          root,
+          "src/components/dashboard/content/studio/prompt-rail/prompt-rail-actions.tsx"
+        ),
+        "utf8"
+      ),
+      /studio-save-status/
+    );
+    assert.match(
+      readFileSync(
+        path.join(
+          root,
+          "src/components/dashboard/content/studio/prompt-rail/prompt-rail-actions.tsx"
+        ),
+        "utf8"
+      ),
+      /Unsaved changes/
+    );
+    assert.match(studio, /onClearSceneVoice/);
+    assert.match(readSceneAssetPanelSurface(), /studio-clear-voice/);
 
     // ~15% shorter Short cards + clearer selection + no vertical scroll on track
     assert.match(css, /4\.45rem/);
@@ -578,13 +661,7 @@ describe("Content Studio atomId-only entry", () => {
 
   it("Phase 4A: dry-run render path is API → channel; UI stays presentation-only", () => {
     const hook = readStudioHookSurface();
-    const api = readFileSync(
-      path.join(
-        root,
-        "src/components/dashboard/content/hooks/use-atom-content-studio/studio-production-api.ts"
-      ),
-      "utf8"
-    );
+    const api = readStudioProductionApiSurface();
     const sceneEditor = readFileSync(
       path.join(
         root,
@@ -592,6 +669,7 @@ describe("Content Studio atomId-only entry", () => {
       ),
       "utf8"
     );
+    const sceneAssetPanel = readSceneAssetPanelSurface();
     const route = readFileSync(
       path.join(
         root,
@@ -605,12 +683,21 @@ describe("Content Studio atomId-only entry", () => {
     );
 
     assert.match(hook, /validateImageRender/);
+    assert.match(hook, /generateCompleteScene/);
     assert.match(api, /render-scene-image/);
     assert.match(api, /renderSavedSceneImageRequest/);
-    assert.match(sceneEditor, /Generate Image/);
-    assert.match(sceneEditor, /Regenerate Image/);
-    assert.match(sceneEditor, /Save this scene before generating its image/);
-    assert.match(sceneEditor, /dirty/);
+    assert.match(sceneEditor, /SceneAssetPanel/);
+    assert.match(sceneAssetPanel, /Generate Image/);
+    assert.match(sceneAssetPanel, /Regenerate Image/);
+    assert.match(sceneAssetPanel, /Generate Complete Scene/);
+    assert.match(sceneAssetPanel, /studio-generate-complete-scene/);
+    assert.match(sceneAssetPanel, /studio-full-generate-stepper/);
+    assert.doesNotMatch(
+      sceneAssetPanel,
+      /Only image asset scenes can be prepared in this phase/
+    );
+    assert.match(sceneAssetPanel, /Save this scene before generating its image/);
+    assert.match(sceneAssetPanel, /dirty/);
 
     assert.match(route, /requireApiSession/);
     assert.match(route, /requireCompanyAccess/);
@@ -625,6 +712,55 @@ describe("Content Studio atomId-only entry", () => {
     assert.doesNotMatch(hook, /from ["']@\/brain\/render/);
     assert.doesNotMatch(api, /from ["']@\/brain\/render/);
     assert.doesNotMatch(hook, /@google\/genai|@imagekit\/nodejs/);
+  });
+
+  it("composed MP4 plays inside the vertical preview frame, not a full-width sibling", () => {
+    const preview = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/preview-canvas.tsx"
+      ),
+      "utf8"
+    );
+    const workspace = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/vision-shell/youtube-workspace.tsx"
+      ),
+      "utf8"
+    );
+    const storyboard = readFileSync(
+      path.join(
+        root,
+        "src/components/dashboard/content/studio/storyboard.tsx"
+      ),
+      "utf8"
+    );
+    const css = readFileSync(
+      path.join(root, "src/styles/content-studio.css"),
+      "utf8"
+    );
+
+    assert.match(preview, /studio-preview-composed-video/);
+    assert.match(preview, /showingComposed/);
+    assert.match(preview, /object-contain/);
+    assert.match(preview, /data-media=/);
+    // Must not recreate a full-width landscape player under the frame.
+    assert.doesNotMatch(preview, /studio-preview-composed-player/);
+    assert.doesNotMatch(
+      preview,
+      /className="w-full rounded-md bg-black"/
+    );
+    // Storyboard ownership stays on the workspace, once (import + JSX).
+    assert.doesNotMatch(preview, /StudioStoryboard|studio-storyboard/);
+    assert.match(workspace, /<StudioStoryboard[\s\n]/);
+    assert.equal(
+      (workspace.match(/<StudioStoryboard[\s\n]/g) ?? []).length,
+      1
+    );
+    assert.match(storyboard, /data-testid="studio-storyboard"/);
+    assert.match(css, /\.studio-preview-frame--short/);
+    assert.match(css, /aspect-ratio:\s*9\s*\/\s*16/);
   });
 });
 

@@ -3,7 +3,7 @@ title: Content Brain
 status: active
 authority: supporting
 owner: engineering
-last_verified: 2026-07-30
+last_verified: 2026-08-02
 related_paths:
   - src/brain/content/**
   - src/brain/atom/**
@@ -54,7 +54,8 @@ Canonical Content Brain pipeline: Brand Core → editorial directions → Conten
 - **LLM-as-judge always-on** for Idea Lab topic candidate runs (advisory)
 - Approval/lock before channel specialists; production from locked `atomId`
 - Product MT + Idea Lab: approve/lock → `/content?atomId=` (auth via atom owner `companyId`); no localStorage Studio handoff
-- `ContentProductionBundle` via `produceContentBundle`: YouTube Short via `youtube-short-service` (9:16) + YouTube Video adapter (16:9); idempotent refresh; export/render stubbed
+- `ContentProductionBundle` via `produceContentBundle`: YouTube Short via `youtube-short-service` (9:16) + YouTube Video adapter (16:9); idempotent refresh
+- Manual Short loop (dev): durable PATCH + regen stale cascades; process-local in-flight mutex (not multi-instance safe); scene readiness + provenance; `finalShort` sourceHash fingerprint; FFmpeg re-encode concat; media preflight (ffprobe JSON + decode + upload URL check); download = manual YouTube upload. Operator gate: `npx tsx scripts/operator-first-short-eval.ts`. Verified in automated development tests; live-provider and operator acceptance remain pending.
 - Evidence admission + claim capabilities; limited approve needs limitations ack; revise vs redirect
 - Atom build trace = refs/metadata only; inspector reports word count (not a validity gate)
 - Gate: `npm run verify:select-to-atom` (P0–P2)

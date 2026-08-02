@@ -20,6 +20,7 @@ function sceneBaselineFromScene(
     visualPrompt: scene.visualPrompt,
     narration: scene.narration,
     onScreenText: scene.onScreenText,
+    motionPrompt: scene.motionPrompt,
     assetType: scene.assetType ?? "image",
   };
 }
@@ -104,6 +105,7 @@ export function mergeDurableEdits(
       if (next.visualPrompt !== undefined) cleaned.visualPrompt = next.visualPrompt;
       if (next.narration !== undefined) cleaned.narration = next.narration;
       if (next.onScreenText !== undefined) cleaned.onScreenText = next.onScreenText;
+      if (next.motionPrompt !== undefined) cleaned.motionPrompt = next.motionPrompt;
       if (next.assetType !== undefined) cleaned.assetType = next.assetType;
       if (Object.keys(cleaned).length === 0) {
         delete mergedScenes[sceneId];

@@ -48,9 +48,10 @@ export function PastePromptSheet({
         <SheetHeader>
           <SheetTitle>Paste scene prompt</SheetTitle>
           <SheetDescription>
-            Paste one unstructured brief for {sceneLabel}. AI fills Visual
-            Prompt, Narration, On-Screen Text, and Asset Type — review before
-            saving.
+            Paste a labeled master brief for {sceneLabel} with Visual Prompt,
+            Narration, On-Screen Text, Asset Type, and Motion Prompt (when
+            Asset Type is Video). Fields are filled for review — nothing is
+            generated until you Save Scene and run each asset step.
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-1 flex-col gap-2 px-4">
@@ -58,7 +59,7 @@ export function PastePromptSheet({
             className="min-h-[220px] w-full resize-y rounded-lg border border-border bg-card px-3 py-2 text-xs text-text-primary outline-none focus-visible:ring-2 focus-visible:ring-ring"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Describe the scene: subject, mood, style, narration, on-screen text, image or video…"
+            placeholder={`SCENE 1\n\nVISUAL PROMPT\n…\n\nNARRATION\n…\n\nON-SCREEN TEXT\n…\n\nASSET TYPE\nvideo\n\nMOTION PROMPT\n…`}
             disabled={busy}
             data-testid="studio-paste-prompt-textarea"
           />

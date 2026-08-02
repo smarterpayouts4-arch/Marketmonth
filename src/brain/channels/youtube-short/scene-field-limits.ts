@@ -12,6 +12,12 @@ export const SCENE_PASTE_PROMPT_MAX_CHARS = 16_000 as const;
 /** Canonical scene visualPrompt (ingest extract, durable, draft, sceneCard). */
 export const SCENE_VISUAL_PROMPT_MAX_CHARS = 8_000 as const;
 
+/**
+ * Durable Veo motion / action instructions (Asset Type = Video).
+ * Cap matches visualPrompt — action + identity locks, not a second plate essay.
+ */
+export const SCENE_MOTION_PROMPT_MAX_CHARS = SCENE_VISUAL_PROMPT_MAX_CHARS;
+
 /** Spoken narration for one scene. */
 export const SCENE_NARRATION_MAX_CHARS = 1_200 as const;
 

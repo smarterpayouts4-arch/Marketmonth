@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { after, before, describe, it } from "node:test";
 
@@ -141,7 +141,7 @@ describe("YouTube Short scene prompt ingestion", () => {
     };
   }
 
-  it("returns the four canonical fields and folds mood/style into visualPrompt", async () => {
+  it("returns canonical fields and folds mood/style into visualPrompt (LLM unlabeled)", async () => {
     const { atomId, companyId, sceneId } = await seedBundle();
     setSceneIngestLlmAdapterForTests(async () => ({
       ok: true,
@@ -151,6 +151,7 @@ describe("YouTube Short scene prompt ingestion", () => {
         narration: "Most teams do not lack ideas; they lack clarity.",
         onScreenText: "Too many ideas. No clear direction.",
         assetType: "image",
+        motionPrompt: "",
       }),
     }));
 
@@ -171,6 +172,35 @@ describe("YouTube Short scene prompt ingestion", () => {
     assert.match(parsed.narration, /clarity/i);
     assert.match(parsed.onScreenText, /Too many ideas/i);
     assert.equal(result.repairUsed, false);
+    assert.equal(parsed.extractionMode, "llm");
+  });
+
+  it("labeled master brief uses deterministic path and does not call LLM", async () => {
+    const { atomId, companyId, sceneId } = await seedBundle();
+    let llmCalls = 0;
+    setSceneIngestLlmAdapterForTests(async () => {
+      llmCalls += 1;
+      return { ok: true, raw: "{}" };
+    });
+    const fixture = readFileSync(
+      path.join(process.cwd(), "data/fixtures/scene1-master-prompt-labeled.txt"),
+      "utf8"
+    );
+    const result = await ingestYouTubeShortScenePrompt({
+      atomId,
+      companyIdHint: companyId,
+      sceneId,
+      prompt: fixture,
+      apiKey: "test-key",
+    });
+    assert.equal(result.ok, true);
+    if (!result.ok) return;
+    assert.equal(llmCalls, 0);
+    assert.equal(result.extracted.extractionMode, "deterministic");
+    assert.equal(result.extracted.assetType, "video");
+    assert.ok((result.extracted.motionPrompt ?? "").length > 20);
+    assert.match(result.extracted.onScreenText, /attracting attention/);
+    assert.equal(result.model, "deterministic-labeled");
   });
 
   it("does not mutate persisted durable edits (no auto-save)", async () => {
@@ -184,6 +214,7 @@ describe("YouTube Short scene prompt ingestion", () => {
         narration: "INGEST_ONLY narration",
         onScreenText: "INGEST OST",
         assetType: "video",
+        motionPrompt: "Slow push-in on the product.",
       }),
     }));
 
@@ -222,6 +253,7 @@ describe("YouTube Short scene prompt ingestion", () => {
           narration: "Repaired narration line",
           onScreenText: "Repaired OST",
           assetType: "image",
+          motionPrompt: "",
         }),
       };
     });
@@ -249,15 +281,18 @@ describe("YouTube Short scene prompt ingestion", () => {
     assert.equal(short!.durableEdits?.scenes?.[sceneId], undefined);
   });
 
-  it("Paste Prompt extract schema has only four scene fields (no globalVisualStyle)", () => {
+  it("Paste Prompt extract schema includes motionPrompt (no globalVisualStyle)", () => {
     const shape = youtubeShortSceneIngestExtractSchema.shape;
     assert.deepEqual(Object.keys(shape).sort(), [
       "assetType",
+      "extractionMode",
+      "motionPrompt",
       "narration",
       "onScreenText",
       "visualPrompt",
     ]);
     assert.equal("globalVisualStyle" in shape, false);
+    assert.equal("videoPrompt" in shape, false);
   });
 
   it("rejects paste source over 16000 characters before LLM", async () => {
@@ -291,6 +326,7 @@ describe("YouTube Short scene prompt ingestion", () => {
         narration: "Exact paste ceiling narration",
         onScreenText: "OST",
         assetType: "image",
+        motionPrompt: "",
       }),
     }));
     const result = await ingestYouTubeShortScenePrompt({
@@ -306,15 +342,6 @@ describe("YouTube Short scene prompt ingestion", () => {
   it("long extracted visual fills extract and persists through PATCH + bundle parse", async () => {
     const { atomId, companyId, sceneId } = await seedBundle();
     const longVisual = "L".repeat(4169);
-    setSceneIngestLlmAdapterForTests(async () => ({
-      ok: true,
-      raw: JSON.stringify({
-        visualPrompt: longVisual,
-        narration: "Why is magnesium getting so much attention?",
-        onScreenText: "Why is magnesium getting so much attention?",
-        assetType: "image",
-      }),
-    }));
 
     const extracted = await ingestYouTubeShortScenePrompt({
       atomId,
@@ -325,6 +352,7 @@ describe("YouTube Short scene prompt ingestion", () => {
     });
     assert.equal(extracted.ok, true);
     if (!extracted.ok) return;
+    assert.equal(extracted.extracted.extractionMode, "deterministic");
     assert.equal(extracted.extracted.visualPrompt.length, 4169);
     assert.equal(extracted.extracted.visualPrompt, longVisual);
 
@@ -333,7 +361,12 @@ describe("YouTube Short scene prompt ingestion", () => {
       companyIdHint: companyId,
       edits: {
         scenes: {
-          [sceneId]: extracted.extracted,
+          [sceneId]: {
+            visualPrompt: extracted.extracted.visualPrompt,
+            narration: extracted.extracted.narration,
+            onScreenText: extracted.extracted.onScreenText,
+            assetType: extracted.extracted.assetType,
+          },
         },
       },
     });
@@ -358,6 +391,7 @@ describe("YouTube Short scene prompt ingestion", () => {
         narration: "Narration line",
         onScreenText: "OST",
         assetType: "image",
+        motionPrompt: "",
       }),
     }));
     const result = await ingestYouTubeShortScenePrompt({
@@ -383,6 +417,7 @@ describe("YouTube Short scene prompt ingestion", () => {
         narration: "PATCH_ME narration",
         onScreenText: "PATCH OST",
         assetType: "video",
+        motionPrompt: "She opens the bottle and drinks.",
       }),
     }));
 
@@ -390,7 +425,7 @@ describe("YouTube Short scene prompt ingestion", () => {
       atomId,
       companyIdHint: companyId,
       sceneId,
-      prompt: "Video scene.",
+      prompt: "Video scene about a calm evening routine.",
       apiKey: "test-key",
     });
     assert.equal(extracted.ok, true);
@@ -401,7 +436,13 @@ describe("YouTube Short scene prompt ingestion", () => {
       companyIdHint: companyId,
       edits: {
         scenes: {
-          [sceneId]: extracted.extracted,
+          [sceneId]: {
+            visualPrompt: extracted.extracted.visualPrompt,
+            narration: extracted.extracted.narration,
+            onScreenText: extracted.extracted.onScreenText,
+            assetType: extracted.extracted.assetType,
+            motionPrompt: extracted.extracted.motionPrompt,
+          },
         },
       },
     });
@@ -413,5 +454,6 @@ describe("YouTube Short scene prompt ingestion", () => {
     assert.equal(scene!.narration, "PATCH_ME narration");
     assert.equal(scene!.onScreenText, "PATCH OST");
     assert.equal(scene!.assetType, "video");
+    assert.equal(scene!.motionPrompt, "She opens the bottle and drinks.");
   });
 });

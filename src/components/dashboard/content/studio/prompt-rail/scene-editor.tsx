@@ -15,8 +15,10 @@ import type {
   SceneAssetType,
   SceneEditFields,
 } from "../../hooks/use-atom-content-studio";
+import type { FullGenerateProgress } from "../../hooks/use-atom-content-studio/use-studio-edit-actions";
 import { PastePromptSheet } from "./paste-prompt-sheet";
 import { PromptCard } from "./prompt-card";
+import { SceneAssetPanel } from "./scene-asset-panel";
 
 type SceneEditorProps = {
   pkg: ContentFormatPackage;
@@ -29,15 +31,27 @@ type SceneEditorProps = {
   ingestBusy?: boolean;
   ingestError?: string | null;
   renderBusy?: boolean;
+  renderBusyMap?: import("../../hooks/use-atom-content-studio/render-busy").RenderBusyMap;
   renderMessage?: string | null;
   renderError?: string | null;
+  saveLabel?: string;
+  onSave?: () => void | Promise<void>;
+  onResetFormat?: () => void | Promise<void>;
   onPastePromptFill?: (prompt: string) => Promise<boolean>;
   onStartFromGenerated?: () => void;
   onValidateImageRender?: () => void | Promise<boolean>;
+  onGenerateSceneVoice?: () => void | Promise<boolean>;
+  onClearSceneVoice?: () => void | Promise<boolean>;
+  onGenerateSceneVideo?: () => void | Promise<boolean>;
+  onClearSceneVideo?: () => void | Promise<boolean>;
+  onComposeSceneMp4?: () => void | Promise<boolean>;
+  onGenerateCompleteScene?: () => void | Promise<boolean>;
+  fullGenerateProgress?: FullGenerateProgress | null;
   onSceneVisualPromptChange: (v: string) => void;
   onSceneNarrationChange: (v: string) => void;
   onSceneOnScreenTextChange: (v: string) => void;
   onSceneAssetTypeChange: (v: SceneAssetType) => void;
+  onSceneMotionPromptChange: (v: string) => void;
   onResetScene?: () => void | Promise<void>;
 };
 
@@ -51,15 +65,27 @@ export function SceneEditor({
   ingestBusy = false,
   ingestError = null,
   renderBusy = false,
+  renderBusyMap,
   renderMessage = null,
   renderError = null,
+  saveLabel = "Save Scene",
+  onSave,
+  onResetFormat,
   onPastePromptFill,
   onStartFromGenerated,
   onValidateImageRender,
+  onGenerateSceneVoice,
+  onClearSceneVoice,
+  onGenerateSceneVideo,
+  onClearSceneVideo,
+  onComposeSceneMp4,
+  onGenerateCompleteScene,
+  fullGenerateProgress = null,
   onSceneVisualPromptChange,
   onSceneNarrationChange,
   onSceneOnScreenTextChange,
   onSceneAssetTypeChange,
+  onSceneMotionPromptChange,
   onResetScene,
 }: SceneEditorProps) {
   const [pasteOpen, setPasteOpen] = useState(false);
@@ -71,32 +97,12 @@ export function SceneEditor({
       ? `Scene ${sceneIndex} of ${sceneCount}`
       : "Selected scene";
 
-  const durableRender =
-    selectedScene && "render" in selectedScene
-      ? selectedScene.render
-      : undefined;
-  const hasDurableImage = Boolean(durableRender?.assetUrl);
-  const durableDryRunOk =
-    durableRender?.status === "dry_run_succeeded" && !hasDurableImage;
-  const durableFailed = durableRender?.status === "failed";
-  const liveSucceeded = durableRender?.status === "succeeded" && hasDurableImage;
-
-  const actionDisabledReason = !sceneEdits.visualPrompt.trim()
-    ? "Add a visual prompt first"
-    : sceneEdits.assetType !== "image"
-      ? "Only image asset scenes can be prepared in this phase"
-      : dirty
-        ? "Save this scene before generating its image."
-        : renderBusy
-          ? "Generating image…"
-          : null;
-  const actionDisabled =
-    Boolean(actionDisabledReason) || !onValidateImageRender;
-  const actionLabel = renderBusy
-    ? "Generating image…"
-    : hasDurableImage
-      ? "Regenerate Image"
-      : "Generate Image";
+  const showAssetWorkflow =
+    manualWorkspace &&
+    !fieldsReadOnly &&
+    Boolean(onValidateImageRender) &&
+    Boolean(onSave) &&
+    Boolean(onResetFormat);
 
   return (
     <div
@@ -154,6 +160,18 @@ export function SceneEditor({
               Start from generated scene
             </button>
           ) : null}
+          {onResetScene ? (
+            <button
+              type="button"
+              className="text-[10px] text-text-muted underline-offset-2 hover:underline"
+              onClick={() => {
+                void onResetScene();
+              }}
+              data-testid="studio-reset-scene"
+            >
+              Reset Scene
+            </button>
+          ) : null}
         </div>
       ) : null}
 
@@ -194,108 +212,71 @@ export function SceneEditor({
           readOnly={fieldsReadOnly}
           compact
         />
-        <div
-          className="flex items-center justify-between gap-2 text-xs"
-          data-testid="studio-scene-asset-type"
-        >
-          <span className="text-text-muted">Asset Type</span>
-          <div className="studio-prompt-mode" role="group" aria-label="Asset type">
-            <button
-              type="button"
-              className="studio-prompt-mode__btn"
-              data-active={sceneEdits.assetType === "image" ? "true" : "false"}
-              aria-pressed={sceneEdits.assetType === "image"}
-              disabled={fieldsReadOnly}
-              onClick={() => onSceneAssetTypeChange("image")}
-              data-testid="studio-scene-asset-image"
-            >
-              Image
-            </button>
-            <button
-              type="button"
-              className="studio-prompt-mode__btn"
-              data-active={sceneEdits.assetType === "video" ? "true" : "false"}
-              aria-pressed={sceneEdits.assetType === "video"}
-              disabled={fieldsReadOnly}
-              onClick={() => onSceneAssetTypeChange("video")}
-              data-testid="studio-scene-asset-video"
-            >
-              Video
-            </button>
-          </div>
-        </div>
 
-        {manualWorkspace && !fieldsReadOnly ? (
-          <div className="space-y-1" data-testid="studio-validate-image-render">
-            <button
-              type="button"
-              className="h-8 w-full rounded-lg border border-dashed border-border px-3 text-xs text-text-muted disabled:opacity-60"
-              disabled={actionDisabled}
-              title={actionDisabledReason ?? actionLabel}
-              onClick={() => {
-                void onValidateImageRender?.();
-              }}
-              data-testid="studio-generate-image-shell"
-            >
-              {actionLabel}
-            </button>
-            {dirty ? (
-              <p
-                className="text-[10px] text-text-muted"
-                data-testid="studio-render-save-hint"
-              >
-                Save this scene before generating its image.
-              </p>
-            ) : null}
-            {renderBusy ? (
-              <p
-                className="text-[10px] text-text-muted"
-                data-testid="studio-render-loading"
-              >
-                Generating image…
-              </p>
-            ) : null}
-            {renderError ? (
-              <p
-                className="text-[10px] text-red-600"
-                data-testid="studio-render-error"
-              >
-                {renderError}
-              </p>
-            ) : null}
-            {renderMessage || liveSucceeded || durableDryRunOk ? (
-              <p
-                className="text-[10px] text-text-secondary"
-                data-testid="studio-render-success"
-              >
-                {renderMessage ??
-                  (liveSucceeded
-                    ? "Image generated"
-                    : "Renderer path verified — no image generated")}
-              </p>
-            ) : null}
-            {!renderError && durableFailed && durableRender?.error ? (
-              <p
-                className="text-[10px] text-red-600"
-                data-testid="studio-render-durable-error"
-              >
-                {durableRender.error.message}
-              </p>
-            ) : null}
-          </div>
-        ) : null}
-
-        {manualWorkspace && onResetScene && !fieldsReadOnly ? (
-          <button
-            type="button"
-            className="text-[10px] text-text-muted underline-offset-2 hover:underline"
-            onClick={() => {
-              void onResetScene();
-            }}
-            data-testid="studio-reset-scene"
+        {showAssetWorkflow && onSave && onResetFormat ? (
+          <SceneAssetPanel
+            pkg={pkg}
+            selectedSceneId={selectedSceneId}
+            sceneEdits={sceneEdits}
+            fieldsReadOnly={fieldsReadOnly}
+            dirty={dirty}
+            renderBusy={renderBusy}
+            renderBusyMap={renderBusyMap}
+            renderMessage={renderMessage}
+            renderError={renderError}
+            saveLabel={saveLabel}
+            onSave={onSave}
+            onReset={onResetFormat}
+            onSceneAssetTypeChange={onSceneAssetTypeChange}
+            onSceneMotionPromptChange={onSceneMotionPromptChange}
+            onValidateImageRender={onValidateImageRender}
+            onGenerateSceneVoice={onGenerateSceneVoice}
+            onClearSceneVoice={onClearSceneVoice}
+            onGenerateSceneVideo={onGenerateSceneVideo}
+            onClearSceneVideo={onClearSceneVideo}
+            onComposeSceneMp4={onComposeSceneMp4}
+            onGenerateCompleteScene={onGenerateCompleteScene}
+            fullGenerateProgress={fullGenerateProgress}
+          />
+        ) : !manualWorkspace ? (
+          <div
+            className="flex items-center justify-between gap-2 text-xs"
+            data-testid="studio-scene-asset-type"
           >
-            Reset Scene
-          </button>
+            <span className="text-text-muted">Asset Type</span>
+            <div
+              className="studio-prompt-mode"
+              role="group"
+              aria-label="Asset type"
+            >
+              <button
+                type="button"
+                className="studio-prompt-mode__btn"
+                data-active={
+                  sceneEdits.assetType === "image" ? "true" : "false"
+                }
+                aria-pressed={sceneEdits.assetType === "image"}
+                disabled={fieldsReadOnly}
+                onClick={() => onSceneAssetTypeChange("image")}
+                data-testid="studio-scene-asset-image"
+              >
+                Image
+              </button>
+              <button
+                type="button"
+                className="studio-prompt-mode__btn"
+                data-active={
+                  sceneEdits.assetType === "video" ? "true" : "false"
+                }
+                aria-pressed={sceneEdits.assetType === "video"}
+                disabled={fieldsReadOnly}
+                onClick={() => onSceneAssetTypeChange("video")}
+                data-testid="studio-scene-asset-video"
+              >
+                Video
+              </button>
+            </div>
+          </div>
         ) : null}
       </div>
 

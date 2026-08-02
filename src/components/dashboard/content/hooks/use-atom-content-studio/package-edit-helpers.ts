@@ -55,6 +55,7 @@ export function sceneFieldsFromScene(scene: SceneCard): SceneEditFields {
     visualPrompt: scene.visualPrompt,
     narration: scene.narration,
     onScreenText: scene.onScreenText ?? "",
+    motionPrompt: scene.motionPrompt ?? "",
     assetType: scene.assetType ?? "image",
   };
 }
@@ -69,6 +70,7 @@ export function baselineSceneFields(
       visualPrompt: baseline.visualPrompt,
       narration: baseline.narration,
       onScreenText: baseline.onScreenText ?? "",
+      motionPrompt: baseline.motionPrompt ?? "",
       assetType: baseline.assetType,
     };
   }
@@ -102,6 +104,7 @@ export type ScenePatch = {
   visualPrompt?: string;
   narration?: string;
   onScreenText?: string;
+  motionPrompt?: string;
   assetType?: SceneAssetType;
 };
 
@@ -123,6 +126,9 @@ export function buildScenePatches(
     }
     if (local.onScreenText !== current.onScreenText) {
       patch.onScreenText = local.onScreenText;
+    }
+    if (local.motionPrompt !== current.motionPrompt) {
+      patch.motionPrompt = local.motionPrompt;
     }
     if (local.assetType !== current.assetType) {
       patch.assetType = local.assetType;

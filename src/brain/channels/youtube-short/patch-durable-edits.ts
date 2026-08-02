@@ -12,6 +12,7 @@ import type {
 import { getFormat } from "@/brain/content-studio/platform-registry";
 import { createAtomRepository } from "@/brain/store";
 
+import { applyAssetStaleRules } from "./asset-stale-rules";
 import {
   applyDurableEditsToShortPackage,
   resetShortPackageToGeneratedBaseline,
@@ -133,7 +134,10 @@ export async function patchYouTubeShortDurableEdits(
   let selectedSceneIdHint: string | undefined;
 
   if (input.resetToGenerated) {
-    nextPkg = resetShortPackageToGeneratedBaseline(shortPkg);
+    nextPkg = applyAssetStaleRules(
+      shortPkg,
+      resetShortPackageToGeneratedBaseline(shortPkg)
+    );
   } else if (resetSceneId) {
     if (!shortPkg.scenes.some((s) => s.id === resetSceneId)) {
       return {
@@ -142,7 +146,10 @@ export async function patchYouTubeShortDurableEdits(
         status: 400,
       };
     }
-    nextPkg = resetShortSceneToGeneratedBaseline(shortPkg, resetSceneId);
+    nextPkg = applyAssetStaleRules(
+      shortPkg,
+      resetShortSceneToGeneratedBaseline(shortPkg, resetSceneId)
+    );
   } else if (hasStructure) {
     const parsedStructure = youtubeShortSceneStructureActionSchema.safeParse(
       input.sceneStructure
@@ -157,7 +164,8 @@ export async function patchYouTubeShortDurableEdits(
     if (!structured.ok) {
       return { ok: false, error: structured.error, status: 400 };
     }
-    nextPkg = structured.package;
+    // Structure changes (add/remove/reorder) must invalidate finalShort.
+    nextPkg = applyAssetStaleRules(shortPkg, structured.package);
     selectedSceneIdHint = structured.selectedSceneIdHint;
   } else {
     if (!input.edits) {
@@ -168,6 +176,7 @@ export async function patchYouTubeShortDurableEdits(
       return { ok: false, error: "Invalid edits payload", status: 400 };
     }
     nextPkg = applyDurableEditsToShortPackage(shortPkg, parsed.data);
+    nextPkg = applyAssetStaleRules(shortPkg, nextPkg);
   }
 
   const format = getFormat("youtube_short");

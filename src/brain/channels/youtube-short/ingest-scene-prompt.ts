@@ -7,6 +7,10 @@ import { tokenBudget } from "@/brain/policy/token-budgets";
 import { getContentBundle } from "@/brain/use-cases/produce-content-bundle";
 
 import {
+  pasteHasRecognizedSectionHeaders,
+  validateLabeledScenePrompt,
+} from "./parse-labeled-scene-prompt";
+import {
   SCENE_NARRATION_MAX_CHARS,
   SCENE_ON_SCREEN_TEXT_MAX_CHARS,
   SCENE_PASTE_PROMPT_MAX_CHARS,
@@ -33,6 +37,7 @@ export type IngestScenePromptResult =
       repairUsed: boolean;
       model: string;
       tokenUsage?: BrainLlmTokenUsage;
+      unknownSections?: string[];
     }
   | {
       ok: false;
@@ -87,16 +92,18 @@ async function defaultSceneIngestLlm(
 const SYSTEM_PROMPT = `You extract production fields for ONE YouTube Short scene (9:16).
 
 Return ONLY JSON matching the schema with these keys:
-- visualPrompt: one image/video generation brief. Fold mood, lighting, composition, color, subject, style, background, and camera notes into this single string. Do NOT invent separate mood/lighting fields.
-- narration: spoken line for this scene only (not a full multi-scene script).
-- onScreenText: short caption/text overlay for this scene (may be empty string).
-- assetType: "image" or "video" based on the brief (default "image" if unclear).
+- visualPrompt: clean still-image creation instructions only (subject, lighting, composition, wardrobe, environment). Never include spoken script, on-screen title copy, asset type, or motion/action instructions.
+- narration: the exact spoken words for this scene only (not a multi-scene script). Do not rewrite or summarize.
+- onScreenText: the exact designed on-screen title copy for this scene, preserving intended line breaks when present. Must not be empty when the brief includes title/overlay copy. Never put overlay design/styling notes here.
+- assetType: "image" or "video" only. When the brief clearly asks for video/motion, use "video".
+- motionPrompt: image-to-video action and continuity instructions only. Empty string when assetType is "image" and no motion is needed. Never merge motion into visualPrompt.
 
 Rules:
 - Stay faithful to the user's brief; do not invent brand claims.
 - Keep visualPrompt ≤ ${SCENE_VISUAL_PROMPT_MAX_CHARS} chars, narration ≤ ${SCENE_NARRATION_MAX_CHARS} chars, onScreenText ≤ ${SCENE_ON_SCREEN_TEXT_MAX_CHARS} chars.
-- Preserve detailed visual production language when present — do not compress or omit sections just to shorten the string when under the visualPrompt limit.
-- Prefer concrete visual language suitable for later image generation.`;
+- Preserve detailed visual production language when present.
+- Prefer concrete visual language suitable for later image generation.
+- Never include section headers or bodies for NARRATION, ON-SCREEN TEXT, ASSET TYPE, or MOTION PROMPT inside visualPrompt.`;
 
 function buildUserPrompt(prompt: string, sceneId: string): string {
   return `Scene id: ${sceneId}
@@ -106,7 +113,7 @@ Unstructured scene brief:
 ${prompt}
 ---
 
-Extract visualPrompt, narration, onScreenText, and assetType.`;
+Extract visualPrompt, narration, onScreenText, assetType, and motionPrompt.`;
 }
 
 function buildRepairPrompt(
@@ -149,9 +156,23 @@ function parseExtract(
   return { ok: true, data: result.data };
 }
 
+function llmEmptyOstRejected(prompt: string, onScreenText: string): string | null {
+  if (onScreenText.trim()) return null;
+  // Unlabeled briefs that clearly carry title copy must not succeed with "".
+  if (
+    /educational\s+only/i.test(prompt) ||
+    /especially\s+before\s+bed/i.test(prompt) ||
+    /on[-\s]?screen\s+text/i.test(prompt)
+  ) {
+    return "onScreenText cannot be empty when the brief includes on-screen title copy";
+  }
+  return null;
+}
+
 /**
  * Extract scene fields from a pasted brief. Does NOT mutate the production
  * bundle — caller reviews and saves via PATCH durable edits.
+ * Labeled headers → deterministic parser (no LLM). Unlabeled → LLM fallback.
  */
 export async function ingestYouTubeShortScenePrompt(
   input: IngestScenePromptInput
@@ -209,6 +230,31 @@ export async function ingestYouTubeShortScenePrompt(
     };
   }
 
+  if (pasteHasRecognizedSectionHeaders(prompt)) {
+    const labeled = validateLabeledScenePrompt(prompt);
+    if (!labeled.ok) {
+      return { ok: false, status: 422, error: labeled.error, model };
+    }
+    const extracted: YouTubeShortSceneIngestExtract = {
+      visualPrompt: labeled.fields.visualPrompt,
+      narration: labeled.fields.narration,
+      onScreenText: labeled.fields.onScreenText,
+      assetType: labeled.fields.assetType,
+      ...(labeled.fields.motionPrompt
+        ? { motionPrompt: labeled.fields.motionPrompt }
+        : {}),
+      extractionMode: "deterministic",
+    };
+    return {
+      ok: true,
+      sceneId,
+      extracted,
+      repairUsed: false,
+      model: "deterministic-labeled",
+      unknownSections: labeled.unknownSections,
+    };
+  }
+
   const apiKey = input.apiKey ?? process.env.OPENAI_API_KEY?.trim();
   if (!apiKey) {
     return {
@@ -240,10 +286,25 @@ export async function ingestYouTubeShortScenePrompt(
 
   const firstParsed = parseExtract(first.raw);
   if (firstParsed.ok) {
+    const ostErr = llmEmptyOstRejected(prompt, firstParsed.data.onScreenText);
+    if (ostErr) {
+      return { ok: false, status: 422, error: ostErr, model };
+    }
+    if (
+      firstParsed.data.assetType === "video" &&
+      !(firstParsed.data.motionPrompt ?? "").trim()
+    ) {
+      return {
+        ok: false,
+        status: 422,
+        error: "motionPrompt is required when assetType is video",
+        model,
+      };
+    }
     return {
       ok: true,
       sceneId,
-      extracted: firstParsed.data,
+      extracted: { ...firstParsed.data, extractionMode: "llm" },
       repairUsed: false,
       model,
       tokenUsage: first.tokenUsage,
@@ -276,10 +337,26 @@ export async function ingestYouTubeShortScenePrompt(
     };
   }
 
+  const ostErr = llmEmptyOstRejected(prompt, repaired.data.onScreenText);
+  if (ostErr) {
+    return { ok: false, status: 422, error: ostErr, model };
+  }
+  if (
+    repaired.data.assetType === "video" &&
+    !(repaired.data.motionPrompt ?? "").trim()
+  ) {
+    return {
+      ok: false,
+      status: 422,
+      error: "motionPrompt is required when assetType is video",
+      model,
+    };
+  }
+
   return {
     ok: true,
     sceneId,
-    extracted: repaired.data,
+    extracted: { ...repaired.data, extractionMode: "llm" },
     repairUsed: true,
     model,
     tokenUsage: repair.tokenUsage,

@@ -15,6 +15,7 @@ export const SHORT_RENDER_ERROR_CODES = {
   RENDERER_REJECTED_INPUT: "short_render.renderer_rejected_input",
   RENDERER_FAILED: "short_render.renderer_failed",
   STALE_SCENE_REVISION: "short_render.stale_scene_revision",
+  ALREADY_RUNNING: "short_render.already_running",
   BUNDLE_PERSISTENCE_FAILED: "short_render.bundle_persistence_failed",
   ATOM_NOT_LOCKED: "short_render.atom_not_locked",
   IMAGE_PROVIDER_NOT_CONFIGURED: "image_provider_not_configured",
@@ -49,13 +50,15 @@ export const SHORT_RENDER_ERROR_MESSAGES: Record<ShortRenderErrorCode, string> =
     [SHORT_RENDER_ERROR_CODES.EMPTY_VISUAL_PROMPT]:
       "Scene visual prompt is empty",
     [SHORT_RENDER_ERROR_CODES.UNSUPPORTED_ASSET_TYPE]:
-      "Only image asset scenes can be prepared in this phase",
+      "Unsupported asset type for still image generation",
     [SHORT_RENDER_ERROR_CODES.RENDERER_UNAVAILABLE]: "Renderer unavailable",
     [SHORT_RENDER_ERROR_CODES.RENDERER_REJECTED_INPUT]:
       "Renderer rejected the render input",
     [SHORT_RENDER_ERROR_CODES.RENDERER_FAILED]: "Renderer failed",
     [SHORT_RENDER_ERROR_CODES.STALE_SCENE_REVISION]:
       "Scene changed during render — result discarded",
+    [SHORT_RENDER_ERROR_CODES.ALREADY_RUNNING]:
+      "Image generation is already running.",
     [SHORT_RENDER_ERROR_CODES.BUNDLE_PERSISTENCE_FAILED]:
       "Could not persist render state",
     [SHORT_RENDER_ERROR_CODES.ATOM_NOT_LOCKED]:
@@ -112,6 +115,7 @@ export function httpStatusForShortRenderError(code: ShortRenderErrorCode): numbe
     case SHORT_RENDER_ERROR_CODES.SCENE_NOT_FOUND:
       return 404;
     case SHORT_RENDER_ERROR_CODES.STALE_SCENE_REVISION:
+    case SHORT_RENDER_ERROR_CODES.ALREADY_RUNNING:
       return 409;
     case SHORT_RENDER_ERROR_CODES.IMAGE_PROVIDER_AUTH_FAILED:
       return 401;

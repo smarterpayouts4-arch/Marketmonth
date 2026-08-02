@@ -58,6 +58,7 @@ function preservePriorSceneStructure(
         visualPrompt: scene.visualPrompt,
         narration: scene.narration,
         onScreenText: scene.onScreenText,
+        motionPrompt: scene.motionPrompt,
         assetType: scene.assetType ?? "image",
       };
   }

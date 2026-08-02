@@ -41,6 +41,8 @@ export function mapRendererResultToSceneRender(input: {
   prior: SceneRenderState | undefined;
   promptHash: string;
   sourceRevision: string;
+  visualPromptUsed: string;
+  assetTypeUsed: "image" | "video";
   attempt: number;
   requestId: string;
   requestedAt: string;
@@ -51,6 +53,8 @@ export function mapRendererResultToSceneRender(input: {
     prior,
     promptHash,
     sourceRevision,
+    visualPromptUsed,
+    assetTypeUsed,
     attempt,
     requestId,
     requestedAt,
@@ -70,6 +74,8 @@ export function mapRendererResultToSceneRender(input: {
       mediaKind: "image",
       promptHash,
       sourceRevision,
+      visualPromptUsed,
+      assetTypeUsed,
       attempt,
       error: result.error,
       requestedAt,
@@ -90,6 +96,8 @@ export function mapRendererResultToSceneRender(input: {
       mediaKind: "image",
       promptHash,
       sourceRevision,
+      visualPromptUsed,
+      assetTypeUsed,
       attempt,
       error: {
         code: SHORT_RENDER_ERROR_CODES.RENDERER_FAILED,
@@ -115,6 +123,8 @@ export function mapRendererResultToSceneRender(input: {
         mediaKind: "image",
         promptHash,
         sourceRevision,
+        visualPromptUsed,
+        assetTypeUsed,
         attempt,
         error: {
           code: SHORT_RENDER_ERROR_CODES.RENDERER_REJECTED_INPUT,
@@ -137,6 +147,8 @@ export function mapRendererResultToSceneRender(input: {
       mediaKind: "image",
       promptHash,
       sourceRevision,
+      visualPromptUsed,
+      assetTypeUsed,
       attempt,
       error: undefined,
       requestedAt,
@@ -157,6 +169,8 @@ export function mapRendererResultToSceneRender(input: {
       mediaKind: "image",
       promptHash,
       sourceRevision,
+      visualPromptUsed,
+      assetTypeUsed,
       attempt,
       error: {
         code: SHORT_RENDER_ERROR_CODES.RENDERER_REJECTED_INPUT,
@@ -180,6 +194,8 @@ export function mapRendererResultToSceneRender(input: {
     mediaKind: "image",
     promptHash,
     sourceRevision,
+    visualPromptUsed,
+    assetTypeUsed,
     attempt,
     assetRef: result.assetRef,
     assetUrl: result.assetUrl,

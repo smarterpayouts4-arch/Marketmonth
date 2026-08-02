@@ -16,6 +16,7 @@ export const sceneRenderStatusSchema = z.enum([
   "running",
   "dry_run_succeeded",
   "succeeded",
+  "stale",
   "failed",
 ]);
 
@@ -28,6 +29,9 @@ export const sceneRenderStateSchema = z.object({
   mediaKind: z.literal("image").optional(),
   promptHash: z.string().min(8).max(128).optional(),
   sourceRevision: z.union([z.string().min(1).max(128), z.number()]).optional(),
+  /** Soft-compare for client reuse (mirrors voice.scriptUsed). */
+  visualPromptUsed: z.string().max(8000).optional(),
+  assetTypeUsed: z.enum(["image", "video"]).optional(),
   attempt: z.number().int().nonnegative().optional(),
   assetRef: z.string().min(1).max(2000).optional(),
   assetUrl: z.string().url().optional(),

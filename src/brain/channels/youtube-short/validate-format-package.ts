@@ -2,6 +2,7 @@ import type { ContentAtom } from "@/brain/atom";
 import type { YouTubeShortFormatPackage } from "@/brain/content-studio/schemas/format-package";
 
 import { youtubeShortDurationPolicyError } from "./duration-policy";
+import { visualPromptReservedSectionHeaderError } from "./visual-prompt-section-headers";
 
 export function validateShortFormatPackage(
   output: YouTubeShortFormatPackage,
@@ -17,6 +18,15 @@ export function validateShortFormatPackage(
   }
   if (output.aspectRatio !== "9:16") {
     errors.push("youtube_short must be 9:16");
+  }
+  for (const scene of output.scenes) {
+    const contamination = visualPromptReservedSectionHeaderError(
+      scene.visualPrompt,
+      scene.id
+    );
+    if (contamination) {
+      errors.push(contamination);
+    }
   }
   const hasAnyFilledScene = output.scenes.some(
     (s) => s.narration.trim() || s.visualPrompt.trim()

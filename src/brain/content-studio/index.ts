@@ -35,6 +35,7 @@ export {
 
 /** Short scene field-size policy (canonical: scene-field-limits). */
 export {
+  SCENE_MOTION_PROMPT_MAX_CHARS,
   SCENE_NARRATION_MAX_CHARS,
   SCENE_ON_SCREEN_TEXT_MAX_CHARS,
   SCENE_PASTE_PROMPT_MAX_CHARS,
@@ -42,6 +43,33 @@ export {
   SHORT_PACKAGE_IMAGE_PROMPT_MAX_CHARS,
   VIDEO_CHAPTER_VISUAL_PROMPT_MAX_CHARS,
 } from "@/brain/channels/youtube-short/scene-field-limits";
+
+/** Shared onScreenText → title/support/disclaimer layout (DOM + compose). */
+export {
+  buildOnScreenTextLayout,
+  splitOnScreenTextBlocks,
+  type OnScreenTextLayout,
+} from "./on-screen-text-layout";
+
+/** Pure Veo prompt composer (soft-compare + prepare-scene-video). */
+export { composeEffectiveVeoPrompt } from "./compose-effective-veo-prompt";
+
+/** Soft-compare planner for Generate Complete Scene orchestration. */
+export {
+  planSceneFullGenerate,
+  type SceneFullGenerateEdits,
+  type SceneFullGeneratePlan,
+  type SceneFullGenerateStep,
+} from "./plan-scene-full-generate";
+
+/** AssetType-aware scene / package readiness for manual Short assembly. */
+export {
+  computePackageAssemblyReadiness,
+  computeSceneReadiness,
+  type PackageAssemblyReadiness,
+  type ReadinessStatus,
+  type SceneAssetReadiness,
+} from "./compute-scene-readiness";
 
 export {
   contentFormatPackageSchema,

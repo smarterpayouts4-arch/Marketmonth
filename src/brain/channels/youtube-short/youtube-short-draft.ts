@@ -13,6 +13,7 @@ import {
 } from "./scene-field-limits";
 
 export {
+  SCENE_MOTION_PROMPT_MAX_CHARS,
   SCENE_NARRATION_MAX_CHARS,
   SCENE_ON_SCREEN_TEXT_MAX_CHARS,
   SCENE_PASTE_PROMPT_MAX_CHARS,
@@ -80,6 +81,7 @@ export const youtubeShortDurableSceneBaselineSchema = z.object({
   visualPrompt: z.string().max(SCENE_VISUAL_PROMPT_MAX_CHARS),
   narration: z.string().max(SCENE_NARRATION_MAX_CHARS),
   onScreenText: z.string().max(SCENE_ON_SCREEN_TEXT_MAX_CHARS).optional(),
+  motionPrompt: z.string().max(SCENE_VISUAL_PROMPT_MAX_CHARS).optional(),
   assetType: youtubeShortSceneAssetTypeSchema,
 });
 
@@ -92,6 +94,7 @@ export const youtubeShortDurableSceneEditSchema = z
     visualPrompt: z.string().max(SCENE_VISUAL_PROMPT_MAX_CHARS).optional(),
     narration: z.string().max(SCENE_NARRATION_MAX_CHARS).optional(),
     onScreenText: z.string().max(SCENE_ON_SCREEN_TEXT_MAX_CHARS).optional(),
+    motionPrompt: z.string().max(SCENE_VISUAL_PROMPT_MAX_CHARS).optional(),
     assetType: youtubeShortSceneAssetTypeSchema.optional(),
   })
   .refine(
@@ -99,6 +102,7 @@ export const youtubeShortDurableSceneEditSchema = z
       value.visualPrompt !== undefined ||
       value.narration !== undefined ||
       value.onScreenText !== undefined ||
+      value.motionPrompt !== undefined ||
       value.assetType !== undefined,
     { message: "scene edit must include at least one field" }
   );
@@ -106,27 +110,37 @@ export const youtubeShortDurableSceneEditSchema = z
 /**
  * Complete scene fields returned by Paste Prompt ingestion (review before save).
  * Same canonical field definitions as durable scene baseline / edits — not a
- * parallel schema family. All four keys required for structured output.
+ * parallel schema family. motionPrompt optional (omit / empty for image briefs).
  */
 export const youtubeShortSceneIngestExtractSchema = z.object({
   visualPrompt: z.string().min(1).max(SCENE_VISUAL_PROMPT_MAX_CHARS),
   narration: z.string().min(1).max(SCENE_NARRATION_MAX_CHARS),
-  onScreenText: z.string().max(SCENE_ON_SCREEN_TEXT_MAX_CHARS),
+  onScreenText: z.string().min(1).max(SCENE_ON_SCREEN_TEXT_MAX_CHARS),
   assetType: youtubeShortSceneAssetTypeSchema,
+  motionPrompt: z.string().max(SCENE_VISUAL_PROMPT_MAX_CHARS).optional(),
+  extractionMode: z.enum(["deterministic", "llm"]).optional(),
 });
 
-/** Strict OpenAI json_schema for scene prompt ingestion. */
+/** Strict OpenAI json_schema for unlabeled LLM scene prompt ingestion. */
 export const YOUTUBE_SHORT_SCENE_INGEST_JSON_SCHEMA = {
   name: "youtube_short_scene_ingest",
   schema: {
     type: "object",
     additionalProperties: false,
-    required: ["visualPrompt", "narration", "onScreenText", "assetType"],
+    required: [
+      "visualPrompt",
+      "narration",
+      "onScreenText",
+      "assetType",
+      "motionPrompt",
+    ],
     properties: {
       visualPrompt: { type: "string" },
       narration: { type: "string" },
       onScreenText: { type: "string" },
       assetType: { type: "string", enum: ["image", "video"] },
+      /** Empty string when assetType is image and no motion is needed. */
+      motionPrompt: { type: "string" },
     },
   },
 } as const;

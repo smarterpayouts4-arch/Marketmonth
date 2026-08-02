@@ -51,7 +51,7 @@ const BRAND: Record<PlatformId, string> = {
 
 const YT_FORMATS = [YOUTUBE_SHORT_FORMAT, YOUTUBE_VIDEO_FORMAT] as const;
 
-/** Platform logos + Short|Video — sizes/colors from globals.css .studio-* */
+/** Platform logos + Short|Video — sizes/colors from content-studio.css .studio-* */
 export function StudioPlatformToolbar({
   platform,
   onPlatformChange,

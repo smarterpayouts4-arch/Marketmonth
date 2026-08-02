@@ -12,6 +12,8 @@ export type SceneEditFields = {
   visualPrompt: string;
   narration: string;
   onScreenText: string;
+  /** Durable Veo action instructions — used when assetType is video. */
+  motionPrompt: string;
   assetType: SceneAssetType;
 };
 
@@ -58,5 +60,6 @@ export const EMPTY_SCENE: SceneEditFields = {
   visualPrompt: "",
   narration: "",
   onScreenText: "",
+  motionPrompt: "",
   assetType: "image",
 };

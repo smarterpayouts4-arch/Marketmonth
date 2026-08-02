@@ -16,11 +16,63 @@ export {
   type GeminiGenerateDeps,
 } from "./adapters/gemini-image-generate";
 export {
+  buildGeminiVoicePrompt,
+  generateGeminiVoice,
+  type GeneratedVoiceAudio,
+  type GeminiVoiceConfig,
+  type GeminiVoiceGenerateDeps,
+} from "./adapters/gemini-voice-generate";
+export {
+  GEMINI_TTS_PCM_BIT_DEPTH,
+  GEMINI_TTS_PCM_CHANNELS,
+  GEMINI_TTS_PCM_SAMPLE_RATE,
+  isRawPcmMime,
+  pcmDurationSeconds,
+  pcmToWav,
+} from "./adapters/pcm-to-wav";
+export {
   uploadGeneratedImageToImageKit,
   buildImageKitObjectPath,
   type StoredImageAsset,
   type ImageKitUploadDeps,
 } from "./adapters/imagekit-upload";
+export {
+  deleteSceneVoiceFromImageKit,
+  uploadSceneVoiceToImageKit,
+  type StoredAudioAsset,
+} from "./adapters/imagekit-audio-upload";
+export {
+  deleteSceneVideoFromImageKit,
+  uploadSceneVideoToImageKit,
+  type StoredVideoAsset,
+} from "./adapters/imagekit-video-upload";
+export { uploadSceneComposedVideoToImageKit } from "./adapters/imagekit-composed-video-upload";
+export { uploadFinalShortToImageKit } from "./adapters/imagekit-final-short-upload";
+export { ffmpegConcatSceneClips } from "./adapters/ffmpeg-concat-scenes";
+export { resolveFfmpegPath } from "./adapters/resolve-ffmpeg-path";
+export {
+  runMediaPreflight,
+  type MediaPreflightInput,
+  type MediaPreflightResult,
+} from "./media-preflight";
+export {
+  composeSceneVideo,
+  defaultComposeOutputSpec,
+  type ComposeSceneTitleOverlay,
+  type ComposeSceneVideoDeps,
+  type ComposeSceneVideoOutputSpec,
+  type ComposeSceneVideoRequest,
+  type ComposeSceneVideoResult,
+  type ComposeSceneVisual,
+} from "./compose-scene-video";
+export {
+  generateVeoVideo,
+  resolveVeoPollConfig,
+  type GeneratedVeoVideo,
+  type VeoVideoConfig,
+  type VeoVideoGenerateDeps,
+  type VeoVideoGenerateInput,
+} from "./adapters/veo-video-generate";
 export {
   ImageConfigError,
   requireGeminiImageConfig,
@@ -48,7 +100,21 @@ export {
 export {
   defaultVoiceProviderConfig,
   generateVoice,
+  toGeneratedVoiceSummary,
+  type GeneratedVoiceMedia,
+  type VoiceGenerateDeps,
 } from "./generate-voice";
+export {
+  VEO_VIDEO_ASPECT_RATIO_DEFAULT,
+  VEO_VIDEO_DURATION_DEFAULT,
+  VEO_VIDEO_MODEL_DEFAULT,
+  VEO_VIDEO_RESOLUTION_DEFAULT,
+  defaultVideoProviderConfig,
+  generateVideo,
+  type GeneratedVideoMedia,
+  type VideoGenerateDeps,
+  type VideoProviderConfig,
+} from "./generate-video";
 export { renderMedia, type RenderMediaOptions } from "./render-media";
 export { resolveDefaultRenderAdapter } from "./resolve-render-adapter";
 export {

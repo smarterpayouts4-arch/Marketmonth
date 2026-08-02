@@ -1,7 +1,11 @@
 import { z } from "zod";
 
 import { YOUTUBE_SHORT_DURATION_MAX_SECONDS } from "@/brain/channels/youtube-short/duration-policy";
+import { packageFinalShortStateSchema } from "@/brain/channels/youtube-short/package-final-short-state";
+import { sceneComposedVideoStateSchema } from "@/brain/channels/youtube-short/scene-composed-video-state";
 import { sceneRenderStateSchema } from "@/brain/channels/youtube-short/scene-render-state";
+import { sceneVideoStateSchema } from "@/brain/channels/youtube-short/scene-video-state";
+import { sceneVoiceStateSchema } from "@/brain/channels/youtube-short/scene-voice-state";
 import {
   SCENE_NARRATION_MAX_CHARS,
   SCENE_ON_SCREEN_TEXT_MAX_CHARS,
@@ -45,6 +49,11 @@ export const sceneCardSchema = z.object({
   onScreenText: z.string().max(SCENE_ON_SCREEN_TEXT_MAX_CHARS).optional(),
   /** Empty allowed for Short Manual scaffolding (Phase 3D). */
   visualPrompt: z.string().max(SCENE_VISUAL_PROMPT_MAX_CHARS),
+  /**
+   * Durable Veo motion instructions (Short Asset Type = Video).
+   * Optional on older bundles / image scenes.
+   */
+  motionPrompt: z.string().max(SCENE_VISUAL_PROMPT_MAX_CHARS).optional(),
   /** Short production asset kind; omitted on Video scenes. */
   assetType: youtubeShortSceneAssetTypeSchema.optional(),
   transition: z.string().max(80).optional(),
@@ -54,6 +63,20 @@ export const sceneCardSchema = z.object({
    * backward-compatible reads of older bundles.
    */
   render: sceneRenderStateSchema.optional(),
+  /**
+   * Optional Scene voiceover (one-scene spike). Absent on older bundles.
+   */
+  voice: sceneVoiceStateSchema.optional(),
+  /**
+   * Optional Veo image-to-video clip. Absent on older bundles.
+   * Does not replace render (still) or voice.
+   */
+  video: sceneVideoStateSchema.optional(),
+  /**
+   * Optional composed Short MP4 (still + title + voice). Absent on older bundles.
+   * Distinct from video (Veo motion).
+   */
+  composedVideo: sceneComposedVideoStateSchema.optional(),
 });
 
 export const youtubeShortFormatPackageSchema = z.object({
@@ -99,6 +122,11 @@ export const youtubeShortFormatPackageSchema = z.object({
    * effective values merge field-by-field over generatedBaseline.
    */
   durableEdits: youtubeShortDurableEditsSchema.optional(),
+  /**
+   * Assembled multi-scene Short MP4 (ordered concat of scene composedVideos).
+   * Optional — absent on older bundles.
+   */
+  finalShort: packageFinalShortStateSchema.optional(),
 });
 
 export const videoChapterSchema = z.object({

@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { ContentEmptyState } from "./content-empty-state";
 import { ContentErrorState } from "./content-error-state";
 import { useAtomContentStudio } from "./hooks/use-atom-content-studio";
-import { VisionContentStudioShell } from "./studio/vision-shell";
+import { VisionContentStudioShell } from "./studio/vision-shell/vision-shell";
 
 /**
  * Atom deep-link Studio: /content?atomId=…
@@ -97,6 +97,9 @@ function AtomDeepLinkStudio({ atomId }: { atomId: string }) {
       onSceneAssetTypeChange={(v) =>
         atomStudio.setSceneEditField("assetType", v)
       }
+      onSceneMotionPromptChange={(v) =>
+        atomStudio.setSceneEditField("motionPrompt", v)
+      }
       onResetScene={atomStudio.resetSelectedScene}
       onRemoveScene={atomStudio.removeSelectedScene}
       onAddScene={atomStudio.addScene}
@@ -107,9 +110,17 @@ function AtomDeepLinkStudio({ atomId }: { atomId: string }) {
       onPastePromptFill={atomStudio.ingestScenePrompt}
       onStartFromGenerated={atomStudio.startFromGeneratedScene}
       onValidateImageRender={atomStudio.validateImageRender}
+      onGenerateSceneVoice={atomStudio.generateSceneVoice}
+      onClearSceneVoice={atomStudio.clearSceneVoice}
+      onGenerateSceneVideo={atomStudio.generateSceneVideo}
+      onClearSceneVideo={atomStudio.clearSceneVideo}
+      onComposeSceneMp4={atomStudio.composeSceneMp4}
+      onGenerateCompleteScene={atomStudio.generateCompleteScene}
+      fullGenerateProgress={atomStudio.fullGenerateProgress}
       ingestBusy={atomStudio.ingestBusy}
       ingestError={atomStudio.ingestError}
       renderBusy={atomStudio.renderBusy}
+      renderBusyMap={atomStudio.renderBusyMap}
       renderMessage={atomStudio.renderMessage}
       renderError={atomStudio.renderError}
       imagePrompt={atomStudio.edits.imagePrompt}
@@ -126,6 +137,8 @@ function AtomDeepLinkStudio({ atomId }: { atomId: string }) {
       onReset={atomStudio.resetEdits}
       onRegenerate={() => atomStudio.regenerate()}
       productionLocked={productionLocked}
+      onAssembleFinalShort={atomStudio.assembleFinalShort}
+      assembleBusy={Boolean(atomStudio.renderBusyMap.assemble)}
     />
   );
 }

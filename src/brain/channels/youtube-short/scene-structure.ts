@@ -26,6 +26,7 @@ export function createEmptySceneCard(order: number, id?: string): SceneCard {
     narration: "",
     onScreenText: "",
     visualPrompt: "",
+    motionPrompt: "",
     assetType: "image",
   };
 }
@@ -35,6 +36,7 @@ function emptyBaseline(): YouTubeShortDurableSceneBaseline {
     visualPrompt: "",
     narration: "",
     onScreenText: "",
+    motionPrompt: "",
     assetType: "image",
   };
 }
@@ -71,6 +73,7 @@ function ensureBaseline(
         visualPrompt: scene.visualPrompt,
         narration: scene.narration,
         onScreenText: scene.onScreenText,
+        motionPrompt: scene.motionPrompt,
         assetType: scene.assetType ?? "image",
       };
     }
