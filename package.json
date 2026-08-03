@@ -98,7 +98,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/cheerio": "^0.22.35",
+    "@types/cheerio": "^1.0.0",
     "@types/ffmpeg-static": "^3.0.3",
     "@types/node": "^20",
     "@types/react": "^19",
